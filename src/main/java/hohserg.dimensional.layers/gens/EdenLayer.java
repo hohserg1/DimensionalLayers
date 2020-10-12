@@ -3,11 +3,12 @@ package hohserg.dimensional.layers.gens;
 import divinerpg.registry.BlockRegistry;
 import io.github.opencubicchunks.cubicchunks.api.world.ICube;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.NoiseGeneratorOctaves;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 import static net.minecraft.init.Blocks.AIR;
@@ -29,12 +30,19 @@ public class EdenLayer implements LayerFiller {
 
     @Override
     public IBlockState generateBlockState(BlockPos absolutePos) {
-        return generateAllAndGetOne(absolutePos.add(0, -startY, 0));
+        BlockPos localPos = absolutePos.add(0, -startY, 0);
+        if (!chunkCache.containsKey(localPos))
+            generateAll(localPos);
+        IBlockState r = chunkCache.get(localPos);
+        chunkCache.remove(localPos);
+        return r;
     }
 
-    private IBlockState generateAllAndGetOne(BlockPos pos) {
-        int x = pos.getX()>>4;
-        int z = pos.getZ()>>4;
+    private Map<BlockPos, IBlockState> chunkCache = new HashMap<>();
+
+    private void generateAll(BlockPos pos) {
+        int x = pos.getX() >> 4;
+        int z = pos.getZ() >> 4;
         buffer = setupNoiseGenerators(buffer, x * 2, z * 2);
 
         for (int i1 = 0; i1 < 2; i1++) {
@@ -80,8 +88,7 @@ public class EdenLayer implements LayerFiller {
                                     filler = BlockRegistry.twilightStone.getDefaultState();
                                 }
 
-                                if(new BlockPos(x1,y,z1).equals(pos))
-                                    return filler;
+                                chunkCache.put(new BlockPos(x1, y, z1), filler);
 
                                 d15 += d16;
                             }
@@ -96,7 +103,6 @@ public class EdenLayer implements LayerFiller {
                 }
             }
         }
-        return AIR.getDefaultState();
     }
 
     protected double[] setupNoiseGenerators(double buffer[], int x, int z) {
