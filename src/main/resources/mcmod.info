@@ -1,0 +1,16 @@
+[
+{
+  "modid": "dimensional_layers",
+  "name": "DimensionalLayers",
+  "description": "Cubix Chunks addon",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["hohserg"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
