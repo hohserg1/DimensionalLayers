@@ -1,1 +1,1 @@
-move .\build\libs\DimensionalLayers-1.0.jar .\run2\mods
+move .\build\libs\DimensionalLayers-2.0.jar .\run2\mods
