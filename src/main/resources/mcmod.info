@@ -1,14 +1,14 @@
 [
 {
-  "modid": "dimensional_layers",
-  "name": "DimensionalLayers",
-  "description": "Cubix Chunks addon",
+  "modid": "examplemod",
+  "name": "Example Mod",
+  "description": "Example placeholder mod.",
   "version": "${version}",
   "mcversion": "${mcversion}",
   "url": "",
   "updateUrl": "",
-  "authorList": ["hohserg"],
-  "credits": "",
+  "authorList": ["ExampleDude"],
+  "credits": "The Forge and FML guys, for making this example",
   "logoFile": "",
   "screenshots": [],
   "dependencies": []
