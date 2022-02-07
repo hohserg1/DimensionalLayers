@@ -48,31 +48,15 @@ class DimensionalLayersGenerator(world: World) extends ICubeGenerator {
   }
 
   override def generateColumn(chunk: Chunk): Unit = {
-    //println("generateColumn", chunk.x, chunk.z)
-
   }
 
-  override def populate(cube: ICube): Unit = {
-    layers.get(cube.getY).foreach { case (startFrom, layer) =>
-      val minY = cube.getY << 4
-      val maxY = (cube.getY << 4) + 15
-      val posToState = layer.getPopulatedChanges(cube.getX, cube.getZ)
-      //println("populate1", startFrom, layer, minY, maxY, posToState.toString().substring(0,30))
-      posToState
-        .map { case (pos, state) => pos.up(startFrom << 4) -> state }
-        .filter { case (pos, state) => minY <= pos.getY && pos.getY <= maxY }
-        .foreach { case (pos, state) => cube.setBlockState(pos, state) }
-    }
-  }
+  override def populate(cube: ICube): Unit = {}
 
   override def getFullPopulationRequirements(iCube: ICube): Box = {
-    //println("getFullPopulationRequirements", iCube.getCoords)
-    //ICubeGenerator.NO_REQUIREMENT
-    new Box(-1, -1, -1, 0, 0, 0)
+    ICubeGenerator.NO_REQUIREMENT
   }
 
   override def getPopulationPregenerationRequirements(iCube: ICube): Box = {
-    //println("getPopulationPregenerationRequirements", iCube.getCoords)
     ICubeGenerator.NO_REQUIREMENT
   }
 
@@ -87,7 +71,6 @@ class DimensionalLayersGenerator(world: World) extends ICubeGenerator {
   }
 
   override def getPossibleCreatures(enumCreatureType: EnumCreatureType, blockPos: BlockPos): util.List[Biome.SpawnListEntry] = {
-    //println("getPossibleCreatures")
     ImmutableList.of()
   }
 
