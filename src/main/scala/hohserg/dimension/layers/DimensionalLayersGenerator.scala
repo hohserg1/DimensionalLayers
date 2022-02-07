@@ -1,9 +1,7 @@
 package hohserg.dimension.layers
 
-import java.util
-
 import com.google.common.collect.ImmutableList
-import io.github.opencubicchunks.cubicchunks.api.util.{Box, IntRange}
+import io.github.opencubicchunks.cubicchunks.api.util.Box
 import io.github.opencubicchunks.cubicchunks.api.world.ICube
 import io.github.opencubicchunks.cubicchunks.api.worldgen.{CubePrimer, ICubeGenerator}
 import net.minecraft.entity.EnumCreatureType
@@ -12,17 +10,16 @@ import net.minecraft.world.World
 import net.minecraft.world.biome.Biome
 import net.minecraft.world.chunk.Chunk
 
+import java.util
+
 class DimensionalLayersGenerator(world: World) extends ICubeGenerator {
+  val preset = DimensionLayersPreset.fromJson(world.getWorldInfo.getGeneratorOptions)
 
   val layers: Map[Int, (Int, Layer)] =
-    DimensionalLayersWorldType.layers
+    preset.toLayerMap
       .map { case (range, layerFactory) => range -> layerFactory(world) }
       .flatMap { case (range, layer) => for (i <- range.getMin to range.getMax) yield i -> (range.getMin -> layer) }
       .toMap
-
-  println("DimensionalLayersGenerator", world.isRemote)
-
-  def inRange(tuple: (IntRange, Layer), y: Int): Boolean = tuple._1.getMin <= y && y <= tuple._1.getMax
 
   override def generateCube(x: Int, y: Int, z: Int): CubePrimer = {
     //println("generateCube", x, y, z)
