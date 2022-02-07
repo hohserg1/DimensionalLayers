@@ -1,13 +1,12 @@
 package hohserg.dimension.layers.fake.world
 
-import net.minecraft.world.biome.BiomeProvider
-import net.minecraft.world.{DimensionType, World, WorldProvider}
+import net.minecraft.world.{DimensionType, WorldProvider}
 
-class FakeWorldProvider(biomeProviderFactory: World => BiomeProvider, _hasSkyLight: Boolean) extends WorldProvider {
+class FakeWorldProvider(originalProvider: WorldProvider, _hasSkyLight: Boolean) extends WorldProvider {
   override def getDimensionType: DimensionType = DimensionType.OVERWORLD
 
   override def init(): Unit = {
     this.hasSkyLight = _hasSkyLight
-    this.biomeProvider = biomeProviderFactory(world)
+    this.biomeProvider = originalProvider.getBiomeProvider
   }
 }

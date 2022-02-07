@@ -18,11 +18,12 @@ class DimensionalLayersGenerator(world: World) extends ICubeGenerator {
   val layers: Map[Int, (Int, Layer)] =
     preset.toLayerMap
       .map { case (range, layerFactory) => range -> layerFactory(world) }
-      .flatMap { case (range, layer) => for (i <- range.getMin to range.getMax) yield i -> (range.getMin -> layer) }
-      .toMap
+      .flatMap { case (range, layer) =>
+        for (i <- range.getMin to range.getMax)
+          yield i -> (range.getMin -> layer)
+      }
 
   override def generateCube(x: Int, y: Int, z: Int): CubePrimer = {
-    //println("generateCube", x, y, z)
     val primer = new CubePrimer()
 
     layers.get(y).foreach { case (startFrom, layer) =>

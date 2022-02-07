@@ -11,8 +11,6 @@ sealed trait Layer {
 
   def getBiomeAt: (Int, Int) => (Int, Int) => Biome
 
-  def getPopulatedChanges: (Int, Int) => Map[BlockPos, IBlockState]
-
 
 }
 
@@ -29,16 +27,12 @@ object Layer {
       (x, z) => chunk.getBiome(new BlockPos(x, 1, z), world.getBiomeProvider)
     }
 
-    override val getPopulatedChanges: (Int, Int) => Map[BlockPos, IBlockState] = world.getPopulatedChanges
-
   }
 
   case class SolidLayer(state: IBlockState, biome: Biome = Biomes.VOID) extends Layer {
     override val getChunkContentAt: (Int, Int) => (Int, Int, Int) => IBlockState = (_, _) => (_, _, _) => state
 
     override val getBiomeAt: (Int, Int) => (Int, Int) => Biome = (_, _) => (_, _) => biome
-
-    override val getPopulatedChanges: (Int, Int) => Map[BlockPos, IBlockState] = (_, _) => Map()
   }
 
 }

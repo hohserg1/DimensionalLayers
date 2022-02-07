@@ -20,18 +20,13 @@ case class DimensionLayersPreset(layers: List[LayerSpec]) {
       .foldRight(List[(IntRange, World => Layer)]() -> 0) {
         case (LayerSpec(dt, height), (acc, lastFreeCubic)) =>
           ((IntRange.of(lastFreeCubic, lastFreeCubic + height - 1) -> {
-            world: World => {
-              val provider = dt.createDimension()
-              val fakeWorld = FakeWorld(
+            world: World =>
+              FakeWorldLayer(FakeWorld(
+                dt,
                 world.getSeed,
                 enableMapFeatures = true,
-                _ => provider.createChunkGenerator(),
-                _ => provider.getBiomeProvider,
                 hasSkyLight = false
-              )
-              provider.setWorld(fakeWorld)
-              FakeWorldLayer(fakeWorld)
-            }
+              ))
           }) :: acc) -> (lastFreeCubic + height)
       }._1.toMap
 }
