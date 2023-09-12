@@ -1,77 +1,120 @@
 package hohserg.dimension.layers
 
-import hohserg.dimension.layers.DimensionLayersPreset.LayerSpec
-import hohserg.dimension.layers.DimensionLayersPreset.LayerSpec.{cubicHeightLeftBracket, dimensionTypeLeftBracket, rightBracket}
-import hohserg.dimension.layers.Layer.FakeWorldLayer
-import hohserg.dimension.layers.fake.world.FakeWorld
+import com.google.gson._
+import hohserg.dimension.layers.DimensionLayersPreset.{DimensionLayerSpec, LayerSpec, SolidLayerSpec}
+import hohserg.dimension.layers.worldgen.{Layer, SolidLayer, VanillaLayer}
 import io.github.opencubicchunks.cubicchunks.api.util.IntRange
+import net.minecraft.block.Block
+import net.minecraft.block.state.IBlockState
 import net.minecraft.world.{DimensionType, World}
 import net.minecraftforge.common.DimensionManager
 
-import scala.collection.JavaConverters.asScalaSetConverter
+import java.lang.reflect.Type
+import scala.collection.JavaConverters.{asScalaIteratorConverter, asScalaSetConverter, mapAsScalaMapConverter}
 import scala.util.Try
 
 case class DimensionLayersPreset(layers: List[LayerSpec]) {
-
-  def toJson: String = "[" + layers.map(l => l.toJson).mkString(", ") + "]"
-
   def toLayerMap: Map[IntRange, World => Layer] =
     layers
       .foldRight(List[(IntRange, World => Layer)]() -> 0) {
-        case (LayerSpec(dt, height), (acc, lastFreeCubic)) =>
-          ((IntRange.of(lastFreeCubic, lastFreeCubic + height - 1) -> {
+        case (spec: DimensionLayerSpec, (acc, lastFreeCubic)) =>
+          ((IntRange.of(lastFreeCubic, lastFreeCubic + 16 - 1) -> {
             world: World =>
-              FakeWorldLayer(FakeWorld(
-                dt,
-                world.getSeed,
-                enableMapFeatures = true,
-                hasSkyLight = false
-              ))
-          }) :: acc) -> (lastFreeCubic + height)
+              new VanillaLayer(spec, lastFreeCubic)
+          }) :: acc) -> (lastFreeCubic + 16)
+        case (SolidLayerSpec(filler, height), (acc, lastFreeCubic)) =>
+          ((IntRange.of(lastFreeCubic, lastFreeCubic + 16 - 1) -> {
+            world: World =>
+              new SolidLayer(filler, lastFreeCubic, height)
+          }) :: acc) -> (lastFreeCubic + 16)
       }._1.toMap
+
+  def toSettings: String = DimensionLayersPreset.gson.toJson(this)
 }
 
 object DimensionLayersPreset {
-  case class LayerSpec(dimensionType: DimensionType, cubicHeight: Int = 16) {
-    def toJson: String =
-      "{" +
-        dimensionTypeLeftBracket + dimensionType.getName + rightBracket + ", " +
-        cubicHeightLeftBracket + cubicHeight + rightBracket +
-        "}"
+  def apply(settings: String): DimensionLayersPreset =
+    Try(settings)
+      .filter(_.nonEmpty)
+      .orElse(Try(Configuration.defaultPreset).filter(_.nonEmpty))
+      .map(gson.fromJson(_, classOf[DimensionLayersPreset]))
+      .getOrElse(DimensionLayersPreset(DimensionManager.getRegisteredDimensions.keySet().asScala.map(DimensionLayerSpec).toList))
+
+
+  sealed trait LayerSpec {
+    def height: Int
   }
 
-  object LayerSpec {
-    val dimensionTypeLeftBracket = "dimensionType=\""
-    val cubicHeightLeftBracket = "cubicHeight=\""
-    val rightBracket = "\""
+  case class DimensionLayerSpec(dimensionType: DimensionType) extends LayerSpec {
+    override def height: Int = 16
+  }
 
-    def fromJson(json: String): LayerSpec = {
-      val dimensionTypeStart = json.indexOf(dimensionTypeLeftBracket) + dimensionTypeLeftBracket.length
-      val dimensionTypeEnd = json.indexOf(rightBracket, dimensionTypeStart)
-      val cubicHeightStart = json.indexOf(cubicHeightLeftBracket) + cubicHeightLeftBracket.length
-      val cubicHeightEnd = json.indexOf(rightBracket, cubicHeightStart)
-      LayerSpec(
-        DimensionType.byName(json.substring(dimensionTypeStart, dimensionTypeEnd)),
-        json.substring(cubicHeightStart, cubicHeightEnd).toInt
-      )
+  case class SolidLayerSpec(filler: IBlockState, height: Int = 1) extends LayerSpec
+
+
+  private val gson: Gson =
+    (new GsonBuilder)
+      .registerTypeHierarchyAdapter(classOf[LayerSpec], LayerSpecSerializer)
+      .registerTypeHierarchyAdapter(classOf[DimensionLayersPreset], Serializer)
+      .create()
+
+  private object Serializer extends JsonSerializer[DimensionLayersPreset] with JsonDeserializer[DimensionLayersPreset] {
+    override def serialize(src: DimensionLayersPreset, typeOfSrc: Type, context: JsonSerializationContext): JsonElement = {
+      val r = new JsonArray
+      src.layers.foreach(l => r.add(context.serialize(l)))
+      r
     }
 
+    override def deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): DimensionLayersPreset =
+      DimensionLayersPreset(json.getAsJsonArray.iterator().asScala.map(je => context.deserialize[LayerSpec](je, classOf[LayerSpec])).toList)
   }
 
-  lazy val mixAllDims = DimensionLayersPreset(
-    DimensionManager.getRegisteredDimensions.keySet().asScala.map(LayerSpec(_)).toList
-  )
+  private object LayerSpecSerializer extends JsonSerializer[LayerSpec] with JsonDeserializer[LayerSpec] {
+    override def serialize(src: LayerSpec, typeOfSrc: Type, context: JsonSerializationContext): JsonElement = {
+      val r = new JsonObject
+      src match {
+        case DimensionLayerSpec(dimensionType) =>
+          r.add("dimensionType", new JsonPrimitive(dimensionType.getName))
+        case SolidLayerSpec(filler, height) =>
+          r.add("filler", new JsonPrimitive(filler.getBlock.getRegistryName.toString))
+          if (filler != filler.getBlock.getDefaultState) {
+            val jsonProps = new JsonObject
+            filler.getProperties.asScala.foreach { case (p, v) => jsonProps.add(p.getName, new JsonPrimitive(p.getName(v.asInstanceOf))) }
+            r.add("properties", jsonProps)
+          }
+          r.add("height", new JsonPrimitive(height))
+      }
+      r
+    }
 
-  def fromJson(json: String): DimensionLayersPreset =
-    if (json == "mixAllDims")
-      mixAllDims
-    else
-      Try(DimensionLayersPreset(
-        json.substring(json.indexOf('[') + 1, json.lastIndexOf(']'))
-          .replaceAll("\\s", "")
-          .split(',')
-          .map(LayerSpec.fromJson)
-          .toList
-      )).getOrElse(mixAllDims)
+    override def deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): LayerSpec = {
+      val jsonObject = json.getAsJsonObject
+      if (jsonObject.has("dimensionType"))
+        DimensionLayerSpec(
+          DimensionType.byName(jsonObject.getAsJsonPrimitive("dimensionType").getAsString)
+        )
+      else {
+        val block = Block.getBlockFromName(jsonObject.getAsJsonPrimitive("filler").getAsString)
 
+        SolidLayerSpec(
+          if (jsonObject.has("properties")) {
+            var state = block.getDefaultState
+            val jsonProps = jsonObject.getAsJsonObject("properties")
+            jsonProps.entrySet().asScala.foreach { e =>
+              val propName = e.getKey
+              val valueName = e.getValue.getAsString
+              val p = block.getBlockState.getProperty(propName)
+              val maybeValue = p.parseValue(valueName)
+              if (maybeValue.isPresent) {
+                state = state.withProperty(p, maybeValue.get().asInstanceOf)
+              }
+            }
+            state
+          } else
+            block.getDefaultState,
+          jsonObject.getAsJsonPrimitive("height").getAsInt
+        )
+      }
+    }
+  }
 }

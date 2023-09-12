@@ -58,8 +58,6 @@ dependencies {
     compileOnly 'abc:CubicChunks:1.12.2:dev'
     implementation 'abc:DivineRPG:1.7.1'
 
-    implementation group: 'com.github.stannismod.gext', name: 'forge112', version: '1.4.0.3-SNAPSHOT'
-
 }
 
 jar {
