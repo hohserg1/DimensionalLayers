@@ -6,6 +6,7 @@ import hohserg.dimensional.layers.worldgen.{Layer, SolidLayer, VanillaLayer}
 import io.github.opencubicchunks.cubicchunks.api.util.IntRange
 import net.minecraft.block.Block
 import net.minecraft.block.state.IBlockState
+import net.minecraft.init.Blocks
 import net.minecraft.world.{DimensionType, World}
 import net.minecraftforge.common.DimensionManager
 
@@ -18,16 +19,13 @@ case class DimensionLayersPreset(layers: List[LayerSpec]) {
     layers
       .foldRight(List[(IntRange, World => Layer)]() -> 0) {
         case (spec: DimensionLayerSpec, (acc, lastFreeCubic)) =>
-          ((IntRange.of(lastFreeCubic, lastFreeCubic + 16 - 1) -> {
-            world: World =>
-              new VanillaLayer(spec, lastFreeCubic)
-          }) :: acc) -> (lastFreeCubic + 16)
+          (range(lastFreeCubic, spec.height) -> (new VanillaLayer(_: World, spec, lastFreeCubic)) :: acc) -> (lastFreeCubic + spec.height)
+
         case (SolidLayerSpec(filler, height), (acc, lastFreeCubic)) =>
-          ((IntRange.of(lastFreeCubic, lastFreeCubic + 16 - 1) -> {
-            world: World =>
-              new SolidLayer(filler, lastFreeCubic, height)
-          }) :: acc) -> (lastFreeCubic + 16)
+          (range(lastFreeCubic, height) -> { _: World => SolidLayer(filler, lastFreeCubic, height) } :: acc) -> (lastFreeCubic + height)
       }._1.toMap
+
+  private def range(lastFreeCubic: Int, height: Int) = IntRange.of(lastFreeCubic, lastFreeCubic + height - 1)
 
   def toSettings: String = DimensionLayersPreset.gson.toJson(this)
 }
@@ -38,7 +36,9 @@ object DimensionLayersPreset {
       .filter(_.nonEmpty)
       .orElse(Try(Configuration.defaultPreset).filter(_.nonEmpty))
       .map(gson.fromJson(_, classOf[DimensionLayersPreset]))
-      .getOrElse(DimensionLayersPreset(DimensionManager.getRegisteredDimensions.keySet().asScala.map(DimensionLayerSpec).toList))
+      .getOrElse(DimensionLayersPreset(
+        DimensionManager.getRegisteredDimensions.keySet().asScala.map(DimensionLayerSpec).toList :+ SolidLayerSpec(Blocks.BEDROCK.getDefaultState)
+      ))
 
 
   sealed trait LayerSpec {

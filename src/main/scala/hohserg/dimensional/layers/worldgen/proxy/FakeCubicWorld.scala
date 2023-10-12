@@ -1,4 +1,4 @@
-package hohserg.dimensional.layers.legacy.fake.world
+package hohserg.dimensional.layers.worldgen.proxy
 
 import io.github.opencubicchunks.cubicchunks.api.util._
 import io.github.opencubicchunks.cubicchunks.api.world.{IColumn, ICube}

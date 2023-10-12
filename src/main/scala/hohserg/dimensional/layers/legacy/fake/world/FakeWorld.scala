@@ -1,5 +1,6 @@
 package hohserg.dimensional.layers.legacy.fake.world
 
+import hohserg.dimensional.layers.worldgen.proxy.{FakeCubicWorld, FakeSaveHandler}
 import net.minecraft.block.state.IBlockState
 import net.minecraft.profiler.Profiler
 import net.minecraft.tileentity.TileEntityLockableLoot

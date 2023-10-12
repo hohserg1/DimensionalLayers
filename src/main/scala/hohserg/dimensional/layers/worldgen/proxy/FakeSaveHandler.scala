@@ -1,4 +1,4 @@
-package hohserg.dimensional.layers.legacy.fake.world
+package hohserg.dimensional.layers.worldgen.proxy
 
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.datafix.DataFixesManager
@@ -10,8 +10,7 @@ import net.minecraft.world.{World, WorldProvider}
 
 import java.io.File
 
-class FakeSaveHandler(info: WorldInfo) extends ISaveHandler {
-  override def loadWorldInfo(): WorldInfo = info
+class FakeSaveHandler(val loadWorldInfo: WorldInfo) extends ISaveHandler {
 
   override def checkSessionLock(): Unit = ()
 

@@ -15,4 +15,9 @@ package object layers {
       override def accept(t: A): Unit = f(t)
     }
 
+  implicit def toJava[A, B](f: A => B): java.util.function.Function[A, B] =
+    new java.util.function.Function[A, B] {
+      override def apply(t: A): B = f(t)
+    }
+
 }
