@@ -191,7 +191,11 @@ class DimensionalLayersGenerator2(world: World) extends ICubeGenerator {
         layer.vanillaGenerator.getPossibleCreatures(enumCreatureType, blockPos.down(layer.startBlockY))
     }.getOrElse(ImmutableList.of())
 
-  override def getClosestStructure(s: String, blockPos: BlockPos, b: Boolean): BlockPos = BlockPos.ORIGIN
+  override def getClosestStructure(name: String, blockPos: BlockPos, findUnexplored: Boolean): BlockPos =
+    layerAtCubeY.get(Coords.blockToCube(blockPos.getY)).collect {
+      case layer: VanillaLayer =>
+        layer.vanillaGenerator.getNearestStructurePos(this.world, name, blockPos, findUnexplored)
+    }.orNull
 
   override def generateCube(cubeX: Int, cubeY: Int, cubeZ: Int): CubePrimer = generateCube(cubeX, cubeY, cubeZ, new CubePrimer())
 }
