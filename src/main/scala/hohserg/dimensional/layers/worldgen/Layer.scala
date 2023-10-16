@@ -29,6 +29,8 @@ class VanillaLayer(world: World, val spec: DimensionLayerSpec, val startCubeY: I
 
   def shift(pos: BlockPos): ShiftedBlockPos = ShiftedBlockPos(pos, this)
 
+  def markShifted(pos: BlockPos): ShiftedBlockPos = ShiftedBlockPos.markShifted(pos, this)
+
   val proxyWorld: ProxyWorld = new ProxyWorld(world, this)
   private val provider: WorldProvider = proxyWorld.provider
   val vanillaGenerator: IChunkGenerator = provider.createChunkGenerator()

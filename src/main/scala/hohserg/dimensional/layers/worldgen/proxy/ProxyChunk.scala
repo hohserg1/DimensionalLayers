@@ -83,7 +83,7 @@ class ProxyChunk(original: Chunk, layer: VanillaLayer) extends Chunk(original.ge
     original.removeTileEntity(layer.shift(pos))
 
   override def getPrecipitationHeight(pos: BlockPos): BlockPos =
-    original.getPrecipitationHeight(layer.shift(pos))
+    layer.markShifted(original.getPrecipitationHeight(layer.shift(pos)))
 
   override def isEmptyBetween(startY: Int, endY: Int): Boolean =
     original.isEmptyBetween(startY + layer.startBlockY, endY + layer.startBlockY)
