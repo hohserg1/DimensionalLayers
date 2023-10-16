@@ -174,9 +174,12 @@ class DimensionalLayersGenerator2(world: World) extends ICubeGenerator {
 
   override def generateColumn(chunk: Chunk): Unit = {
 
-  }
-
-  override def recreateStructures(cube: ICube): Unit = {
+  override def recreateStructures(cube: ICube): Unit =
+    layerAtCubeY.get(cube.getY).foreach {
+      case layer: VanillaLayer =>
+        layer.vanillaGenerator.recreateStructures(layer.proxyWorld.getChunk(cube.getX, cube.getZ), cube.getX, cube.getZ)
+      case _ =>
+    }
 
   }
 
