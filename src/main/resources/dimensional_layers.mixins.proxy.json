@@ -11,6 +11,7 @@
     "conformVisibility": true
   },
   "mixins": [
+    "BlockPosMixin",
     "TemplateMixin"
   ]
 }
