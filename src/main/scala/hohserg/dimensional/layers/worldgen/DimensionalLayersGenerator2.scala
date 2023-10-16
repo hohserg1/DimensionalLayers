@@ -172,7 +172,7 @@ class DimensionalLayersGenerator2(world: World) extends ICubeGenerator {
     }.getOrElse(ICubeGenerator.NO_REQUIREMENT)
   }
 
-  override def generateColumn(chunk: Chunk): Unit = {
+  override def generateColumn(chunk: Chunk): Unit = ()
 
   override def recreateStructures(cube: ICube): Unit =
     layerAtCubeY.get(cube.getY).foreach {
@@ -181,11 +181,9 @@ class DimensionalLayersGenerator2(world: World) extends ICubeGenerator {
       case _ =>
     }
 
-  }
 
-  override def recreateStructures(chunk: Chunk): Unit = {
+  override def recreateStructures(chunk: Chunk): Unit = ()
 
-  }
 
   override def getPossibleCreatures(enumCreatureType: EnumCreatureType, blockPos: BlockPos): util.List[Biome.SpawnListEntry] = Lists.newArrayList()
 
