@@ -1,6 +1,6 @@
 package hohserg.dimensional.layers.worldgen
 
-import com.google.common.collect.Lists
+import com.google.common.collect.ImmutableList
 import hohserg.dimensional.layers.DimensionLayersPreset
 import io.github.opencubicchunks.cubicchunks.api.util.{Box, Coords}
 import io.github.opencubicchunks.cubicchunks.api.world.{ICube, ICubicWorld}
@@ -185,7 +185,11 @@ class DimensionalLayersGenerator2(world: World) extends ICubeGenerator {
   override def recreateStructures(chunk: Chunk): Unit = ()
 
 
-  override def getPossibleCreatures(enumCreatureType: EnumCreatureType, blockPos: BlockPos): util.List[Biome.SpawnListEntry] = Lists.newArrayList()
+  override def getPossibleCreatures(enumCreatureType: EnumCreatureType, blockPos: BlockPos): util.List[Biome.SpawnListEntry] =
+    layerAtCubeY.get(Coords.blockToCube(blockPos.getY)).collect {
+      case layer: VanillaLayer =>
+        layer.vanillaGenerator.getPossibleCreatures(enumCreatureType, blockPos.down(layer.startBlockY))
+    }.getOrElse(ImmutableList.of())
 
   override def getClosestStructure(s: String, blockPos: BlockPos, b: Boolean): BlockPos = BlockPos.ORIGIN
 
