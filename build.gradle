@@ -1,3 +1,10 @@
+apply plugin: 'idea'
+
+idea {
+    module {
+        inheritOutputDirs = true
+    }
+}
 buildscript {
     repositories {
         maven { url = 'https://maven.minecraftforge.net/' }
