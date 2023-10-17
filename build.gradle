@@ -31,7 +31,11 @@ minecraft {
     mappings channel: 'stable', version: '39-1.12'
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
 
-    accessTransformer = file('src/main/resources/META-INF/dimensional_layers_at.cfg')
+    accessTransformer = files(
+            'src/main/resources/META-INF/dimensional_layers_at.cfg',
+            'libs_at/aether_at.cfg',
+            'libs_at/orbis-lib_at.cfg',
+    )
 
     runs {
         client {
@@ -64,6 +68,8 @@ dependencies {
 
     compileOnly 'abc:CubicChunks:1.12.2:dev'
     implementation 'abc:DivineRPG:1.7.1'
+    implementation fg.deobf('abc:aether_ii-1.12.2:0.3.0')
+    implementation fg.deobf('abc:orbis-lib-1.12.2:0.2.0')
     //implementation 'abc:AbyssalCraft:1.12.2-1.10.4'
 
 }

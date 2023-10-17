@@ -40,3 +40,5 @@ hs_err_pid*
 *.launch
 /src/main/scala/itemtransformhelper/
 /src/main/resources/assets/itemtransformhelper/
+libs_at/aether_at.cfg
+libs_at/orbis-lib_at.cfg
