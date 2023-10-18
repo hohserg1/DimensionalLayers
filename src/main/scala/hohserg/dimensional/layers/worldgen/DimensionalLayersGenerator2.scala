@@ -74,6 +74,9 @@ class DimensionalLayersGenerator2(world: World) extends ICubeGenerator {
 
     val chunk = layer.lastChunks.get(cubeX -> cubeZ)
 
+    if (layer.spec.dimensionType.getName == "Aether")
+      println("Aether")
+
     if (!layer.optimizationHack) {
       layer.optimizationHack = true
       recursiveGeneration(cubeX, cubeY, cubeZ, layer)
@@ -114,15 +117,15 @@ class DimensionalLayersGenerator2(world: World) extends ICubeGenerator {
     markColumnPopulated(cubeX, cubeZ, layer)
 
     try {
-      layer.vanillaGenerator.populate(cubeX, cubeZ);
+      layer.vanillaGenerator.populate(cubeX, cubeZ)
     } catch {
       case ex: IllegalArgumentException =>
         val stack = ex.getStackTrace
         if (stack == null || stack.length < 1 || stack(0).getClassName != classOf[Random].getName || stack(0).getMethodName != "nextInt")
-          throw ex;
-        CubicChunks.LOGGER.error("Error while populating. Likely known mod issue, ignoring...", ex);
+          throw ex
+        CubicChunks.LOGGER.error("Error while populating. Likely known mod issue, ignoring...", ex)
     }
-    applyModGenerators(cubeX, cubeZ, layer);
+    applyModGenerators(cubeX, cubeZ, layer)
   }
 
   def applyModGenerators(x: Int, z: Int, layer: VanillaLayer): Unit = {
@@ -132,10 +135,10 @@ class DimensionalLayersGenerator2(world: World) extends ICubeGenerator {
     val generators = IGameRegistry.getSortedGeneratorList.asScala
 
     val worldSeed = world.getSeed
-    val fmlRandom = new Random(worldSeed);
-    val xSeed = fmlRandom.nextLong() >> 3L;
-    val zSeed = fmlRandom.nextLong() >> 3L;
-    val chunkSeed = xSeed * x + zSeed * z ^ worldSeed;
+    val fmlRandom = new Random(worldSeed)
+    val xSeed = fmlRandom.nextLong() >> 3L
+    val zSeed = fmlRandom.nextLong() >> 3L
+    val chunkSeed = xSeed * x + zSeed * z ^ worldSeed
 
 
     for (generator <- generators) {
