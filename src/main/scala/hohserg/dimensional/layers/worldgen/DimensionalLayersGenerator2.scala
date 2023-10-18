@@ -35,6 +35,9 @@ class DimensionalLayersGenerator2(world: World) extends ICubeGenerator {
     try {
       WorldgenHangWatchdog.startWorldGen()
       generator(cubeX, cubeY, cubeZ, target, layer)
+    } catch {
+      case e: Throwable =>
+        CubicChunks.LOGGER.error("DimensionalLayersGenerator2#generateWithWatchdog error", e)
     } finally {
       WorldgenHangWatchdog.endWorldGen()
     }
