@@ -1,5 +1,6 @@
 package hohserg.dimensional.layers.worldgen.proxy
 
+import hohserg.dimensional.layers.Main
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.datafix.DataFixesManager
 import net.minecraft.world.chunk.Chunk
@@ -36,7 +37,11 @@ class FakeSaveHandler(val loadWorldInfo: WorldInfo) extends ISaveHandler {
 
   override def flush(): Unit = ???
 
-  override def getWorldDirectory: File = ???
+  override lazy val getWorldDirectory: File = {
+    val r = new File("./" + Main.modid + "/fake_save_handle/")
+    r.mkdirs()
+    r
+  }
 
   override def getMapFileFromName(mapName: String): File = ???
 
