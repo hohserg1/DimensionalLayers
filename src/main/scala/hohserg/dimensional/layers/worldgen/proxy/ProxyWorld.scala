@@ -29,6 +29,8 @@ class ProxyWorld(original: World, val layer: VanillaLayer)
 
   lootTable = new LootTableManager(null)
 
+  initCapabilities()
+
   override def getMinHeight: Int = layer.startBlockY
 
   override def getMaxHeight: Int = layer.endBlockY + 1
