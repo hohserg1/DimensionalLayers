@@ -16,7 +16,7 @@ class ProxyChunkProvider(original: World, layer: VanillaLayer) extends IChunkPro
         override def load(key: Chunk): ProxyChunk = new ProxyChunk(key, layer)
       })
 
-  override def getLoadedChunk(x: Int, z: Int): Chunk = proxyChunkCache.get(original.getChunkProvider.getLoadedChunk(x, z))
+  override def getLoadedChunk(x: Int, z: Int): Chunk = Option(original.getChunkProvider.getLoadedChunk(x, z)).map(proxyChunkCache.get).orNull
 
   override def provideChunk(x: Int, z: Int): Chunk = proxyChunkCache.get(original.getChunkProvider.provideChunk(x, z))
 
