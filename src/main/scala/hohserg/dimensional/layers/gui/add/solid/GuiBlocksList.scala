@@ -6,7 +6,7 @@ import hohserg.dimensional.layers.gui.{Drawable, GuiTileList}
 import net.minecraft.block.Block
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.RenderHelper
-import net.minecraft.init.Items
+import net.minecraft.init.{Blocks, Items}
 import net.minecraft.item.{Item, ItemStack}
 import net.minecraftforge.fml.common.registry.ForgeRegistries
 
@@ -16,10 +16,11 @@ import scala.collection.JavaConverters._
 object GuiBlocksList {
   val itemWidth = 18
   lazy val allBlocks: Seq[DrawableBlock] =
-    ForgeRegistries.BLOCKS.getValuesCollection.asScala
-      .filter(Item.getItemFromBlock(_) != Items.AIR)
-      .map(DrawableBlock)
-      .toIndexedSeq
+    DrawableBlock(Blocks.AIR) +:
+      ForgeRegistries.BLOCKS.getValuesCollection.asScala
+        .filter(Item.getItemFromBlock(_) != Items.AIR)
+        .map(DrawableBlock)
+        .toIndexedSeq
 
   val blockLinesByLen: LoadingCache[Integer, Seq[GuiTileList.GuiTileLine[DrawableBlock]]] = GuiTileList.createLinesCache(allBlocks, itemWidth)
 
