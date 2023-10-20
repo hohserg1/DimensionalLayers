@@ -1,6 +1,6 @@
 package hohserg.dimensional.layers.legacy.fake.world
 
-import hohserg.dimensional.layers.LRUCache
+import hohserg.dimensional.layers.legacy.LRUCache
 import net.minecraft.crash.CrashReport
 import net.minecraft.util.ReportedException
 import net.minecraft.util.math.ChunkPos
