@@ -9,7 +9,7 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiCreateWorld
 import net.minecraft.world.{World, WorldServer, WorldType}
 
-class DimensionalLayersWorldType extends WorldType("dimlayers") with ICubicWorldType {
+object DimensionalLayersWorldType extends WorldType("dimlayers") with ICubicWorldType {
 
   override def onGUICreateWorldPress(): Unit = {
   }

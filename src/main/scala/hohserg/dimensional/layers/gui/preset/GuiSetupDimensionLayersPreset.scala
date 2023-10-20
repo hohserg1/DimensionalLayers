@@ -5,8 +5,16 @@ import hohserg.dimensional.layers.gui.preset.list.GuiLayersList
 import hohserg.dimensional.layers.gui.{GuiBase, GuiClickableButton, MouseUtils}
 import net.minecraft.client.gui.GuiCreateWorld
 
+import java.util.Random
+
 class GuiSetupDimensionLayersPreset(parent: GuiCreateWorld) extends GuiBase(parent) {
   var layersList: GuiLayersList = _
+
+  override protected def back(): Unit = {
+    if (parent.worldSeed.isEmpty)
+      parent.worldSeed = new Random().nextLong.toString
+    super.back()
+  }
 
   override def initGui(): Unit = {
     super.initGui()
