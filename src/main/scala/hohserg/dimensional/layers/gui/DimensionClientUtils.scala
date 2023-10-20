@@ -7,12 +7,15 @@ import net.minecraft.client.renderer.{BufferBuilder, Tessellator}
 import net.minecraft.util.ResourceLocation
 import net.minecraft.world.DimensionType
 
-object DimensionLogo {
+object DimensionClientUtils {
+
+  def getDisplayName(dimensionType: DimensionType): String =
+    dimensionType.getName
 
   final val width = 64
 
 
-  def draw(dimensionType: DimensionType, x: Int, y: Int): Unit = {
+  def drawLogo(dimensionType: DimensionType, x: Int, y: Int): Unit = {
     val tess = Tessellator.getInstance()
     Minecraft.getMinecraft.getTextureManager.bindTexture(getBackgroundForDimensionType(dimensionType))
 

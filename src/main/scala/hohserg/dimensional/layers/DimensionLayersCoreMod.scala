@@ -2,6 +2,7 @@ package hohserg.dimensional.layers
 
 import net.minecraftforge.common.ForgeVersion
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin
+import org.spongepowered.asm.mixin.Mixins
 
 import java.util
 
@@ -9,8 +10,9 @@ import java.util
 @IFMLLoadingPlugin.SortingIndex(value = 5000)
 class DimensionLayersCoreMod extends IFMLLoadingPlugin {
   override def getASMTransformerClass: Array[String] = {
-    import org.spongepowered.asm.mixin.Mixins
     Mixins.addConfiguration("dimensional_layers.mixins.proxy.json")
+    Mixins.addConfiguration("dimensional_layers.mixins.gui.json")
+
     if (System.getProperty("net.minecraftforge.gradle.GradleStart.srg.srg-mcp") != null)
       Array(
         "io.github.opencubicchunks.cubicchunks.cubicgen.asm.coremod.MapGenStrongholdCubicConstructorTransform",

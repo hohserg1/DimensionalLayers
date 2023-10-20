@@ -1,29 +1,28 @@
 package hohserg.dimensional.layers.gui.preset
 
-import hohserg.dimensional.layers.gui.MouseUtils
-import hohserg.dimensional.layers.gui.add.GuiAddLayer
-import net.minecraft.client.gui.{GuiButton, GuiCreateWorld, GuiScreen}
+import hohserg.dimensional.layers.gui.add._
+import hohserg.dimensional.layers.gui.preset.list.GuiLayersList
+import hohserg.dimensional.layers.gui.{GuiBase, GuiClickableButton, MouseUtils}
+import net.minecraft.client.gui.GuiCreateWorld
 
-class GuiSetupDimensionLayersPreset(parent: GuiCreateWorld) extends GuiScreen {
+class GuiSetupDimensionLayersPreset(parent: GuiCreateWorld) extends GuiBase(parent) {
   var layersList: GuiLayersList = _
-
-  val doneButton = 0
-  val addLayerButton = 1
 
   override def initGui(): Unit = {
     super.initGui()
-    addButton(new GuiButton(addLayerButton, width - 100, 10, 90, 20, "Add layer"))
-    addButton(new GuiButton(doneButton, width - 100, height - 30, 90, 20, "Done"))
-    layersList = new GuiLayersList(this, width - 200, height, parent.chunkProviderSettingsJson)
-  }
 
-  override def actionPerformed(button: GuiButton): Unit = {
-    if (button.id == doneButton) {
+    addButton(new GuiClickableButton(0, width - 80 - 10, height - 30, 80, 20, "Done")(() => {
       parent.chunkProviderSettingsJson = layersList.toSettings
-      mc.displayGuiScreen(parent)
-    } else if (button.id == addLayerButton) {
-      mc.displayGuiScreen(new GuiAddLayer(this))
-    }
+      back()
+    }))
+
+    addButton(new GuiClickableButton(1, width - 80 - 10 - 80 - 10, height - 30, 80, 20, "Cancel")(back))
+
+    addButton(new GuiClickableButton(2, width - 110 - 10, 10, 110, 20, "Add dimension layer")(show(new dimension.GuiAddLayer(_))))
+
+    addButton(new GuiClickableButton(3, width - 110 - 10, 30, 110, 20, "Add solid layer")(show(new solid.GuiAddLayer(_))))
+
+    layersList = new GuiLayersList(this, width - 200, height, if (layersList == null) parent.chunkProviderSettingsJson else layersList.toSettings)
   }
 
   override def drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float): Unit = {
