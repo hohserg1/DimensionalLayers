@@ -74,9 +74,6 @@ class DimensionalLayersGenerator2(world: World) extends ICubeGenerator {
 
     val chunk = layer.lastChunks.get(cubeX -> cubeZ)
 
-    if (layer.spec.dimensionType.getName == "Aether")
-      println("Aether")
-
     if (!layer.optimizationHack) {
       layer.optimizationHack = true
       recursiveGeneration(cubeX, cubeY, cubeZ, layer)
