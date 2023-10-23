@@ -2,8 +2,8 @@ package hohserg.dimensional.layers.gui.preset.list
 
 import hohserg.dimensional.layers.DimensionLayersPreset.LayerSpec
 import hohserg.dimensional.layers.Main
+import hohserg.dimensional.layers.gui.preset.list.GuiLayerEntry._
 import hohserg.dimensional.layers.gui.{DimensionClientUtils, RelativeCoord}
-import hohserg.dimensional.layers.gui.preset.list.GuiLayerEntry.{background, moveDown, moveUp, remove}
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.client.renderer.{BufferBuilder, Tessellator}
@@ -36,6 +36,12 @@ object GuiLayerEntry {
     RelativeCoord.alignLeft(0), RelativeCoord.alignTop(0),
     RelativeCoord.alignRight(0), RelativeCoord.alignBottom(0),
     new Rectangle(150, 0, 1, 1)
+  )
+
+  val settings = DrawableArea(
+    RelativeCoord.alignRight(-20 - 40), RelativeCoord.alignTop(22),
+    RelativeCoord.alignRight(-40), RelativeCoord.alignTop(22 + 20),
+    new Rectangle(2, 52, 20, 20)
   )
 
 }
@@ -75,6 +81,7 @@ trait GuiLayerEntry {
       drawMoveUp(index, buffer)
       drawMoveDown(index, buffer)
       drawRemove(buffer)
+      drawSettings(buffer)
 
       tess.draw()
     }
@@ -93,6 +100,10 @@ trait GuiLayerEntry {
 
   def drawRemove(buffer: BufferBuilder): Unit = {
     drawArea(remove, buffer)
+  }
+
+  def drawSettings(buffer: BufferBuilder): Unit = {
+    drawArea(settings, buffer)
   }
 
   private def isHovering(area: DrawableArea): Boolean = isHovering(
@@ -135,6 +146,7 @@ trait GuiLayerEntry {
     checkMoveUpClicked(index, mouseX, mouseY)
     checkMoveDownClicked(index, mouseX, mouseY)
     checkRemoveClicked(index, mouseX, mouseY)
+    checkSettingsClicked(index, mouseX, mouseY)
   }
 
   private def checkMoveUpClicked(index: Int, mouseX: Int, mouseY: Int): Unit = {
@@ -162,6 +174,11 @@ trait GuiLayerEntry {
   private def checkRemoveClicked(index: Int, mouseX: Int, mouseY: Int): Unit = {
     if (isHovering(remove)) {
       parent.entries.remove(index)
+    }
+  }
+
+  private def checkSettingsClicked(index: Int, mouseX: Int, mouseY: Int): Unit = {
+    if (isHovering(settings)) {
     }
   }
 
