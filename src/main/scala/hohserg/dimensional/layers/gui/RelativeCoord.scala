@@ -3,37 +3,37 @@ package hohserg.dimensional.layers.gui
 import scala.language.implicitConversions
 
 trait RelativeCoord {
-  def absoluteCoord(x: Int, y: Int, w: Int, h: Int): Int
+  def absoluteCoord(minX: Int, minY: Int, maxX: Int, maxY: Int): Int
 }
 
 object RelativeCoord {
 
   def alignLeft(offset: Int): RelativeCoord =
-    (x: Int, _: Int, _: Int, _: Int) => x + offset
+    (minX: Int, _: Int, _: Int, _: Int) => minX + offset
 
   def alignRight(offset: Int): RelativeCoord =
-    (_: Int, _: Int, w: Int, _: Int) => w + offset
+    (_: Int, _: Int, maxX: Int, _: Int) => maxX + offset
 
   def alignTop(offset: Int): RelativeCoord =
-    (_: Int, y: Int, _: Int, _: Int) => y + offset
+    (_: Int, minY: Int, _: Int, _: Int) => minY + offset
 
   def alignBottom(offset: Int): RelativeCoord =
-    (_: Int, _: Int, _: Int, h: Int) => h + offset
+    (_: Int, _: Int, _: Int, maxY: Int) => maxY + offset
 
   def horizontalCenterMin(width: Int): RelativeCoord =
-    (x: Int, _: Int, w: Int, _: Int) => x + w / 2 - width / 2
+    (minX: Int, _: Int, maxX: Int, _: Int) => minX + (maxX - minX) / 2 - width / 2
 
   def horizontalCenterMax(width: Int): RelativeCoord =
-    (x: Int, _: Int, w: Int, _: Int) => x + w / 2 + math.ceil(width.toDouble / 2).toInt
+    (minX: Int, _: Int, maxX: Int, _: Int) => minX + (maxX - minX) / 2 + math.ceil(width.toDouble / 2).toInt
 
   def verticalCenterMin(height: Int): RelativeCoord =
-    (_: Int, y: Int, _: Int, h: Int) => y + h / 2 - height / 2
+    (_: Int, minY: Int, _: Int, maxY: Int) => minY + (maxY - minY) / 2 - height / 2
 
   def verticalCenterMax(height: Int): RelativeCoord =
-    (_: Int, y: Int, _: Int, h: Int) => y + h / 2 + math.ceil(height.toDouble / 2).toInt
+    (_: Int, minY: Int, _: Int, maxY: Int) => minY + (maxY - minY) / 2 + math.ceil(height.toDouble / 2).toInt
 
 
   private implicit def fromFunction(f: (Int, Int, Int, Int) => Int): RelativeCoord = new RelativeCoord {
-    override def absoluteCoord(x: Int, y: Int, w: Int, h: Int): Int = f(x, y, w, h)
+    override def absoluteCoord(minX: Int, minY: Int, maxX: Int, maxY: Int): Int = f(minX, minY, maxX, maxY)
   }
 }
