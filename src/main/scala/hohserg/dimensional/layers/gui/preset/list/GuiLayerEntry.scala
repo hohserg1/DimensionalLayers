@@ -27,8 +27,8 @@ object GuiLayerEntry {
     new Rectangle(2, 20, 26, 16)
   )
   val remove = DrawableArea(
-    RelativeCoord.alignRight(-4 - 13), RelativeCoord.alignTop(4),
-    RelativeCoord.alignRight(-4), RelativeCoord.alignTop(4 + 12),
+    RelativeCoord.alignRight(-4 - 13), RelativeCoord.verticalCenterMin(12),
+    RelativeCoord.alignRight(-4), RelativeCoord.verticalCenterMax(12),
     new Rectangle(2, 38, 13, 12)
   )
 
@@ -39,8 +39,8 @@ object GuiLayerEntry {
   )
 
   val settings = DrawableArea(
-    RelativeCoord.alignRight(-20 - 40), RelativeCoord.alignTop(22),
-    RelativeCoord.alignRight(-40), RelativeCoord.alignTop(22 + 20),
+    RelativeCoord.alignRight(-20 - 40), RelativeCoord.verticalCenterMin(20),
+    RelativeCoord.alignRight(-40), RelativeCoord.verticalCenterMax(20),
     new Rectangle(2, 52, 20, 20)
   )
 
