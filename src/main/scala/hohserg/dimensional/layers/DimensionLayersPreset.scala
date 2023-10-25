@@ -25,7 +25,7 @@ case class DimensionLayersPreset(layers: List[LayerSpec]) {
           (range(lastFreeCubic, spec.height) -> (new DimensionLayer(_: World, spec, lastFreeCubic)) :: acc) -> (lastFreeCubic + spec.height)
 
         case (SolidLayerSpec(filler, biome, height), (acc, lastFreeCubic)) =>
-          (range(lastFreeCubic, height) -> { _: World => SolidLayer(filler, lastFreeCubic, height) } :: acc) -> (lastFreeCubic + height)
+          (range(lastFreeCubic, height) -> { _: World => SolidLayer(filler, biome, lastFreeCubic, height) } :: acc) -> (lastFreeCubic + height)
       }._1.toMap
 
   private def range(lastFreeCubic: Int, height: Int) = IntRange.of(lastFreeCubic, lastFreeCubic + height - 1)

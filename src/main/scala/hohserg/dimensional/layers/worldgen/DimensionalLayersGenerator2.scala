@@ -47,24 +47,26 @@ class DimensionalLayersGenerator2(world: World) extends ICubeGenerator {
     layerAtCubeY.get(cubeY).foreach {
       case layer: DimensionLayer =>
         generateWithWatchdog(generateLayerTerrain, cubeX, cubeY, cubeZ, primer, layer)
-        generateBiomes(cubeX, cubeZ, primer, layer)
+        layer.biomes = layer.proxyWorld.getBiomeProvider.getBiomes(layer.biomes, Coords.cubeToMinBlock(cubeX), Coords.cubeToMinBlock(cubeZ), 16, 16)
+        generateBiomes(primer, (localBiomeX, _, localBiomeZ) => layer.biomes((localBiomeX << 2) & 15 | ((localBiomeZ << 2) & 15) << 4))
+
       case layer: SolidLayer =>
         for {
           x <- 0 to 15
           y <- 0 to 15
           z <- 0 to 15
         } primer.setBlockState(x, y, z, layer.filler)
+        generateBiomes(primer, (_, _, _) => layer.biome)
     }
     primer
   }
 
-  private def generateBiomes(cubeX: Int, cubeZ: Int, primer: CubePrimer, layer: DimensionLayer): Unit = {
-    layer.biomes = layer.proxyWorld.getBiomeProvider.getBiomes(layer.biomes, Coords.cubeToMinBlock(cubeX), Coords.cubeToMinBlock(cubeZ), 16, 16)
+  private def generateBiomes(primer: CubePrimer, calcBiome: (Int, Int, Int) => Biome): Unit = {
     for {
       localBiomeX <- 0 to 3
       localBiomeY <- 0 to 3
       localBiomeZ <- 0 to 3
-    } primer.setBiome(localBiomeX, localBiomeY, localBiomeZ, layer.biomes((localBiomeX << 2) & 15 | ((localBiomeZ << 2) & 15) << 4))
+    } primer.setBiome(localBiomeX, localBiomeY, localBiomeZ, calcBiome(localBiomeX, localBiomeY, localBiomeZ))
   }
 
   private def generateLayerTerrain(cubeX: Int, cubeY: Int, cubeZ: Int, primer: CubePrimer, layer: DimensionLayer): Unit = {
