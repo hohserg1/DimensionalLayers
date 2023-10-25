@@ -45,7 +45,11 @@ class VanillaLayer(world: World, val spec: DimensionLayerSpec, val startCubeY: I
       .maximumSize(200)
       .expireAfterAccess(60, TimeUnit.SECONDS)
       .build(new CacheLoader[(Int, Int), Chunk] {
-        override def load(key: (Int, Int)): Chunk = vanillaGenerator.generateChunk(key._1, key._2)
+        override def load(key: (Int, Int)): Chunk = {
+          val r = vanillaGenerator.generateChunk(key._1, key._2)
+          r.onLoad()
+          r
+        }
       })
 
   override def height: Int = 16
