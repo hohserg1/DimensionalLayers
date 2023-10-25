@@ -31,6 +31,8 @@ class ProxyWorld(original: World, val layer: DimensionLayer)
 
   initCapabilities()
 
+  override def getSeed: Long = layer.spec.seedOverride.getOrElse(super.getSeed)
+
   override def getMinHeight: Int = layer.startBlockY
 
   override def getMaxHeight: Int = layer.endBlockY + 1
