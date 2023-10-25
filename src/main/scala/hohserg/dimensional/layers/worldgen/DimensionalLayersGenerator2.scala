@@ -106,11 +106,6 @@ class DimensionalLayersGenerator2(world: World) extends ICubeGenerator {
   }
 
   private def generateLayerFeatures(cubeX: Int, cubeY: Int, cubeZ: Int, cube: ICube, layer: VanillaLayer): Unit = {
-    val rand = new Random(world.getSeed)
-    rand.setSeed(rand.nextInt() ^ cubeX)
-    rand.setSeed(rand.nextInt() ^ cubeZ)
-    rand.setSeed(rand.nextInt() ^ cubeY)
-
     markColumnPopulated(cubeX, cubeZ, layer)
 
     try {
