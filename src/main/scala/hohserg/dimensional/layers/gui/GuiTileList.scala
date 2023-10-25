@@ -2,6 +2,7 @@ package hohserg.dimensional.layers.gui
 
 import com.google.common.cache.{CacheBuilder, CacheLoader, LoadingCache}
 import hohserg.dimensional.layers.gui.GuiTileList.{GuiTileLine, SelectHandler, slotWidth}
+import hohserg.dimensional.layers.gui.mixin.AccessorGuiScrollingList
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
@@ -25,7 +26,7 @@ object GuiTileList {
         }
       })
 
-  class GuiTileLine[A <: Drawable](line: Seq[A], itemWidth: Int) {
+  class GuiTileLine[A <: Drawable](val line: Seq[A], itemWidth: Int) {
 
     protected var minX: Int = 0
     protected var minY: Int = 0
@@ -173,4 +174,15 @@ abstract class GuiTileList[A <: Drawable](val parent: GuiScreen with SelectHandl
     maybeTooltip = None
   }
 
+  def select(item: A): Unit = {
+    for ((line, verticalIndex) <- lines.zipWithIndex) {
+      for ((i, horizontalIndex) <- line.line.zipWithIndex) {
+        if (i == item) {
+          selection = Some((verticalIndex, horizontalIndex, item))
+          this.asInstanceOf[AccessorGuiScrollingList].setScrollDistance(slotHeight * verticalIndex)
+          return
+        }
+      }
+    }
+  }
 }

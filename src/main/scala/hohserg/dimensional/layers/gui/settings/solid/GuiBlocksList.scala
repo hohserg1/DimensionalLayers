@@ -1,7 +1,7 @@
-package hohserg.dimensional.layers.gui.add.solid
+package hohserg.dimensional.layers.gui.settings.solid
 
 import com.google.common.cache.LoadingCache
-import hohserg.dimensional.layers.gui.add.solid.GuiBlocksList.{blockLinesByLen, itemWidth}
+import hohserg.dimensional.layers.gui.settings.solid.GuiBlocksList.{blockLinesByLen, itemWidth}
 import hohserg.dimensional.layers.gui.{Drawable, GuiTileList}
 import net.minecraft.block.Block
 import net.minecraft.client.Minecraft
@@ -35,7 +35,7 @@ object GuiBlocksList {
   }
 }
 
-class GuiBlocksList(parent: GuiAddLayer, availableWidth: Int, height: Int) extends GuiTileList(parent, availableWidth, height, itemWidth, blockLinesByLen)() {
+class GuiBlocksList(parent: GuiSettingsLayer, availableWidth: Int, height: Int) extends GuiTileList(parent, availableWidth, height, itemWidth, blockLinesByLen)() {
   override def drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float): Unit = {
     RenderHelper.enableGUIStandardItemLighting()
     super.drawScreen(mouseX, mouseY, partialTicks)

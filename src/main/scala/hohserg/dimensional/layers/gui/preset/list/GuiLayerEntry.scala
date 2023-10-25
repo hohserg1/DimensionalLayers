@@ -2,8 +2,9 @@ package hohserg.dimensional.layers.gui.preset.list
 
 import hohserg.dimensional.layers.DimensionLayersPreset.LayerSpec
 import hohserg.dimensional.layers.Main
+import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionLayersPreset
 import hohserg.dimensional.layers.gui.preset.list.GuiLayerEntry._
-import hohserg.dimensional.layers.gui.{DimensionClientUtils, RelativeCoord}
+import hohserg.dimensional.layers.gui.{DimensionClientUtils, GuiBase, RelativeCoord}
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.client.renderer.{BufferBuilder, Tessellator}
@@ -50,6 +51,8 @@ trait GuiLayerEntry {
   def parent: GuiLayersList
 
   def layer: LayerSpec
+
+  def guiSettings(index: Int, parent: GuiSetupDimensionLayersPreset): GuiBase
 
   protected val mc = Minecraft.getMinecraft
 
@@ -179,6 +182,7 @@ trait GuiLayerEntry {
 
   private def checkSettingsClicked(index: Int, mouseX: Int, mouseY: Int): Unit = {
     if (isHovering(settings)) {
+      mc.displayGuiScreen(guiSettings(index, parent.parent))
     }
   }
 
