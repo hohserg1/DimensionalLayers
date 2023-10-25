@@ -52,7 +52,7 @@ class DimensionLayer(world: World, val spec: DimensionLayerSpec, val startCubeY:
         }
       })
 
-  override def height: Int = 16
+  override def height: Int = spec.height
 }
 
 case class SolidLayer(filler: IBlockState, startCubeY: Int, height: Int) extends Layer
