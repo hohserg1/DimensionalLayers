@@ -10,7 +10,6 @@ import net.minecraft.world._
 import net.minecraft.world.biome.Biome
 import net.minecraft.world.chunk.Chunk
 import net.minecraft.world.gen.IChunkGenerator
-import net.minecraftforge.fml.common.FMLCommonHandler
 
 import java.util.concurrent.TimeUnit
 
@@ -36,9 +35,6 @@ class DimensionLayer(world: World, val spec: DimensionLayerSpec, val startCubeY:
   val vanillaGenerator: IChunkGenerator = provider.createChunkGenerator()
   var optimizationHack: Boolean = false
   var biomes: Array[Biome] = _
-
-  private val viewDistance = FMLCommonHandler.instance().getMinecraftServerInstance.getPlayerList.getViewDistance
-
 
   val lastChunks: LoadingCache[(Int, Int), Chunk] =
     CacheBuilder.newBuilder()
