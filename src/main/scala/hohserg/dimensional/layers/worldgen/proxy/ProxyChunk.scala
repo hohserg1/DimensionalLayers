@@ -10,8 +10,10 @@ import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.EnumSkyBlock
 import net.minecraft.world.chunk.Chunk
+import net.minecraft.world.chunk.storage.ExtendedBlockStorage
 
 class ProxyChunk(original: Chunk, layer: VanillaLayer) extends Chunk(original.getWorld, original.x, original.z) {
+  val column = original.asInstanceOf[IColumn]
 
   override def getBlockState(pos: BlockPos): IBlockState =
     pos match {
@@ -87,6 +89,12 @@ class ProxyChunk(original: Chunk, layer: VanillaLayer) extends Chunk(original.ge
 
   override def isEmptyBetween(startY: Int, endY: Int): Boolean =
     original.isEmptyBetween(startY + layer.startBlockY, endY + layer.startBlockY)
+
+  override lazy val getBlockStorageArray: Array[ExtendedBlockStorage] =
+    (for {
+      i <- 0 to 15
+    } yield column.getCube(layer.startCubeY + i).getStorage).toArray
+
 
   private def executeInLayer[A](pos: BlockPos, f: ShiftedBlockPos => A, default: A): A = {
     val p = layer.shift(pos)
