@@ -6,9 +6,12 @@ import hohserg.dimensional.layers.worldgen.{Layer, SolidLayer, VanillaLayer}
 import io.github.opencubicchunks.cubicchunks.api.util.IntRange
 import net.minecraft.block.Block
 import net.minecraft.block.state.IBlockState
-import net.minecraft.init.Blocks
+import net.minecraft.init.{Biomes, Blocks}
+import net.minecraft.util.ResourceLocation
+import net.minecraft.world.biome.Biome
 import net.minecraft.world.{DimensionType, World}
 import net.minecraftforge.common.DimensionManager
+import net.minecraftforge.fml.common.registry.ForgeRegistries
 
 import java.lang.reflect.Type
 import scala.collection.JavaConverters.{asScalaIteratorConverter, asScalaSetConverter, mapAsScalaMapConverter}
@@ -21,7 +24,7 @@ case class DimensionLayersPreset(layers: List[LayerSpec]) {
         case (spec: DimensionLayerSpec, (acc, lastFreeCubic)) =>
           (range(lastFreeCubic, spec.height) -> (new VanillaLayer(_: World, spec, lastFreeCubic)) :: acc) -> (lastFreeCubic + spec.height)
 
-        case (SolidLayerSpec(filler, height), (acc, lastFreeCubic)) =>
+        case (SolidLayerSpec(filler, biome, height), (acc, lastFreeCubic)) =>
           (range(lastFreeCubic, height) -> { _: World => SolidLayer(filler, lastFreeCubic, height) } :: acc) -> (lastFreeCubic + height)
       }._1.toMap
 
@@ -37,7 +40,7 @@ object DimensionLayersPreset {
       .orElse(Try(Configuration.defaultPreset).filter(_.nonEmpty))
       .map(gson.fromJson(_, classOf[DimensionLayersPreset]))
       .getOrElse(DimensionLayersPreset(
-        DimensionManager.getRegisteredDimensions.keySet().asScala.map(DimensionLayerSpec).toList :+ SolidLayerSpec(Blocks.BEDROCK.getDefaultState)
+        DimensionManager.getRegisteredDimensions.keySet().asScala.map(DimensionLayerSpec(_)).toList :+ SolidLayerSpec(Blocks.BEDROCK.getDefaultState)
       ))
 
 
@@ -45,11 +48,11 @@ object DimensionLayersPreset {
     def height: Int
   }
 
-  case class DimensionLayerSpec(dimensionType: DimensionType) extends LayerSpec {
+  case class DimensionLayerSpec(dimensionType: DimensionType, seedOverride: Option[Long] = None) extends LayerSpec {
     override def height: Int = 16
   }
 
-  case class SolidLayerSpec(filler: IBlockState, height: Int = 1) extends LayerSpec
+  case class SolidLayerSpec(filler: IBlockState, biome: Biome = Biomes.PLAINS, height: Int = 1) extends LayerSpec
 
 
   private val gson: Gson =
@@ -73,9 +76,11 @@ object DimensionLayersPreset {
     override def serialize(src: LayerSpec, typeOfSrc: Type, context: JsonSerializationContext): JsonElement = {
       val r = new JsonObject
       src match {
-        case DimensionLayerSpec(dimensionType) =>
+        case DimensionLayerSpec(dimensionType, seedOverride) =>
           r.add("dimensionType", new JsonPrimitive(dimensionType.getName))
-        case SolidLayerSpec(filler, height) =>
+          seedOverride.foreach(seed => r.add("seedOverride", new JsonPrimitive(seed)))
+
+        case SolidLayerSpec(filler, biome, height) =>
           r.add("filler", new JsonPrimitive(filler.getBlock.getRegistryName.toString))
           if (filler != filler.getBlock.getDefaultState) {
             val jsonProps = new JsonObject
@@ -83,6 +88,9 @@ object DimensionLayersPreset {
             r.add("properties", jsonProps)
           }
           r.add("height", new JsonPrimitive(height))
+          if (biome != Biomes.PLAINS) {
+            r.add("biome", new JsonPrimitive(biome.getRegistryName.toString))
+          }
       }
       r
     }
@@ -91,29 +99,33 @@ object DimensionLayersPreset {
       val jsonObject = json.getAsJsonObject
       if (jsonObject.has("dimensionType"))
         DimensionLayerSpec(
-          DimensionType.byName(jsonObject.getAsJsonPrimitive("dimensionType").getAsString)
+          DimensionType.byName(jsonObject.getAsJsonPrimitive("dimensionType").getAsString),
+          if (jsonObject.has("seedOverride"))
+            Some(jsonObject.getAsJsonPrimitive("seedOverride").getAsLong)
+          else
+            None
         )
       else {
         val block = Block.getBlockFromName(jsonObject.getAsJsonPrimitive("filler").getAsString)
 
-        SolidLayerSpec(
-          if (jsonObject.has("properties")) {
-            var state = block.getDefaultState
-            val jsonProps = jsonObject.getAsJsonObject("properties")
-            jsonProps.entrySet().asScala.foreach { e =>
-              val propName = e.getKey
-              val valueName = e.getValue.getAsString
-              val p = block.getBlockState.getProperty(propName)
-              val maybeValue = p.parseValue(valueName)
-              if (maybeValue.isPresent) {
-                state = state.withProperty(p, maybeValue.get().asInstanceOf)
-              }
+        SolidLayerSpec(if (jsonObject.has("properties")) {
+          var state = block.getDefaultState
+          val jsonProps = jsonObject.getAsJsonObject("properties")
+          jsonProps.entrySet().asScala.foreach { e =>
+            val propName = e.getKey
+            val valueName = e.getValue.getAsString
+            val p = block.getBlockState.getProperty(propName)
+            val maybeValue = p.parseValue(valueName)
+            if (maybeValue.isPresent) {
+              state = state.withProperty(p, maybeValue.get().asInstanceOf)
             }
-            state
-          } else
-            block.getDefaultState,
-          jsonObject.getAsJsonPrimitive("height").getAsInt
-        )
+          }
+          state
+        } else
+          block.getDefaultState, if (jsonObject.has("biome")) {
+          ForgeRegistries.BIOMES.getValue(new ResourceLocation(jsonObject.getAsJsonPrimitive("biome").getAsString))
+        } else
+          Biomes.PLAINS, jsonObject.getAsJsonPrimitive("height").getAsInt)
       }
     }
   }

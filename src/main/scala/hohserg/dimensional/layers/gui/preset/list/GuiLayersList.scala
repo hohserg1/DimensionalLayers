@@ -9,11 +9,12 @@ import net.minecraft.block.state.IBlockState
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.world.DimensionType
+import net.minecraft.world.biome.Biome
 import net.minecraftforge.fml.client.GuiScrollingList
 
 import scala.collection.mutable
 
-class GuiLayersList(parent: GuiSetupDimensionLayersPreset, val width: Int, height: Int, settings: String)
+class GuiLayersList(val parent: GuiSetupDimensionLayersPreset, val width: Int, height: Int, settings: String)
   extends GuiScrollingList(
     Minecraft.getMinecraft,
     width, height, 10, height - 10, 10, DimensionClientUtils.width + 4,
@@ -27,8 +28,8 @@ class GuiLayersList(parent: GuiSetupDimensionLayersPreset, val width: Int, heigh
       }
       .toBuffer
 
-  def add(block: IBlockState, height: Int): Unit = {
-    new GuiSolidLayerEntry(this, SolidLayerSpec(block, height)) +=: entries
+  def add(block: IBlockState, biome: Biome, height: Int): Unit = {
+    new GuiSolidLayerEntry(this, SolidLayerSpec(block, biome, height)) +=: entries
   }
 
   def add(dimensionType: DimensionType): Unit = {
