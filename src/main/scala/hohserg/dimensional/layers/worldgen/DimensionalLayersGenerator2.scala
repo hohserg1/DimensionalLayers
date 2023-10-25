@@ -31,7 +31,7 @@ class DimensionalLayersGenerator2(world: World) extends ICubeGenerator {
         yield i -> layer
     }
 
-  private def generateWithWatchdog[BlockStateAcceptor](generator: (Int, Int, Int, BlockStateAcceptor, VanillaLayer) => Unit, cubeX: Int, cubeY: Int, cubeZ: Int, target: BlockStateAcceptor, layer: VanillaLayer): Unit = {
+  private def generateWithWatchdog[BlockStateAcceptor](generator: (Int, Int, Int, BlockStateAcceptor, DimensionLayer) => Unit, cubeX: Int, cubeY: Int, cubeZ: Int, target: BlockStateAcceptor, layer: DimensionLayer): Unit = {
     try {
       WorldgenHangWatchdog.startWorldGen()
       generator(cubeX, cubeY, cubeZ, target, layer)
@@ -45,7 +45,7 @@ class DimensionalLayersGenerator2(world: World) extends ICubeGenerator {
 
   override def generateCube(cubeX: Int, cubeY: Int, cubeZ: Int, primer: CubePrimer): CubePrimer = {
     layerAtCubeY.get(cubeY).foreach {
-      case layer: VanillaLayer =>
+      case layer: DimensionLayer =>
         generateWithWatchdog(generateLayerTerrain, cubeX, cubeY, cubeZ, primer, layer)
         generateBiomes(cubeX, cubeZ, primer, layer)
       case layer: SolidLayer =>
@@ -58,7 +58,7 @@ class DimensionalLayersGenerator2(world: World) extends ICubeGenerator {
     primer
   }
 
-  private def generateBiomes(cubeX: Int, cubeZ: Int, primer: CubePrimer, layer: VanillaLayer): Unit = {
+  private def generateBiomes(cubeX: Int, cubeZ: Int, primer: CubePrimer, layer: DimensionLayer): Unit = {
     layer.biomes = layer.proxyWorld.getBiomeProvider.getBiomes(layer.biomes, Coords.cubeToMinBlock(cubeX), Coords.cubeToMinBlock(cubeZ), 16, 16)
     for {
       localBiomeX <- 0 to 3
@@ -67,7 +67,7 @@ class DimensionalLayersGenerator2(world: World) extends ICubeGenerator {
     } primer.setBiome(localBiomeX, localBiomeY, localBiomeZ, layer.biomes((localBiomeX << 2) & 15 | ((localBiomeZ << 2) & 15) << 4))
   }
 
-  private def generateLayerTerrain(cubeX: Int, cubeY: Int, cubeZ: Int, primer: CubePrimer, layer: VanillaLayer): Unit = {
+  private def generateLayerTerrain(cubeX: Int, cubeY: Int, cubeZ: Int, primer: CubePrimer, layer: DimensionLayer): Unit = {
     val rand = new Random(world.getSeed)
     rand.setSeed(rand.nextInt ^ cubeX)
     rand.setSeed(rand.nextInt ^ cubeZ)
@@ -91,7 +91,7 @@ class DimensionalLayersGenerator2(world: World) extends ICubeGenerator {
     }
   }
 
-  private def recursiveGeneration(cubeX: Int, cubeY: Int, cubeZ: Int, layer: VanillaLayer): Unit = {
+  private def recursiveGeneration(cubeX: Int, cubeY: Int, cubeZ: Int, layer: DimensionLayer): Unit = {
     for (y <- (layer.startCubeY + layer.height - 1) to layer.startCubeY by -1)
       if (y != cubeY)
         world.asInstanceOf[ICubicWorld].getCubeFromCubeCoords(cubeX, y, cubeZ)
@@ -99,17 +99,18 @@ class DimensionalLayersGenerator2(world: World) extends ICubeGenerator {
 
   override def populate(cube: ICube): Unit = {
     layerAtCubeY.get(cube.getY).foreach {
-      case layer: VanillaLayer =>
+      case layer: DimensionLayer =>
         generateWithWatchdog(generateLayerFeatures, cube.getX, cube.getY, cube.getZ, cube, layer)
       case _ =>
     }
   }
 
-  private def generateLayerFeatures(cubeX: Int, cubeY: Int, cubeZ: Int, cube: ICube, layer: VanillaLayer): Unit = {
+  private def generateLayerFeatures(cubeX: Int, cubeY: Int, cubeZ: Int, cube: ICube, layer: DimensionLayer): Unit = {
     markColumnPopulated(cubeX, cubeZ, layer)
 
     try {
       layer.vanillaGenerator.populate(cubeX, cubeZ)
+      applyModGenerators(cubeX, cubeZ, layer)
     } catch {
       case ex: IllegalArgumentException =>
         val stack = ex.getStackTrace
@@ -117,10 +118,9 @@ class DimensionalLayersGenerator2(world: World) extends ICubeGenerator {
           throw ex
         CubicChunks.LOGGER.error("Error while populating. Likely known mod issue, ignoring...", ex)
     }
-    applyModGenerators(cubeX, cubeZ, layer)
   }
 
-  def applyModGenerators(x: Int, z: Int, layer: VanillaLayer): Unit = {
+  def applyModGenerators(x: Int, z: Int, layer: DimensionLayer): Unit = {
     if (IGameRegistry.getSortedGeneratorList == null)
       IGameRegistry.computeGenerators()
 
@@ -139,7 +139,7 @@ class DimensionalLayersGenerator2(world: World) extends ICubeGenerator {
     }
   }
 
-  private def markColumnPopulated(cubeX: Int, cubeZ: Int, layer: VanillaLayer): Unit = {
+  private def markColumnPopulated(cubeX: Int, cubeZ: Int, layer: DimensionLayer): Unit = {
     for (y <- (layer.startCubeY + layer.height - 1) to layer.startCubeY by -1) {
       cubicWorld.getCubeFromCubeCoords(cubeX, y, cubeZ).setPopulated(true)
     }
@@ -154,7 +154,7 @@ class DimensionalLayersGenerator2(world: World) extends ICubeGenerator {
 
   override def getFullPopulationRequirements(cube: ICube): Box = {
     layerAtCubeY.get(cube.getY).collect {
-      case layer: VanillaLayer =>
+      case layer: DimensionLayer =>
         val i = cube.getY - layer.startCubeY
         new Box(-1, -i, -1, 0, layer.height - i - 1, 0)
     }.getOrElse(ICubeGenerator.NO_REQUIREMENT)
@@ -164,7 +164,7 @@ class DimensionalLayersGenerator2(world: World) extends ICubeGenerator {
 
   override def getPopulationPregenerationRequirements(cube: ICube): Box = {
     layerAtCubeY.get(cube.getY).collect {
-      case layer: VanillaLayer =>
+      case layer: DimensionLayer =>
         val i = cube.getY - layer.startCubeY
         new Box(0, -i, 0, 1, layer.height - i - 1, 1)
     }.getOrElse(ICubeGenerator.NO_REQUIREMENT)
@@ -174,7 +174,7 @@ class DimensionalLayersGenerator2(world: World) extends ICubeGenerator {
 
   override def recreateStructures(cube: ICube): Unit =
     layerAtCubeY.get(cube.getY).foreach {
-      case layer: VanillaLayer =>
+      case layer: DimensionLayer =>
         layer.vanillaGenerator.recreateStructures(layer.proxyWorld.getChunk(cube.getX, cube.getZ), cube.getX, cube.getZ)
       case _ =>
     }
@@ -185,13 +185,13 @@ class DimensionalLayersGenerator2(world: World) extends ICubeGenerator {
 
   override def getPossibleCreatures(enumCreatureType: EnumCreatureType, blockPos: BlockPos): util.List[Biome.SpawnListEntry] =
     layerAtCubeY.get(Coords.blockToCube(blockPos.getY)).collect {
-      case layer: VanillaLayer =>
+      case layer: DimensionLayer =>
         layer.vanillaGenerator.getPossibleCreatures(enumCreatureType, blockPos.down(layer.startBlockY))
     }.getOrElse(ImmutableList.of())
 
   override def getClosestStructure(name: String, blockPos: BlockPos, findUnexplored: Boolean): BlockPos =
     layerAtCubeY.get(Coords.blockToCube(blockPos.getY)).collect {
-      case layer: VanillaLayer =>
+      case layer: DimensionLayer =>
         layer.vanillaGenerator.getNearestStructurePos(this.world, name, blockPos, findUnexplored)
     }.orNull
 

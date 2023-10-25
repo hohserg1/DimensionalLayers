@@ -20,7 +20,7 @@ trait Layer {
   def height: Int
 }
 
-class VanillaLayer(world: World, val spec: DimensionLayerSpec, val startCubeY: Int) extends Layer {
+class DimensionLayer(world: World, val spec: DimensionLayerSpec, val startCubeY: Int) extends Layer {
   val endCubeY: Int = startCubeY + spec.height - 1
   val startBlockY: Int = Coords.cubeToMinBlock(startCubeY)
   val endBlockY: Int = Coords.cubeToMaxBlock(endCubeY)

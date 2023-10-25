@@ -1,10 +1,10 @@
 package hohserg.dimensional.layers.worldgen.proxy
 
-import hohserg.dimensional.layers.worldgen.VanillaLayer
+import hohserg.dimensional.layers.worldgen.DimensionLayer
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.{BlockPos, Vec3i}
 
-class ShiftedBlockPos(private val x: Int, private val y: Int, private val z: Int, private val layer: VanillaLayer) extends BlockPos(x, y + layer.startBlockY, z) {
+class ShiftedBlockPos(private val x: Int, private val y: Int, private val z: Int, private val layer: DimensionLayer) extends BlockPos(x, y + layer.startBlockY, z) {
   def isInLayer: Boolean = layer.virtualStartBlockY <= y && y <= layer.virtualEndBlockY
 
   override def offset(facing: EnumFacing, n: Int): BlockPos =
@@ -60,13 +60,13 @@ class ShiftedBlockPos(private val x: Int, private val y: Int, private val z: Int
 }
 
 object ShiftedBlockPos {
-  def apply(pos: BlockPos, layer: VanillaLayer): ShiftedBlockPos =
+  def apply(pos: BlockPos, layer: DimensionLayer): ShiftedBlockPos =
     pos match {
       case already: ShiftedBlockPos => already
       case _ => new ShiftedBlockPos(pos.getX, pos.getY, pos.getZ, layer)
     }
 
-  def markShifted(pos: BlockPos, layer: VanillaLayer): ShiftedBlockPos =
+  def markShifted(pos: BlockPos, layer: DimensionLayer): ShiftedBlockPos =
     pos match {
       case already: ShiftedBlockPos => already
       case _ => new ShiftedBlockPos(pos.getX, pos.getY - layer.startBlockY, pos.getZ, layer)

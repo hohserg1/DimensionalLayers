@@ -1,6 +1,6 @@
 package hohserg.dimensional.layers.worldgen.proxy
 
-import hohserg.dimensional.layers.worldgen.VanillaLayer
+import hohserg.dimensional.layers.worldgen.DimensionLayer
 import io.github.opencubicchunks.cubicchunks.api.util.Coords
 import io.github.opencubicchunks.cubicchunks.api.world.IColumn
 import net.minecraft.block.state.IBlockState
@@ -12,7 +12,7 @@ import net.minecraft.world.EnumSkyBlock
 import net.minecraft.world.chunk.Chunk
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage
 
-class ProxyChunk(original: Chunk, layer: VanillaLayer) extends Chunk(original.getWorld, original.x, original.z) {
+class ProxyChunk(original: Chunk, layer: DimensionLayer) extends Chunk(original.getWorld, original.x, original.z) {
   val column = original.asInstanceOf[IColumn]
 
   override def getBlockState(pos: BlockPos): IBlockState =

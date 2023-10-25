@@ -1,6 +1,6 @@
 package hohserg.dimensional.layers.worldgen.proxy
 
-import hohserg.dimensional.layers.worldgen.VanillaLayer
+import hohserg.dimensional.layers.worldgen.DimensionLayer
 import io.github.opencubicchunks.cubicchunks.api.world.IMinMaxHeight
 import net.minecraft.block.Block
 import net.minecraft.block.state.IBlockState
@@ -13,7 +13,7 @@ import net.minecraft.world.chunk.{Chunk, IChunkProvider}
 import net.minecraft.world.storage.loot.LootTableManager
 import net.minecraft.world.{World, WorldLens}
 
-class ProxyWorld(original: World, val layer: VanillaLayer)
+class ProxyWorld(original: World, val layer: DimensionLayer)
   extends World(
     new FakeSaveHandler(original.getWorldInfo),
     original.getWorldInfo,
@@ -57,6 +57,8 @@ class ProxyWorld(original: World, val layer: VanillaLayer)
   override def setBlockState(pos: BlockPos, state: IBlockState): Boolean = original.setBlockState(layer.shift(pos), state)
 
   override def isChunkLoaded(x: Int, z: Int, allowEmpty: Boolean): Boolean = WorldLens.isChunkLoaded(original, x, z, allowEmpty)
+
+  override def isBlockLoaded(pos: BlockPos): Boolean = super.isBlockLoaded(pos)
 
   override def getBlockState(pos: BlockPos): IBlockState = original.getBlockState(layer.shift(pos))
 

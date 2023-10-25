@@ -2,7 +2,7 @@ package hohserg.dimensional.layers
 
 import com.google.gson._
 import hohserg.dimensional.layers.DimensionLayersPreset.{DimensionLayerSpec, LayerSpec, SolidLayerSpec}
-import hohserg.dimensional.layers.worldgen.{Layer, SolidLayer, VanillaLayer}
+import hohserg.dimensional.layers.worldgen.{DimensionLayer, Layer, SolidLayer}
 import io.github.opencubicchunks.cubicchunks.api.util.IntRange
 import net.minecraft.block.Block
 import net.minecraft.block.state.IBlockState
@@ -22,7 +22,7 @@ case class DimensionLayersPreset(layers: List[LayerSpec]) {
     layers
       .foldRight(List[(IntRange, World => Layer)]() -> 0) {
         case (spec: DimensionLayerSpec, (acc, lastFreeCubic)) =>
-          (range(lastFreeCubic, spec.height) -> (new VanillaLayer(_: World, spec, lastFreeCubic)) :: acc) -> (lastFreeCubic + spec.height)
+          (range(lastFreeCubic, spec.height) -> (new DimensionLayer(_: World, spec, lastFreeCubic)) :: acc) -> (lastFreeCubic + spec.height)
 
         case (SolidLayerSpec(filler, biome, height), (acc, lastFreeCubic)) =>
           (range(lastFreeCubic, height) -> { _: World => SolidLayer(filler, lastFreeCubic, height) } :: acc) -> (lastFreeCubic + height)
