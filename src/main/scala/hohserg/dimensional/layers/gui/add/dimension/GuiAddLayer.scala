@@ -8,6 +8,7 @@ class GuiAddLayer(parent: GuiSetupDimensionLayersPreset) extends GuiBase(parent)
   var dimensionTypesList: GuiDimensionList = _
 
   override def initGui(): Unit = {
+    super.initGui()
     addButton(new GuiClickableButton(0, width - 100, height - 30, 90, 20, "Cancel")(back))
     dimensionTypesList = new GuiDimensionList(this, width - 110, height)
   }

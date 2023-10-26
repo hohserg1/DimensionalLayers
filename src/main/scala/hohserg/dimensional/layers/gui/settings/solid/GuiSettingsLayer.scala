@@ -26,6 +26,7 @@ class GuiSettingsLayer(parent: GuiSetupDimensionLayersPreset, onFinish: (IBlockS
   var rightPaneMinX = 0
 
   override def initGui(): Unit = {
+    super.initGui()
     rightPaneMinX = width - 190
 
     addButton(new GuiClickableButton(0, width - 100, height - 30, 90, 20, "Cancel")(back))
