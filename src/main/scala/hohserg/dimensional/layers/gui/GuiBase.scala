@@ -1,9 +1,11 @@
 package hohserg.dimensional.layers.gui
 
 import hohserg.dimensional.layers.gui.GuiClickableButton.Handler
-import net.minecraft.client.gui.GuiScreen
+import net.minecraft.client.gui.{FontRenderer, GuiScreen}
 
 class GuiBase(val parent: GuiScreen) extends GuiScreen {
+  implicit def fr: FontRenderer = fontRenderer
+
   protected def back(): Unit = {
     mc.displayGuiScreen(parent)
   }
