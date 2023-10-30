@@ -1,10 +1,14 @@
 package hohserg.dimensional.layers.gui
 
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiScreen
+import net.minecraft.client.gui.ScaledResolution
 import org.lwjgl.input.Mouse
 
 object MouseUtils {
-  def getMousePos(gui: GuiScreen): (Int, Int) =
-    (Mouse.getEventX * gui.width / Minecraft.getMinecraft.displayWidth, gui.height - Mouse.getEventY * gui.height / Minecraft.getMinecraft.displayHeight - 1)
+  def getMousePos: (Int, Int) = {
+    val resolution = new ScaledResolution(Minecraft.getMinecraft)
+    val width = resolution.getScaledWidth
+    val height = resolution.getScaledHeight
+    (Mouse.getEventX * width / Minecraft.getMinecraft.displayWidth, height - Mouse.getEventY * height / Minecraft.getMinecraft.displayHeight - 1)
+  }
 }

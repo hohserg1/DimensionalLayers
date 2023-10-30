@@ -70,7 +70,7 @@ class GuiSettingsLayer(parent: GuiSetupDimensionLayersPreset, onFinish: (IBlockS
 
   override def handleMouseInput(): Unit = {
     super.handleMouseInput()
-    val (mouseX, mouseY) = MouseUtils.getMousePos(parent)
+    val (mouseX, mouseY) = MouseUtils.getMousePos
     blocksList.handleMouseInput(mouseX, mouseY)
   }
 

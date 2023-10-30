@@ -4,10 +4,10 @@ import hohserg.dimensional.layers.DimensionLayersPreset.LayerSpec
 import hohserg.dimensional.layers.Main
 import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionLayersPreset
 import hohserg.dimensional.layers.gui.preset.list.GuiLayerEntry._
-import hohserg.dimensional.layers.gui.{DimensionClientUtils, GuiBase, RelativeCoord}
+import hohserg.dimensional.layers.gui.{DimensionClientUtils, DrawableArea, GuiBase, RelativeCoord}
 import net.minecraft.client.Minecraft
+import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
-import net.minecraft.client.renderer.{BufferBuilder, Tessellator}
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11
 
@@ -47,7 +47,9 @@ object GuiLayerEntry {
 
 }
 
-trait GuiLayerEntry {
+trait GuiLayerEntry extends DrawableArea.Container {
+  implicit def self: DrawableArea.Container = this
+
   def parent: GuiLayersList
 
   def layer: LayerSpec
@@ -56,12 +58,12 @@ trait GuiLayerEntry {
 
   protected val mc = Minecraft.getMinecraft
 
-  protected var minX: Int = 0
-  protected var minY: Int = 0
-  protected var maxX: Int = 0
-  protected var maxY: Int = 0
-  protected var mouseX: Int = 0
-  protected var mouseY: Int = 0
+  var minX: Int = 0
+  var minY: Int = 0
+  var maxX: Int = 0
+  var maxY: Int = 0
+  var mouseX: Int = 0
+  var mouseY: Int = 0
 
   def drawEntry(index: Int, minX: Int, minY: Int, maxX: Int, maxY: Int, mouseX: Int, mouseY: Int): Unit = {
     this.minX = minX
@@ -71,7 +73,7 @@ trait GuiLayerEntry {
     this.mouseX = mouseX
     this.mouseY = mouseY
 
-    if (isHovering(background)) {
+    if (background.isHovering) {
       mc.getTextureManager.bindTexture(GuiLayerEntry.texture)
 
       val tess = Tessellator.getInstance()
@@ -79,70 +81,19 @@ trait GuiLayerEntry {
 
       buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX)
 
-      drawBackground(buffer)
+      background.draw(buffer)
 
-      drawMoveUp(index, buffer)
-      drawMoveDown(index, buffer)
-      drawRemove(buffer)
-      drawSettings(buffer)
+      if (isNotFirst(index))
+        moveUp.draw(buffer)
+
+      if (isNotLast(index))
+        moveDown.draw(buffer)
+
+      remove.draw(buffer)
+      settings.draw(buffer)
 
       tess.draw()
     }
-  }
-
-  def drawBackground(buffer: BufferBuilder): Unit =
-    drawArea(background, buffer)
-
-  def drawMoveUp(index: Int, buffer: BufferBuilder): Unit =
-    if (isNotFirst(index))
-      drawArea(moveUp, buffer)
-
-  def drawMoveDown(index: Int, buffer: BufferBuilder): Unit =
-    if (isNotLast(index))
-      drawArea(moveDown, buffer)
-
-  def drawRemove(buffer: BufferBuilder): Unit = {
-    drawArea(remove, buffer)
-  }
-
-  def drawSettings(buffer: BufferBuilder): Unit = {
-    drawArea(settings, buffer)
-  }
-
-  private def isHovering(area: DrawableArea): Boolean = isHovering(
-    area.minX.absoluteCoord(minX, minY, maxX, maxY),
-    area.minY.absoluteCoord(minX, minY, maxX, maxY),
-    area.maxX.absoluteCoord(minX, minY, maxX, maxY),
-    area.maxY.absoluteCoord(minX, minY, maxX, maxY)
-  )
-
-  private def isHovering(minX: Int, minY: Int, maxX: Int, maxY: Int) =
-    minX <= mouseX && mouseX < maxX &&
-      minY <= mouseY && mouseY < maxY
-
-  private def drawArea(area: DrawableArea, buffer: BufferBuilder): Unit = {
-    val areaMinX = area.minX.absoluteCoord(minX, minY, maxX, maxY)
-    val areaMinY = area.minY.absoluteCoord(minX, minY, maxX, maxY)
-    val areaMaxX = area.maxX.absoluteCoord(minX, minY, maxX, maxY)
-    val areaMaxY = area.maxY.absoluteCoord(minX, minY, maxX, maxY)
-    drawRect(
-      buffer,
-      areaMinX, areaMinY, areaMaxX, areaMaxY,
-      if (isHovering(areaMinX, areaMinY, areaMaxX, areaMaxY)) area.hoveringUV else area.uv
-    )
-  }
-
-  private def drawRect(buffer: BufferBuilder,
-                       areaMinX: Int, areaMinY: Int, areaMaxX: Int, areaMaxY: Int,
-                       uv: (Double, Double, Double, Double)): Unit = {
-    val z = 0;
-
-    val (u1, v1, u2, v2) = uv
-
-    buffer.pos(areaMinX, areaMaxY, z).tex(u1, v2).endVertex()
-    buffer.pos(areaMaxX, areaMaxY, z).tex(u2, v2).endVertex()
-    buffer.pos(areaMaxX, areaMinY, z).tex(u2, v1).endVertex()
-    buffer.pos(areaMinX, areaMinY, z).tex(u1, v1).endVertex()
   }
 
   def clicked(index: Int, mouseX: Int, mouseY: Int): Unit = {
@@ -154,7 +105,7 @@ trait GuiLayerEntry {
 
   private def checkMoveUpClicked(index: Int, mouseX: Int, mouseY: Int): Unit = {
     if (isNotFirst(index)) {
-      if (isHovering(moveUp)) {
+      if (moveUp.isHovering) {
         val prev = parent.entries(index - 1)
         parent.entries(index - 1) = this
         parent.entries(index) = prev
@@ -165,7 +116,7 @@ trait GuiLayerEntry {
 
   private def checkMoveDownClicked(index: Int, mouseX: Int, mouseY: Int): Unit = {
     if (isNotLast(index)) {
-      if (isHovering(moveDown)) {
+      if (moveDown.isHovering) {
         val next = parent.entries(index + 1)
         parent.entries(index + 1) = this
         parent.entries(index) = next
@@ -175,13 +126,13 @@ trait GuiLayerEntry {
   }
 
   private def checkRemoveClicked(index: Int, mouseX: Int, mouseY: Int): Unit = {
-    if (isHovering(remove)) {
+    if (remove.isHovering) {
       parent.entries.remove(index)
     }
   }
 
   private def checkSettingsClicked(index: Int, mouseX: Int, mouseY: Int): Unit = {
-    if (isHovering(settings)) {
+    if (settings.isHovering) {
       mc.displayGuiScreen(guiSettings(index, parent.parent))
     }
   }
