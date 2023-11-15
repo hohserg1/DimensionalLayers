@@ -1,25 +1,27 @@
 package hohserg.dimensional.layers.gui.settings.solid
 
-import com.google.common.base.Predicate
+import hohserg.dimensional.layers.clamp
+import hohserg.dimensional.layers.gui.GuiNumericField.NumberHolder
 import hohserg.dimensional.layers.gui.GuiTileList.SelectHandler
 import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionLayersPreset
 import hohserg.dimensional.layers.gui.settings.solid.GuiBlocksList.DrawableBlock
-import hohserg.dimensional.layers.gui.{GuiBase, GuiClickableButton, MouseUtils}
+import hohserg.dimensional.layers.gui.{GuiBase, GuiClickableButton, GuiNumericField, MouseUtils}
 import net.minecraft.block.state.IBlockState
-import net.minecraft.client.gui.GuiTextField
 import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.init.{Biomes, Blocks}
-import net.minecraft.util.math.MathHelper.clamp
 import net.minecraft.world.biome.Biome
 
 import scala.collection.JavaConverters.mapAsScalaMapConverter
-import scala.util.Try
 
 class GuiSettingsLayer(parent: GuiSetupDimensionLayersPreset, onFinish: (IBlockState, Biome, Int) => Unit, initBlock: IBlockState = Blocks.AIR.getDefaultState, initHeight: Int = 1)
   extends GuiBase(parent) with SelectHandler[GuiBlocksList.DrawableBlock] {
+  val layerHeight = new NumberHolder[Int](initHeight) {
+    override def validate(v: Int): Int = clamp(v, 1, 99)
+  }
+
   var blocksList: GuiBlocksList = _
   var doneButton: GuiClickableButton = _
-  var heightField: GuiTextField = _
+  var heightField: GuiNumericField[Int] = _
 
   var currentBlockState = initBlock
 
@@ -32,7 +34,7 @@ class GuiSettingsLayer(parent: GuiSetupDimensionLayersPreset, onFinish: (IBlockS
     addButton(new GuiClickableButton(0, width - 100, height - 30, 90, 20, "Cancel")(back))
 
     doneButton = addButton(new GuiClickableButton(1, width - 100, 10, 90, 20, "Done")(() => {
-      onFinish(currentBlockState, Biomes.PLAINS, Try(heightField.getText.toInt).map(clamp(_, 1, 99)).getOrElse(1))
+      onFinish(currentBlockState, Biomes.PLAINS, layerHeight.get)
       back()
     }
     ) {
@@ -43,13 +45,7 @@ class GuiSettingsLayer(parent: GuiSetupDimensionLayersPreset, onFinish: (IBlockS
     if (currentBlockState != Blocks.AIR.getDefaultState)
       blocksList.select(GuiBlocksList.DrawableBlock(currentBlockState.getBlock))
 
-    heightField = new GuiTextField(2, fontRenderer, rightPaneMinX + fontRenderer.getStringWidth("height:") + 3, doneButton.y + doneButton.height + 10, fontRenderer.getStringWidth("99") + 8, 18)
-    heightField.setText(initHeight.toString)
-    heightField.setMaxStringLength(2)
-    heightField.setValidator(new Predicate[String] {
-      override def apply(input: String): Boolean = input.isEmpty || Try(input.toInt).isSuccess
-    })
-
+    heightField = new GuiNumericField(2, rightPaneMinX + fontRenderer.getStringWidth("height:") + 3, doneButton.y + doneButton.height + 10, 2, layerHeight, _.toInt)
   }
 
   override def drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float): Unit = {
@@ -57,14 +53,14 @@ class GuiSettingsLayer(parent: GuiSetupDimensionLayersPreset, onFinish: (IBlockS
     super.drawScreen(mouseX, mouseY, partialTicks)
     blocksList.drawScreen(mouseX, mouseY, partialTicks)
     RenderHelper.disableStandardItemLighting()
-    drawString(fontRenderer, "height:", rightPaneMinX, heightField.y + 5, 0xffffffff)
-    drawString(fontRenderer, "(cubes)", heightField.x + heightField.width + 4, heightField.y + 5, 0xffffffff)
+    drawString(fontRenderer, "height:", rightPaneMinX, heightField.y + 5, 0xffa0a0a0)
+    drawString(fontRenderer, "(cubes)", heightField.x + heightField.width + 4, heightField.y + 5, 0xffa0a0a0)
     heightField.drawTextBox()
 
-    fontRenderer.drawString("properties: ", rightPaneMinX, heightField.y + heightField.height + 20, 0xffff00ff)
+    drawString(fontRenderer, "properties: ", rightPaneMinX, heightField.y + heightField.height + 20, 0xffa0a0a0)
     currentBlockState.getProperties.asScala.toSeq.zipWithIndex.foreach {
       case ((prop, value), index) =>
-        fontRenderer.drawString(prop.getName + ": " + value, rightPaneMinX + 10, heightField.y + heightField.height + 30 + index * 10, 0xffff00ff)
+        drawString(fontRenderer, prop.getName + ": " + value, rightPaneMinX + 10, heightField.y + heightField.height + 30 + index * 10, 0xffa0a0a0)
     }
   }
 
