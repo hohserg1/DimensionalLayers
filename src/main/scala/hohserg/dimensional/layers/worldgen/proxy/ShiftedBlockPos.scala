@@ -4,8 +4,18 @@ import hohserg.dimensional.layers.worldgen.DimensionLayer
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.{BlockPos, Vec3i}
 
-class ShiftedBlockPos(private val x: Int, private val y: Int, private val z: Int, private val layer: DimensionLayer) extends BlockPos(x, y + layer.startBlockY, z) {
+class ShiftedBlockPos(private val x: Int, private val y: Int, private val z: Int, private val layer: DimensionLayer)
+  extends BlockPos(x, y - layer.virtualStartBlockY + layer.startBlockY, z) {
+
   def isInLayer: Boolean = layer.virtualStartBlockY <= y && y <= layer.virtualEndBlockY
+
+  def clamp: ShiftedBlockPos =
+    if (y < layer.virtualStartBlockY)
+      new ShiftedBlockPos(x, layer.virtualStartBlockY, z, layer)
+    else if (layer.virtualEndBlockY < y)
+      new ShiftedBlockPos(x, layer.virtualEndBlockY, z, layer)
+    else
+      this
 
   override def offset(facing: EnumFacing, n: Int): BlockPos =
     if (n == 0)

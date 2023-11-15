@@ -104,10 +104,10 @@ class ProxyWorld(original: World, val layer: DimensionLayer)
     original.getHeight(x, z) - layer.startBlockY
 
   override def getBiome(pos: BlockPos): Biome =
-    original.getBiome(layer.shift(pos))
+    original.getBiome(layer.shift(pos).clamp)
 
   override def getBiomeForCoordsBody(pos: BlockPos): Biome =
-    original.getBiomeForCoordsBody(layer.shift(pos))
+    original.getBiomeForCoordsBody(layer.shift(pos).clamp)
 
   override def canSeeSky(pos: BlockPos): Boolean =
     original.canSeeSky(layer.shift(pos))
