@@ -70,10 +70,6 @@ class DimensionalLayersGenerator2(world: World) extends ICubeGenerator {
   }
 
   private def generateLayerTerrain(cubeX: Int, cubeY: Int, cubeZ: Int, primer: CubePrimer, layer: DimensionLayer): Unit = {
-    val rand = new Random(world.getSeed)
-    rand.setSeed(rand.nextInt ^ cubeX)
-    rand.setSeed(rand.nextInt ^ cubeZ)
-
     val chunk = layer.lastChunks.get(cubeX -> cubeZ)
 
     if (!layer.optimizationHack) {
