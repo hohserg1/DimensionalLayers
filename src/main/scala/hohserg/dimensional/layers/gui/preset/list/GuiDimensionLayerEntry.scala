@@ -12,5 +12,5 @@ class GuiDimensionLayerEntry(val parent: GuiLayersList, val layer: DimensionLaye
     mc.fontRenderer.drawStringWithShadow(DimensionClientUtils.getDisplayName(layer.dimensionType), minX + DimensionClientUtils.width + 4, minY + (maxY - minY) / 2 - 5, 0xffffff)
   }
 
-  override def guiSettings(index: Int, prevGui: GuiSetupDimensionLayersPreset): GuiBase = new dimension.GuiSettingsLayer(prevGui, layer)
+  override def guiSettings(index: Int, prevGui: GuiSetupDimensionLayersPreset): GuiBase = new dimension.GuiSettingsLayer(prevGui, index, layer)
 }
