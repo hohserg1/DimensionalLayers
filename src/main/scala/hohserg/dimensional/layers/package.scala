@@ -20,4 +20,10 @@ package object layers {
       override def apply(t: A): B = f(t)
     }
 
+  def clamp[N: Numeric](v: N, minV: N, maxV: N): N = {
+    val n = implicitly[Numeric[N]]
+    import n._
+    minV max v min maxV
+  }
+
 }
