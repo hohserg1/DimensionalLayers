@@ -23,8 +23,8 @@ class DimensionLayer(world: World, val spec: DimensionLayerSpec, val startCubeY:
   val endCubeY: Int = startCubeY + spec.height - 1
   val startBlockY: Int = Coords.cubeToMinBlock(startCubeY)
   val endBlockY: Int = Coords.cubeToMaxBlock(endCubeY)
-  val virtualStartBlockY: Int = 0
-  val virtualEndBlockY: Int = Coords.cubeToMaxBlock(spec.height - 1)
+  val virtualStartBlockY: Int = Coords.cubeToMinBlock(spec.bottomOffset)
+  val virtualEndBlockY: Int = Coords.cubeToMaxBlock(16 - spec.topOffset - 1)
 
   def shift(pos: BlockPos): ShiftedBlockPos = ShiftedBlockPos(pos, this)
 

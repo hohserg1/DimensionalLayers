@@ -78,7 +78,7 @@ class DimensionalLayersGenerator2(world: World) extends ICubeGenerator {
       layer.optimizationHack = false
     }
 
-    val storage = chunk.getBlockStorageArray()((cubeY - layer.startCubeY) & 15)
+    val storage = chunk.getBlockStorageArray()((cubeY - layer.startCubeY + layer.spec.bottomOffset) & 15)
     if (storage != null && !storage.isEmpty) {
       for {
         x <- 0 to 15
