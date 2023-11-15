@@ -48,8 +48,8 @@ object DimensionLayersPreset {
     def height: Int
   }
 
-  case class DimensionLayerSpec(dimensionType: DimensionType, seedOverride: Option[Long] = None) extends LayerSpec {
-    override def height: Int = 16
+  case class DimensionLayerSpec(dimensionType: DimensionType, seedOverride: Option[Long] = None, topOffset: Int = 0, bottomOffset: Int = 0) extends LayerSpec {
+    override def height: Int = 16 - topOffset - bottomOffset
   }
 
   case class SolidLayerSpec(filler: IBlockState, biome: Biome = Biomes.PLAINS, height: Int = 1) extends LayerSpec
@@ -76,9 +76,13 @@ object DimensionLayersPreset {
     override def serialize(src: LayerSpec, typeOfSrc: Type, context: JsonSerializationContext): JsonElement = {
       val r = new JsonObject
       src match {
-        case DimensionLayerSpec(dimensionType, seedOverride) =>
+        case DimensionLayerSpec(dimensionType, seedOverride, topOffset, bottomOffset) =>
           r.add("dimensionType", new JsonPrimitive(dimensionType.getName))
           seedOverride.foreach(seed => r.add("seedOverride", new JsonPrimitive(seed)))
+          if (topOffset > 0)
+            r.add("topOffset", new JsonPrimitive(topOffset))
+          if (bottomOffset > 0)
+            r.add("bottomOffset", new JsonPrimitive(bottomOffset))
 
         case SolidLayerSpec(filler, biome, height) =>
           r.add("filler", new JsonPrimitive(filler.getBlock.getRegistryName.toString))
@@ -103,7 +107,9 @@ object DimensionLayersPreset {
           if (jsonObject.has("seedOverride"))
             Some(jsonObject.getAsJsonPrimitive("seedOverride").getAsLong)
           else
-            None
+            None,
+          if (jsonObject.has("topOffset")) jsonObject.getAsJsonPrimitive("topOffset").getAsInt else 0,
+          if (jsonObject.has("bottomOffset")) jsonObject.getAsJsonPrimitive("topOffset").getAsInt else 0
         )
       else {
         val block = Block.getBlockFromName(jsonObject.getAsJsonPrimitive("filler").getAsString)
