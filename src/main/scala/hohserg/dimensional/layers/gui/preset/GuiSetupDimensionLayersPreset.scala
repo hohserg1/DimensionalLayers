@@ -41,7 +41,7 @@ class GuiSetupDimensionLayersPreset(parent: GuiCreateWorld) extends GuiBase(pare
 
   override def handleMouseInput(): Unit = {
     super.handleMouseInput()
-    val (mouseX, mouseY) = MouseUtils.getMousePos(parent)
+    val (mouseX, mouseY) = MouseUtils.getMousePos
     layersList.handleMouseInput(mouseX, mouseY)
   }
 }
