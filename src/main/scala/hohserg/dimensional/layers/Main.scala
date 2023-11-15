@@ -6,6 +6,7 @@ import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.Mod.{EventBusSubscriber, EventHandler}
 import net.minecraftforge.fml.common.event.{FMLPostInitializationEvent, FMLPreInitializationEvent}
 import net.minecraftforge.fml.common.eventhandler.{EventPriority, SubscribeEvent}
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 @Mod(modid = Main.modid, name = "DimensionalLayers", version = "3.0", modLanguage = "scala")
 @EventBusSubscriber
@@ -23,6 +24,7 @@ object Main {
   }
 
 
+  @SideOnly(Side.CLIENT)
   @SubscribeEvent(priority = EventPriority.LOWEST)
   def onGuiCreateWorld(event: ActionPerformedEvent): Unit =
     if (Configuration.worldTypeByDefault)
