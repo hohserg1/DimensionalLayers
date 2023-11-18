@@ -124,6 +124,8 @@ class GuiSettingsLayer(parent: GuiSetupDimensionLayersPreset, index: Int, layer:
     super.mouseReleased(mouseX, mouseY, mouseButton)
     topOffsetField.mouseReleased(mouseX, mouseY, mouseButton)
     bottomOffsetField.mouseReleased(mouseX, mouseY, mouseButton)
+    if (topOffset.get != layer.topOffset || bottomOffset.get != layer.bottomOffset)
+      doneButton.enabled = true
   }
 
   override def keyTyped(typedChar: Char, keyCode: Int): Unit = {
@@ -131,5 +133,7 @@ class GuiSettingsLayer(parent: GuiSetupDimensionLayersPreset, index: Int, layer:
     seedOverrideField.textboxKeyTyped(typedChar, keyCode)
     topOffsetField.textboxKeyTyped(typedChar, keyCode)
     bottomOffsetField.textboxKeyTyped(typedChar, keyCode)
+    if (layer.seedOverride.isEmpty && seedOverrideField.getText.nonEmpty || layer.seedOverride.nonEmpty && layer.seedOverride.get.toString != seedOverrideField.getText)
+      doneButton.enabled = true
   }
 }
