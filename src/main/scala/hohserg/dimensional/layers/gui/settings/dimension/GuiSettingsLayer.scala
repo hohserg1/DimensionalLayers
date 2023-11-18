@@ -54,6 +54,7 @@ class GuiSettingsLayer(parent: GuiSetupDimensionLayersPreset, index: Int, layer:
     bottomOffsetField = new GuiOffsetField(4, gridTop, bottomOffset, false)
 
     seedOverrideField = new GuiTextField(2, fontRenderer, width - 180, height / 2 - 20 / 2, 170, 20)
+    layer.seedOverride.map(_.toString).foreach(seedOverrideField.setText)
   }
 
   def toLongSeed(str: String): Long =
