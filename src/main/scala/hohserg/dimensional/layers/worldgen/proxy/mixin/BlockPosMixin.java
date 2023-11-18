@@ -7,14 +7,12 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(BlockPos.class)
 public class BlockPosMixin {
     @Inject(
             method = "add(Lnet/minecraft/util/math/Vec3i;)Lnet/minecraft/util/math/BlockPos;",
-            at = @At("HEAD"),
-            locals = LocalCapture.PRINT
+            at = @At("HEAD")
     )
     public void add(Vec3i vec, CallbackInfoReturnable<BlockPos> ci) {
         if (vec instanceof ShiftedBlockPos)
@@ -23,8 +21,7 @@ public class BlockPosMixin {
 
     @Inject(
             method = "subtract(Lnet/minecraft/util/math/Vec3i;)Lnet/minecraft/util/math/BlockPos;",
-            at = @At("HEAD"),
-            locals = LocalCapture.PRINT
+            at = @At("HEAD")
     )
     public void subtract(Vec3i vec, CallbackInfoReturnable<BlockPos> ci) {
         if (vec instanceof ShiftedBlockPos) {
