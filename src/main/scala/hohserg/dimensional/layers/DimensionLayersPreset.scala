@@ -73,24 +73,25 @@ object DimensionLayersPreset {
   }
 
   private object LayerSpecSerializer extends JsonSerializer[LayerSpec] with JsonDeserializer[LayerSpec] {
+
+    final val dimensionTypeKey = "dimensionType"
+    final val topOffsetKey = "topOffset"
+    final val bottomOffsetKey = "bottomOffset"
+    final val seedOverrideKey = "seedOverride"
+
     override def serialize(src: LayerSpec, typeOfSrc: Type, context: JsonSerializationContext): JsonElement = {
       val r = new JsonObject
       src match {
         case DimensionLayerSpec(dimensionType, seedOverride, topOffset, bottomOffset) =>
-          r.add("dimensionType", new JsonPrimitive(dimensionType.getName))
-          seedOverride.foreach(seed => r.add("seedOverride", new JsonPrimitive(seed)))
+          r.add(dimensionTypeKey, new JsonPrimitive(dimensionType.getName))
+          seedOverride.foreach(seed => r.add(seedOverrideKey, new JsonPrimitive(seed)))
           if (topOffset > 0)
-            r.add("topOffset", new JsonPrimitive(topOffset))
+            r.add(topOffsetKey, new JsonPrimitive(topOffset))
           if (bottomOffset > 0)
-            r.add("bottomOffset", new JsonPrimitive(bottomOffset))
+            r.add(bottomOffsetKey, new JsonPrimitive(bottomOffset))
 
         case SolidLayerSpec(filler, biome, height) =>
-          r.add("filler", new JsonPrimitive(filler.getBlock.getRegistryName.toString))
-          if (filler != filler.getBlock.getDefaultState) {
-            val jsonProps = new JsonObject
-            filler.getProperties.asScala.foreach { case (p, v) => jsonProps.add(p.getName, new JsonPrimitive(p.getName(v.asInstanceOf))) }
-            r.add("properties", jsonProps)
-          }
+          serializeBlockState(r, filler)
           r.add("height", new JsonPrimitive(height))
           if (biome != Biomes.PLAINS) {
             r.add("biome", new JsonPrimitive(biome.getRegistryName.toString))
@@ -99,40 +100,70 @@ object DimensionLayersPreset {
       r
     }
 
-    override def deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): LayerSpec = {
-      val jsonObject = json.getAsJsonObject
-      if (jsonObject.has("dimensionType"))
-        DimensionLayerSpec(
-          DimensionType.byName(jsonObject.getAsJsonPrimitive("dimensionType").getAsString),
-          if (jsonObject.has("seedOverride"))
-            Some(jsonObject.getAsJsonPrimitive("seedOverride").getAsLong)
-          else
-            None,
-          if (jsonObject.has("topOffset")) jsonObject.getAsJsonPrimitive("topOffset").getAsInt else 0,
-          if (jsonObject.has("bottomOffset")) jsonObject.getAsJsonPrimitive("topOffset").getAsInt else 0
-        )
-      else {
-        val block = Block.getBlockFromName(jsonObject.getAsJsonPrimitive("filler").getAsString)
-
-        SolidLayerSpec(if (jsonObject.has("properties")) {
-          var state = block.getDefaultState
-          val jsonProps = jsonObject.getAsJsonObject("properties")
-          jsonProps.entrySet().asScala.foreach { e =>
-            val propName = e.getKey
-            val valueName = e.getValue.getAsString
-            val p = block.getBlockState.getProperty(propName)
-            val maybeValue = p.parseValue(valueName)
-            if (maybeValue.isPresent) {
-              state = state.withProperty(p, maybeValue.get().asInstanceOf)
-            }
-          }
-          state
-        } else
-          block.getDefaultState, if (jsonObject.has("biome")) {
-          ForgeRegistries.BIOMES.getValue(new ResourceLocation(jsonObject.getAsJsonPrimitive("biome").getAsString))
-        } else
-          Biomes.PLAINS, jsonObject.getAsJsonPrimitive("height").getAsInt)
+    private def serializeBlockState(r: JsonObject, filler: IBlockState) = {
+      r.add("filler", new JsonPrimitive(filler.getBlock.getRegistryName.toString))
+      if (filler != filler.getBlock.getDefaultState) {
+        val jsonProps = new JsonObject
+        filler.getProperties.asScala.foreach { case (p, v) => jsonProps.add(p.getName, new JsonPrimitive(p.getName(v.asInstanceOf))) }
+        r.add("properties", jsonProps)
       }
     }
+
+    override def deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): LayerSpec = {
+      val jsonObject = json.getAsJsonObject
+      if (jsonObject.has(dimensionTypeKey))
+        DimensionLayerSpec(
+          deserializeDimType(jsonObject),
+          deserializeSeed(jsonObject),
+          deserializeOffset(jsonObject, topOffsetKey),
+          deserializeOffset(jsonObject, bottomOffsetKey)
+        )
+      else {
+        SolidLayerSpec(
+          deserializeBlockState(jsonObject),
+          deserializeBiome(jsonObject),
+          jsonObject.getAsJsonPrimitive("height").getAsInt)
+      }
+    }
+
+    private def deserializeBiome(jsonObject: JsonObject) =
+      if (jsonObject.has("biome")) {
+        ForgeRegistries.BIOMES.getValue(new ResourceLocation(jsonObject.getAsJsonPrimitive("biome").getAsString))
+      } else
+        Biomes.PLAINS
+
+
+    private def deserializeBlockState(jsonObject: JsonObject) = {
+      val block = Block.getBlockFromName(jsonObject.getAsJsonPrimitive("filler").getAsString)
+
+      if (jsonObject.has("properties")) {
+        var state = block.getDefaultState
+        val jsonProps = jsonObject.getAsJsonObject("properties")
+        jsonProps.entrySet().asScala.foreach { e =>
+          val propName = e.getKey
+          val valueName = e.getValue.getAsString
+          val p = block.getBlockState.getProperty(propName)
+          val maybeValue = p.parseValue(valueName)
+          if (maybeValue.isPresent) {
+            state = state.withProperty(p, maybeValue.get().asInstanceOf)
+          }
+        }
+        state
+      } else
+        block.getDefaultState
+    }
+
+    private def deserializeOffset(jsonObject: JsonObject, key: String) =
+      if (jsonObject.has(key)) jsonObject.getAsJsonPrimitive(key).getAsInt else 0
+
+
+    private def deserializeSeed(jsonObject: JsonObject) =
+      if (jsonObject.has(seedOverrideKey))
+        Some(jsonObject.getAsJsonPrimitive(seedOverrideKey).getAsLong)
+      else
+        None
+
+    private def deserializeDimType(jsonObject: JsonObject) =
+      DimensionType.byName(jsonObject.getAsJsonPrimitive(dimensionTypeKey).getAsString)
   }
 }

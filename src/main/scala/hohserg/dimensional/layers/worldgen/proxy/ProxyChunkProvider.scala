@@ -7,7 +7,6 @@ import net.minecraft.world.chunk.{Chunk, IChunkProvider}
 
 class ProxyChunkProvider(original: World, layer: DimensionLayer) extends IChunkProvider {
 
-
   val proxyChunkCache: LoadingCache[Chunk, ProxyChunk] =
     CacheBuilder.newBuilder()
       .weakKeys()

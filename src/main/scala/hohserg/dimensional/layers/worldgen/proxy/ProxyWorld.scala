@@ -21,6 +21,7 @@ class ProxyWorld(original: World, val layer: DimensionLayer)
     new Profiler,
     false
   ) with FakeCubicWorld with IMinMaxHeight {
+
   provider.setWorld(this)
 
   override def createChunkProvider(): IChunkProvider = new ProxyChunkProvider(original, layer)
