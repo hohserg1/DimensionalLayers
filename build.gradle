@@ -96,15 +96,15 @@ jar {
 
 jar.finalizedBy('reobfJar')
 
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            artifact jar
-        }
-    }
-    repositories {
-        maven {
-            url "file:///${project.projectDir}/mcmodsrepo"
-        }
+
+processResources {
+    inputs.property "version", version
+    inputs.property "mcversion", '1.12.2'
+
+    from('./src/main/unprepared_resources/') {
+        include "*"
+        include "*/*"
+
+        expand "version": version, 'mcversion': '1.12.2'
     }
 }

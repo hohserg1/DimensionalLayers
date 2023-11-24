@@ -8,7 +8,7 @@ import net.minecraftforge.fml.common.event.{FMLPostInitializationEvent, FMLPreIn
 import net.minecraftforge.fml.common.eventhandler.{EventPriority, SubscribeEvent}
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
-@Mod(modid = Main.modid, name = "DimensionalLayers", version = "3.0", modLanguage = "scala")
+@Mod(modid = Main.modid, name = "DimensionalLayers", modLanguage = "scala")
 @EventBusSubscriber
 object Main {
   final val modid = "dimensional_layers"
