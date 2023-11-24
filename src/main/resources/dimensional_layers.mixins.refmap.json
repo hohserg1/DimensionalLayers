@@ -1,0 +1,12 @@
+{
+  "mappings": {
+    "hohserg/dimensional/layers/worldgen/proxy/mixin/BlockPosMixin": {
+      "add(Lnet/minecraft/util/math/Vec3i;)Lnet/minecraft/util/math/BlockPos;": "Lnet/minecraft/util/math/BlockPos;func_177971_a(Lnet/minecraft/util/math/Vec3i;)Lnet/minecraft/util/math/BlockPos;",
+      "subtract(Lnet/minecraft/util/math/Vec3i;)Lnet/minecraft/util/math/BlockPos;": "Lnet/minecraft/util/math/BlockPos;func_177973_b(Lnet/minecraft/util/math/Vec3i;)Lnet/minecraft/util/math/BlockPos;"
+    },
+    "hohserg/dimensional/layers/worldgen/proxy/mixin/TemplateMixin": {
+      "addBlocksToWorld(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/world/gen/structure/template/ITemplateProcessor;Lnet/minecraft/world/gen/structure/template/PlacementSettings;I)V": "Lnet/minecraft/world/gen/structure/template/Template;func_189960_a(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/world/gen/structure/template/ITemplateProcessor;Lnet/minecraft/world/gen/structure/template/PlacementSettings;I)V",
+      "Lnet/minecraft/tileentity/TileEntity;readFromNBT(Lnet/minecraft/nbt/NBTTagCompound;)V": "Lnet/minecraft/tileentity/TileEntity;func_145839_a(Lnet/minecraft/nbt/NBTTagCompound;)V"
+    }
+  }
+}
