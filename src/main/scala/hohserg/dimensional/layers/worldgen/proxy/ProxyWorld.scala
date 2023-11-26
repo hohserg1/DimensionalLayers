@@ -13,6 +13,8 @@ import net.minecraft.world.chunk.{Chunk, IChunkProvider}
 import net.minecraft.world.storage.loot.LootTableManager
 import net.minecraft.world.{World, WorldLens}
 
+import scala.collection.mutable
+
 class ProxyWorld(original: World, val layer: DimensionLayer)
   extends World(
     new FakeSaveHandler(original.getWorldInfo),
@@ -24,7 +26,7 @@ class ProxyWorld(original: World, val layer: DimensionLayer)
 
   provider.setWorld(this)
 
-  override def createChunkProvider(): IChunkProvider = new ProxyChunkProvider(original, layer)
+  override def createChunkProvider(): IChunkProvider = new ProxyChunkProvider(this, original, layer)
 
   chunkProvider = createChunkProvider()
 
@@ -101,8 +103,14 @@ class ProxyWorld(original: World, val layer: DimensionLayer)
   override def getBlockLightOpacity(pos: BlockPos): Int =
     original.getBlockLightOpacity(layer.shift(pos))
 
+  private val heightCache = new mutable.HashMap[(Int, Int), Int]
+
   override def getHeight(x: Int, z: Int): Int =
-    original.getHeight(x, z) - layer.startBlockY
+    heightCache.getOrElseUpdate(x -> z,
+      (layer.endBlockY to layer.startBlockY by -1).dropWhile(y => original.isAirBlock(new BlockPos(x, y, z))).headOption
+        .map(_ - layer.startBlockY)
+        .getOrElse(0)
+    )
 
   override def getBiome(pos: BlockPos): Biome =
     original.getBiome(layer.shift(pos).clamp)

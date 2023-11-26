@@ -12,7 +12,7 @@ import net.minecraft.world.EnumSkyBlock
 import net.minecraft.world.chunk.Chunk
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage
 
-class ProxyChunk(original: Chunk, layer: DimensionLayer) extends Chunk(original.getWorld, original.x, original.z) {
+class ProxyChunk(proxy: ProxyWorld, original: Chunk, layer: DimensionLayer) extends Chunk(original.getWorld, original.x, original.z) {
   val column = original.asInstanceOf[IColumn]
 
   override def getBlockState(pos: BlockPos): IBlockState =
@@ -85,7 +85,7 @@ class ProxyChunk(original: Chunk, layer: DimensionLayer) extends Chunk(original.
     original.removeTileEntity(layer.shift(pos))
 
   override def getPrecipitationHeight(pos: BlockPos): BlockPos =
-    layer.markShifted(original.getPrecipitationHeight(layer.shift(pos)))
+    proxy.getHeight(pos).up()
 
   override def isEmptyBetween(startY: Int, endY: Int): Boolean =
     original.isEmptyBetween(startY + layer.startBlockY, endY + layer.startBlockY)
