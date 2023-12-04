@@ -13,6 +13,8 @@ public class Configuration {
 
     public static boolean worldTypeByDefault = true;
 
+    public static boolean allowBuildOutsideOfGeneratedHeight = false;
+
     @SubscribeEvent
     public static void onConfigChange(ConfigChangedEvent.OnConfigChangedEvent event) {
         ConfigManager.sync(Main.modid(), Config.Type.INSTANCE);

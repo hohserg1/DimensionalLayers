@@ -9,7 +9,7 @@ import net.minecraft.block.state.IBlockState
 import net.minecraft.init.{Biomes, Blocks}
 import net.minecraft.util.ResourceLocation
 import net.minecraft.world.biome.Biome
-import net.minecraft.world.{DimensionType, World}
+import net.minecraft.world.{DimensionType, World, WorldType}
 import net.minecraftforge.common.DimensionManager
 import net.minecraftforge.fml.common.registry.ForgeRegistries
 
@@ -48,7 +48,10 @@ object DimensionalLayersPreset {
     def height: Int
   }
 
-  case class DimensionLayerSpec(dimensionType: DimensionType, seedOverride: Option[Long] = None, topOffset: Int = 0, bottomOffset: Int = 0) extends LayerSpec {
+  case class DimensionLayerSpec(dimensionType: DimensionType,
+                                seedOverride: Option[Long] = None,
+                                topOffset: Int = 0, bottomOffset: Int = 0,
+                                worldType: WorldType = WorldType.DEFAULT) extends LayerSpec {
     override def height: Int = 16 - topOffset - bottomOffset
   }
 
@@ -78,34 +81,44 @@ object DimensionalLayersPreset {
     final val topOffsetKey = "topOffset"
     final val bottomOffsetKey = "bottomOffset"
     final val seedOverrideKey = "seedOverride"
+    final val worldTypeKey = "worldType"
+    final val biomeKey = "biome"
+    final val heightKey = "height"
+    final val fillerKey = "filler"
+    final val propertiesKey = "properties"
 
     override def serialize(src: LayerSpec, typeOfSrc: Type, context: JsonSerializationContext): JsonElement = {
       val r = new JsonObject
       src match {
-        case DimensionLayerSpec(dimensionType, seedOverride, topOffset, bottomOffset) =>
+        case DimensionLayerSpec(dimensionType, seedOverride, topOffset, bottomOffset, worldType) =>
           r.add(dimensionTypeKey, new JsonPrimitive(dimensionType.getName))
           seedOverride.foreach(seed => r.add(seedOverrideKey, new JsonPrimitive(seed)))
+
           if (topOffset > 0)
             r.add(topOffsetKey, new JsonPrimitive(topOffset))
+
           if (bottomOffset > 0)
             r.add(bottomOffsetKey, new JsonPrimitive(bottomOffset))
 
+          if (worldType != WorldType.DEFAULT)
+            r.add(worldTypeKey, new JsonPrimitive(worldType.getName))
+
         case SolidLayerSpec(filler, biome, height) =>
           serializeBlockState(r, filler)
-          r.add("height", new JsonPrimitive(height))
+          r.add(heightKey, new JsonPrimitive(height))
           if (biome != Biomes.PLAINS) {
-            r.add("biome", new JsonPrimitive(biome.getRegistryName.toString))
+            r.add(biomeKey, new JsonPrimitive(biome.getRegistryName.toString))
           }
       }
       r
     }
 
     private def serializeBlockState(r: JsonObject, filler: IBlockState) = {
-      r.add("filler", new JsonPrimitive(filler.getBlock.getRegistryName.toString))
+      r.add(fillerKey, new JsonPrimitive(filler.getBlock.getRegistryName.toString))
       if (filler != filler.getBlock.getDefaultState) {
         val jsonProps = new JsonObject
         filler.getProperties.asScala.foreach { case (p, v) => jsonProps.add(p.getName, new JsonPrimitive(p.getName(v.asInstanceOf))) }
-        r.add("properties", jsonProps)
+        r.add(propertiesKey, jsonProps)
       }
     }
 
@@ -116,29 +129,37 @@ object DimensionalLayersPreset {
           deserializeDimType(jsonObject),
           deserializeSeed(jsonObject),
           deserializeOffset(jsonObject, topOffsetKey),
-          deserializeOffset(jsonObject, bottomOffsetKey)
+          deserializeOffset(jsonObject, bottomOffsetKey),
+          deserializeWorldType(jsonObject)
         )
       else {
         SolidLayerSpec(
           deserializeBlockState(jsonObject),
           deserializeBiome(jsonObject),
-          jsonObject.getAsJsonPrimitive("height").getAsInt)
+          jsonObject.getAsJsonPrimitive(heightKey).getAsInt)
       }
     }
 
+    def deserializeWorldType(jsonObject: JsonObject): WorldType =
+      if (jsonObject.has(worldTypeKey))
+        WorldType.byName(jsonObject.getAsJsonPrimitive(worldTypeKey).getAsString)
+      else
+        WorldType.DEFAULT
+
+
     private def deserializeBiome(jsonObject: JsonObject) =
-      if (jsonObject.has("biome")) {
-        ForgeRegistries.BIOMES.getValue(new ResourceLocation(jsonObject.getAsJsonPrimitive("biome").getAsString))
-      } else
+      if (jsonObject.has(biomeKey))
+        ForgeRegistries.BIOMES.getValue(new ResourceLocation(jsonObject.getAsJsonPrimitive(biomeKey).getAsString))
+      else
         Biomes.PLAINS
 
 
     private def deserializeBlockState(jsonObject: JsonObject) = {
-      val block = Block.getBlockFromName(jsonObject.getAsJsonPrimitive("filler").getAsString)
+      val block = Block.getBlockFromName(jsonObject.getAsJsonPrimitive(fillerKey).getAsString)
 
-      if (jsonObject.has("properties")) {
+      if (jsonObject.has(propertiesKey)) {
         var state = block.getDefaultState
-        val jsonProps = jsonObject.getAsJsonObject("properties")
+        val jsonProps = jsonObject.getAsJsonObject(propertiesKey)
         jsonProps.entrySet().asScala.foreach { e =>
           val propName = e.getKey
           val valueName = e.getValue.getAsString

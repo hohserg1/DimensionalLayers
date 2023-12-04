@@ -10,15 +10,21 @@ import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.biome.Biome
 import net.minecraft.world.chunk.{Chunk, IChunkProvider}
+import net.minecraft.world.storage.WorldInfo
 import net.minecraft.world.storage.loot.LootTableManager
 import net.minecraft.world.{World, WorldLens}
 
 import scala.collection.mutable
 
 class ProxyWorld(original: World, val layer: DimensionLayer)
+                (val actualWorldInfo: WorldInfo = {
+                  val r = new WorldInfo(original.getWorldInfo)
+                  r.setTerrainType(layer.spec.worldType)
+                  r
+                })
   extends World(
-    new FakeSaveHandler(original.getWorldInfo),
-    original.getWorldInfo,
+    new FakeSaveHandler(actualWorldInfo),
+    actualWorldInfo,
     layer.spec.dimensionType.createDimension(),
     new Profiler,
     false
