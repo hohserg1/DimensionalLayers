@@ -72,7 +72,8 @@ dependencies {
     implementation fg.deobf('abc:aether_ii-1.12.2:0.3.0')
     implementation fg.deobf('abc:orbis-lib-1.12.2:0.2.0')
     implementation fg.deobf('abc:RTG-1.12.2:6.1.0.0')
-    //implementation 'abc:AbyssalCraft:1.12.2-1.10.4'
+    implementation 'abc:AbyssalCraft:1.12.2-1.10.4'
+    implementation 'abc:CubicWorldGen-1.12.2:0.0.178.0-SNAPSHOT:dev'
 
 }
 
