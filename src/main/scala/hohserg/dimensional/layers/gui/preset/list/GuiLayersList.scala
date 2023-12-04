@@ -1,10 +1,10 @@
 package hohserg.dimensional.layers.gui.preset.list
 
-import hohserg.dimensional.layers.DimensionLayersPreset
-import hohserg.dimensional.layers.DimensionLayersPreset.{DimensionLayerSpec, SolidLayerSpec}
+import hohserg.dimensional.layers.DimensionalLayersPreset
+import hohserg.dimensional.layers.DimensionalLayersPreset.{DimensionLayerSpec, SolidLayerSpec}
 import hohserg.dimensional.layers.gui.DimensionClientUtils
 import hohserg.dimensional.layers.gui.mixin.AccessorGuiScrollingList
-import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionLayersPreset
+import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
 import net.minecraft.block.state.IBlockState
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.Tessellator
@@ -14,14 +14,14 @@ import net.minecraftforge.fml.client.GuiScrollingList
 
 import scala.collection.mutable
 
-class GuiLayersList(val parent: GuiSetupDimensionLayersPreset, val width: Int, height: Int, settings: String)
+class GuiLayersList(val parent: GuiSetupDimensionalLayersPreset, val width: Int, height: Int, settings: String)
   extends GuiScrollingList(
     Minecraft.getMinecraft,
     width, height, 10, height - 10, 10, DimensionClientUtils.width + 4,
     Minecraft.getMinecraft.displayWidth, Minecraft.getMinecraft.displayHeight
   ) {
   val entries: mutable.Buffer[GuiLayerEntry] =
-    DimensionLayersPreset(settings).layers
+    DimensionalLayersPreset(settings).layers
       .map {
         case layer: DimensionLayerSpec => new GuiDimensionLayerEntry(this, layer)
         case layer: SolidLayerSpec => new GuiSolidLayerEntry(this, layer)
@@ -48,7 +48,7 @@ class GuiLayersList(val parent: GuiSetupDimensionLayersPreset, val width: Int, h
     accessor.invokeApplyScrollLimits()
   }
 
-  def toSettings: String = DimensionLayersPreset(entries.map(_.layer).toList).toSettings
+  def toSettings: String = DimensionalLayersPreset(entries.map(_.layer).toList).toSettings
 
   override def getSize: Int = entries.size
 

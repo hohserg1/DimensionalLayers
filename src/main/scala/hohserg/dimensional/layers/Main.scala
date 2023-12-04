@@ -20,7 +20,7 @@ object Main {
 
   @EventHandler
   def postInit(e: FMLPostInitializationEvent): Unit = {
-    DimensionLayersPreset("")
+    DimensionalLayersPreset("")
   }
 
 

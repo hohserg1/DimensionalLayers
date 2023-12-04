@@ -7,7 +7,7 @@ import net.minecraft.client.gui.GuiCreateWorld
 
 import java.util.Random
 
-class GuiSetupDimensionLayersPreset(parent: GuiCreateWorld) extends GuiBase(parent) {
+class GuiSetupDimensionalLayersPreset(parent: GuiCreateWorld) extends GuiBase(parent) {
   var layersList: GuiLayersList = _
 
   override protected def back(): Unit = {

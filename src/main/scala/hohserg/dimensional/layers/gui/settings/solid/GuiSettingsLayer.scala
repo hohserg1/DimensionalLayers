@@ -3,7 +3,7 @@ package hohserg.dimensional.layers.gui.settings.solid
 import hohserg.dimensional.layers.clamp
 import hohserg.dimensional.layers.gui.GuiNumericField.NumberHolder
 import hohserg.dimensional.layers.gui.GuiTileList.SelectHandler
-import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionLayersPreset
+import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
 import hohserg.dimensional.layers.gui.settings.solid.GuiBlocksList.DrawableBlock
 import hohserg.dimensional.layers.gui.{GuiBase, GuiClickableButton, GuiNumericField, MouseUtils}
 import net.minecraft.block.state.IBlockState
@@ -13,7 +13,7 @@ import net.minecraft.world.biome.Biome
 
 import scala.collection.JavaConverters.mapAsScalaMapConverter
 
-class GuiSettingsLayer(parent: GuiSetupDimensionLayersPreset, onFinish: (IBlockState, Biome, Int) => Unit, initBlock: IBlockState = Blocks.AIR.getDefaultState, initHeight: Int = 1)
+class GuiSettingsLayer(parent: GuiSetupDimensionalLayersPreset, onFinish: (IBlockState, Biome, Int) => Unit, initBlock: IBlockState = Blocks.AIR.getDefaultState, initHeight: Int = 1)
   extends GuiBase(parent) with SelectHandler[GuiBlocksList.DrawableBlock] {
   val layerHeight = new NumberHolder[Int](initHeight) {
     override def validate(v: Int): Int = clamp(v, 1, 99)

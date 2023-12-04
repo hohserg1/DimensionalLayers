@@ -1,7 +1,7 @@
 package hohserg.dimensional.layers.worldgen
 
 import com.google.common.collect.ImmutableList
-import hohserg.dimensional.layers.DimensionLayersPreset
+import hohserg.dimensional.layers.DimensionalLayersPreset
 import io.github.opencubicchunks.cubicchunks.api.util.{Box, Coords}
 import io.github.opencubicchunks.cubicchunks.api.world.{ICube, ICubicWorld}
 import io.github.opencubicchunks.cubicchunks.api.worldgen.{CubePrimer, ICubeGenerator}
@@ -19,8 +19,8 @@ import java.util
 import java.util.Random
 import scala.collection.JavaConverters._
 
-class DimensionalLayersGenerator2(world: World) extends ICubeGenerator {
-  val preset = DimensionLayersPreset(world.getWorldInfo.getGeneratorOptions)
+class DimensionalLayersGenerator(world: World) extends ICubeGenerator {
+  val preset = DimensionalLayersPreset(world.getWorldInfo.getGeneratorOptions)
 
   val cubicWorld = world.asInstanceOf[ICubicWorldInternal]
 

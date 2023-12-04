@@ -1,7 +1,7 @@
 package hohserg.dimensional.layers.gui.preset.list
 
-import hohserg.dimensional.layers.DimensionLayersPreset.DimensionLayerSpec
-import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionLayersPreset
+import hohserg.dimensional.layers.DimensionalLayersPreset.DimensionLayerSpec
+import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
 import hohserg.dimensional.layers.gui.settings.dimension
 import hohserg.dimensional.layers.gui.{DimensionClientUtils, GuiBase}
 
@@ -12,5 +12,5 @@ class GuiDimensionLayerEntry(val parent: GuiLayersList, val layer: DimensionLaye
     mc.fontRenderer.drawStringWithShadow(DimensionClientUtils.getDisplayName(layer.dimensionType), minX + DimensionClientUtils.width + 4, minY + (maxY - minY) / 2 - 5, 0xffffff)
   }
 
-  override def guiSettings(index: Int, prevGui: GuiSetupDimensionLayersPreset): GuiBase = new dimension.GuiSettingsLayer(prevGui, index, layer)
+  override def guiSettings(index: Int, prevGui: GuiSetupDimensionalLayersPreset): GuiBase = new dimension.GuiSettingsLayer(prevGui, index, layer)
 }

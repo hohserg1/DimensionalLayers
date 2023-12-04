@@ -1,7 +1,7 @@
 package hohserg.dimensional.layers
 
 import com.google.gson._
-import hohserg.dimensional.layers.DimensionLayersPreset.{DimensionLayerSpec, LayerSpec, SolidLayerSpec}
+import hohserg.dimensional.layers.DimensionalLayersPreset.{DimensionLayerSpec, LayerSpec, SolidLayerSpec}
 import hohserg.dimensional.layers.worldgen.{DimensionLayer, Layer, SolidLayer}
 import io.github.opencubicchunks.cubicchunks.api.util.IntRange
 import net.minecraft.block.Block
@@ -17,7 +17,7 @@ import java.lang.reflect.Type
 import scala.collection.JavaConverters.{asScalaIteratorConverter, asScalaSetConverter, mapAsScalaMapConverter}
 import scala.util.Try
 
-case class DimensionLayersPreset(layers: List[LayerSpec]) {
+case class DimensionalLayersPreset(layers: List[LayerSpec]) {
   def toLayerMap: Map[IntRange, World => Layer] =
     layers
       .foldRight(List[(IntRange, World => Layer)]() -> 0) {
@@ -30,16 +30,16 @@ case class DimensionLayersPreset(layers: List[LayerSpec]) {
 
   private def range(lastFreeCubic: Int, height: Int) = IntRange.of(lastFreeCubic, lastFreeCubic + height - 1)
 
-  def toSettings: String = DimensionLayersPreset.gson.toJson(this)
+  def toSettings: String = DimensionalLayersPreset.gson.toJson(this)
 }
 
-object DimensionLayersPreset {
-  def apply(settings: String): DimensionLayersPreset =
+object DimensionalLayersPreset {
+  def apply(settings: String): DimensionalLayersPreset =
     Try(settings)
       .filter(_.nonEmpty)
       .orElse(Try(Configuration.defaultPreset).filter(_.nonEmpty))
-      .map(gson.fromJson(_, classOf[DimensionLayersPreset]))
-      .getOrElse(DimensionLayersPreset(
+      .map(gson.fromJson(_, classOf[DimensionalLayersPreset]))
+      .getOrElse(DimensionalLayersPreset(
         DimensionManager.getRegisteredDimensions.keySet().asScala.map(DimensionLayerSpec(_)).toList :+ SolidLayerSpec(Blocks.BEDROCK.getDefaultState)
       ))
 
@@ -58,18 +58,18 @@ object DimensionLayersPreset {
   private val gson: Gson =
     (new GsonBuilder)
       .registerTypeHierarchyAdapter(classOf[LayerSpec], LayerSpecSerializer)
-      .registerTypeHierarchyAdapter(classOf[DimensionLayersPreset], Serializer)
+      .registerTypeHierarchyAdapter(classOf[DimensionalLayersPreset], Serializer)
       .create()
 
-  private object Serializer extends JsonSerializer[DimensionLayersPreset] with JsonDeserializer[DimensionLayersPreset] {
-    override def serialize(src: DimensionLayersPreset, typeOfSrc: Type, context: JsonSerializationContext): JsonElement = {
+  private object Serializer extends JsonSerializer[DimensionalLayersPreset] with JsonDeserializer[DimensionalLayersPreset] {
+    override def serialize(src: DimensionalLayersPreset, typeOfSrc: Type, context: JsonSerializationContext): JsonElement = {
       val r = new JsonArray
       src.layers.foreach(l => r.add(context.serialize(l)))
       r
     }
 
-    override def deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): DimensionLayersPreset =
-      DimensionLayersPreset(json.getAsJsonArray.iterator().asScala.map(je => context.deserialize[LayerSpec](je, classOf[LayerSpec])).toList)
+    override def deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): DimensionalLayersPreset =
+      DimensionalLayersPreset(json.getAsJsonArray.iterator().asScala.map(je => context.deserialize[LayerSpec](je, classOf[LayerSpec])).toList)
   }
 
   private object LayerSpecSerializer extends JsonSerializer[LayerSpec] with JsonDeserializer[LayerSpec] {

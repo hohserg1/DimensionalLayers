@@ -8,7 +8,7 @@ import java.util
 
 @IFMLLoadingPlugin.MCVersion(value = ForgeVersion.mcVersion)
 @IFMLLoadingPlugin.SortingIndex(value = 5000)
-class DimensionLayersCoreMod extends IFMLLoadingPlugin {
+class DimensionalLayersCoreMod extends IFMLLoadingPlugin {
   override def getASMTransformerClass: Array[String] = {
     Mixins.addConfiguration("dimensional_layers.mixins.proxy.json")
     Mixins.addConfiguration("dimensional_layers.mixins.gui.json")

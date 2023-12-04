@@ -1,7 +1,7 @@
 package hohserg.dimensional.layers.worldgen
 
 import com.google.common.cache.{CacheBuilder, CacheLoader, LoadingCache}
-import hohserg.dimensional.layers.DimensionLayersPreset.DimensionLayerSpec
+import hohserg.dimensional.layers.DimensionalLayersPreset.DimensionLayerSpec
 import hohserg.dimensional.layers.worldgen.proxy.{ProxyWorld, ShiftedBlockPos}
 import io.github.opencubicchunks.cubicchunks.api.util.Coords
 import net.minecraft.block.state.IBlockState

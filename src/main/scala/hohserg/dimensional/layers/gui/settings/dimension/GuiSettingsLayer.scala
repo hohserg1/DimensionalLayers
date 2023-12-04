@@ -1,8 +1,8 @@
 package hohserg.dimensional.layers.gui.settings.dimension
 
-import hohserg.dimensional.layers.DimensionLayersPreset.DimensionLayerSpec
+import hohserg.dimensional.layers.DimensionalLayersPreset.DimensionLayerSpec
 import hohserg.dimensional.layers.gui.GuiNumericField.NumberHolder
-import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionLayersPreset
+import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
 import hohserg.dimensional.layers.gui.preset.list.GuiDimensionLayerEntry
 import hohserg.dimensional.layers.gui.settings.dimension.GuiSettingsLayer._
 import hohserg.dimensional.layers.gui.{DimensionClientUtils, GuiBase, GuiClickableButton}
@@ -19,7 +19,7 @@ object GuiSettingsLayer {
 
 }
 
-class GuiSettingsLayer(parent: GuiSetupDimensionLayersPreset, index: Int, layer: DimensionLayerSpec) extends GuiBase(parent) {
+class GuiSettingsLayer(parent: GuiSetupDimensionalLayersPreset, index: Int, layer: DimensionLayerSpec) extends GuiBase(parent) {
   val topOffset: NumberHolder[Int] = new NumberHolder[Int](layer.topOffset) {
     override def validate(v: Int): Int = clamp(v, 0, 15 - bottomOffset.get)
   }

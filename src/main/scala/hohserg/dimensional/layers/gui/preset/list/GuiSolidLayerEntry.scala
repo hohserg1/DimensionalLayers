@@ -1,7 +1,7 @@
 package hohserg.dimensional.layers.gui.preset.list
 
-import hohserg.dimensional.layers.DimensionLayersPreset.SolidLayerSpec
-import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionLayersPreset
+import hohserg.dimensional.layers.DimensionalLayersPreset.SolidLayerSpec
+import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
 import hohserg.dimensional.layers.gui.settings.solid
 import hohserg.dimensional.layers.gui.settings.solid.GuiBlocksList.DrawableBlock
 import hohserg.dimensional.layers.gui.{DimensionClientUtils, GuiBase}
@@ -26,7 +26,7 @@ class GuiSolidLayerEntry(val parent: GuiLayersList, val layer: SolidLayerSpec) e
     GlStateManager.translate(-x, -y, 0)
   }
 
-  override def guiSettings(index: Int, prevGui: GuiSetupDimensionLayersPreset): GuiBase = new solid.GuiSettingsLayer(prevGui, (block, biome, height) => {
+  override def guiSettings(index: Int, prevGui: GuiSetupDimensionalLayersPreset): GuiBase = new solid.GuiSettingsLayer(prevGui, (block, biome, height) => {
     parent.entries.update(index, new GuiSolidLayerEntry(parent, SolidLayerSpec(block, biome, height)))
   }, layer.filler, layer.height)
 }

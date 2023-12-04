@@ -1,8 +1,8 @@
 package hohserg.dimensional.layers.gui.preset.list
 
-import hohserg.dimensional.layers.DimensionLayersPreset.LayerSpec
+import hohserg.dimensional.layers.DimensionalLayersPreset.LayerSpec
 import hohserg.dimensional.layers.Main
-import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionLayersPreset
+import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
 import hohserg.dimensional.layers.gui.preset.list.GuiLayerEntry._
 import hohserg.dimensional.layers.gui.{DimensionClientUtils, DrawableArea, GuiBase, RelativeCoord}
 import net.minecraft.client.Minecraft
@@ -54,7 +54,7 @@ trait GuiLayerEntry extends DrawableArea.Container {
 
   def layer: LayerSpec
 
-  def guiSettings(index: Int, parent: GuiSetupDimensionLayersPreset): GuiBase
+  def guiSettings(index: Int, parent: GuiSetupDimensionalLayersPreset): GuiBase
 
   protected val mc = Minecraft.getMinecraft
 
