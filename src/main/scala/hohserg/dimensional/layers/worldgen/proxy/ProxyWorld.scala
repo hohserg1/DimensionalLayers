@@ -12,16 +12,29 @@ import net.minecraft.world.biome.Biome
 import net.minecraft.world.chunk.{Chunk, IChunkProvider}
 import net.minecraft.world.storage.WorldInfo
 import net.minecraft.world.storage.loot.LootTableManager
-import net.minecraft.world.{World, WorldLens}
+import net.minecraft.world.{World, WorldLens, WorldSettings}
 
 import scala.collection.mutable
 
-class ProxyWorld(original: World, val layer: DimensionLayer)
-                (val actualWorldInfo: WorldInfo = {
-                  val r = new WorldInfo(original.getWorldInfo)
-                  r.setTerrainType(layer.spec.worldType)
-                  r
-                })
+object ProxyWorld {
+  def apply(original: World, layer: DimensionLayer): ProxyWorld = {
+    val originalWorldInfo = original.getWorldInfo
+    val actualWorldInfo = new WorldInfo(originalWorldInfo)
+    actualWorldInfo.populateFromWorldSettings(
+      new WorldSettings(
+        layer.spec.seedOverride.getOrElse(original.getSeed),
+        originalWorldInfo.getGameType,
+        originalWorldInfo.isMapFeaturesEnabled,
+        originalWorldInfo.isHardcoreModeEnabled,
+        layer.spec.worldType
+      ).setGeneratorOptions(layer.spec.worldTypePreset)
+    )
+    new ProxyWorld(original, layer, actualWorldInfo)
+  }
+}
+
+
+class ProxyWorld private(original: World, val layer: DimensionLayer, actualWorldInfo: WorldInfo)
   extends World(
     new FakeSaveHandler(actualWorldInfo),
     actualWorldInfo,
@@ -40,7 +53,7 @@ class ProxyWorld(original: World, val layer: DimensionLayer)
 
   initCapabilities()
 
-  override def getSeed: Long = layer.spec.seedOverride.getOrElse(super.getSeed)
+  override def getSeed: Long = worldInfo.getSeed
 
   override def getMinHeight: Int = layer.startBlockY
 

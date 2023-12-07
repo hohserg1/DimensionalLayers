@@ -30,7 +30,7 @@ class DimensionLayer(world: World, val spec: DimensionLayerSpec, val startCubeY:
 
   def markShifted(pos: BlockPos): ShiftedBlockPos = ShiftedBlockPos.markShifted(pos, this)
 
-  val proxyWorld: ProxyWorld = new ProxyWorld(world, this)()
+  val proxyWorld = ProxyWorld(world, this)
   private val provider: WorldProvider = proxyWorld.provider
   val vanillaGenerator: IChunkGenerator = provider.createChunkGenerator()
   var optimizationHack: Boolean = false
