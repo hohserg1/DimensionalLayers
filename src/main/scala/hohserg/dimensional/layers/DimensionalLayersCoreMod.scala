@@ -13,15 +13,7 @@ class DimensionalLayersCoreMod extends IFMLLoadingPlugin {
     Mixins.addConfiguration("dimensional_layers.mixins.proxy.json")
     Mixins.addConfiguration("dimensional_layers.mixins.gui.json")
 
-    if (System.getProperty("net.minecraftforge.gradle.GradleStart.srg.srg-mcp") != null)
-      Array(
-        "io.github.opencubicchunks.cubicchunks.cubicgen.asm.coremod.MapGenStrongholdCubicConstructorTransform",
-        "io.github.opencubicchunks.cubicchunks.cubicgen.asm.coremod.MalisisCoreAT"
-      )
-    else
-      Array(
-        "io.github.opencubicchunks.cubicchunks.cubicgen.asm.coremod.MapGenStrongholdCubicConstructorTransform"
-      )
+    Array()
   }
 
   override def getModContainerClass: String = null
