@@ -51,7 +51,7 @@ object DimensionalLayersPreset {
   case class DimensionLayerSpec(dimensionType: DimensionType,
                                 seedOverride: Option[Long] = None,
                                 topOffset: Int = 0, bottomOffset: Int = 0,
-                                worldType: WorldType = WorldType.DEFAULT) extends LayerSpec {
+                                worldType: WorldType = WorldType.DEFAULT, worldTypePreset: String = "") extends LayerSpec {
     override def height: Int = 16 - topOffset - bottomOffset
   }
 
@@ -82,6 +82,7 @@ object DimensionalLayersPreset {
     final val bottomOffsetKey = "bottomOffset"
     final val seedOverrideKey = "seedOverride"
     final val worldTypeKey = "worldType"
+    final val worldTypePresetKey = "worldTypePreset"
     final val biomeKey = "biome"
     final val heightKey = "height"
     final val fillerKey = "filler"
@@ -90,7 +91,7 @@ object DimensionalLayersPreset {
     override def serialize(src: LayerSpec, typeOfSrc: Type, context: JsonSerializationContext): JsonElement = {
       val r = new JsonObject
       src match {
-        case DimensionLayerSpec(dimensionType, seedOverride, topOffset, bottomOffset, worldType) =>
+        case DimensionLayerSpec(dimensionType, seedOverride, topOffset, bottomOffset, worldType, worldTypePreset) =>
           r.add(dimensionTypeKey, new JsonPrimitive(dimensionType.getName))
           seedOverride.foreach(seed => r.add(seedOverrideKey, new JsonPrimitive(seed)))
 
@@ -102,6 +103,10 @@ object DimensionalLayersPreset {
 
           if (worldType != WorldType.DEFAULT)
             r.add(worldTypeKey, new JsonPrimitive(worldType.getName))
+
+          if (worldTypePreset.nonEmpty)
+            r.add(worldTypePresetKey, new JsonPrimitive(worldTypePreset))
+
 
         case SolidLayerSpec(filler, biome, height) =>
           serializeBlockState(r, filler)
@@ -130,7 +135,8 @@ object DimensionalLayersPreset {
           deserializeSeed(jsonObject),
           deserializeOffset(jsonObject, topOffsetKey),
           deserializeOffset(jsonObject, bottomOffsetKey),
-          deserializeWorldType(jsonObject)
+          deserializeWorldType(jsonObject),
+          if (jsonObject.has(worldTypePresetKey)) jsonObject.getAsJsonPrimitive(worldTypePresetKey).getAsString else ""
         )
       else {
         SolidLayerSpec(
