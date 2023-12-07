@@ -68,12 +68,13 @@ dependencies {
     minecraft 'net.minecraftforge:forge:1.12.2-14.23.5.2860'
 
     compileOnly 'abc:CubicChunks:1.12.2:dev'
+    //compileOnly 'abc:CubicChunks-1.12.2:0.0.1266.0-SNAPSHOT:dev_all'
     implementation 'abc:DivineRPG:1.7.1'
     implementation fg.deobf('abc:aether_ii-1.12.2:0.3.0')
     implementation fg.deobf('abc:orbis-lib-1.12.2:0.2.0')
     implementation fg.deobf('abc:RTG-1.12.2:6.1.0.0')
     implementation 'abc:AbyssalCraft:1.12.2-1.10.4'
-    implementation 'abc:CubicWorldGen-1.12.2:0.0.178.0-SNAPSHOT:dev'
+    compileOnly 'abc:CubicWorldGen-1.12.2:0.0.178.0-SNAPSHOT:dev'
 
 }
 
@@ -96,7 +97,6 @@ jar {
 }
 
 jar.finalizedBy('reobfJar')
-
 
 processResources {
     inputs.property "version", version
