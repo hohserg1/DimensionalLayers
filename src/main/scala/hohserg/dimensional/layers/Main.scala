@@ -1,6 +1,8 @@
 package hohserg.dimensional.layers
 
+import hohserg.dimensional.layers.gui.settings.dimension.GuiFakeCreateWorld
 import net.minecraft.client.gui.GuiCreateWorld
+import net.minecraftforge.client.event.GuiOpenEvent
 import net.minecraftforge.client.event.GuiScreenEvent.ActionPerformedEvent
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.Mod.{EventBusSubscriber, EventHandler}
@@ -36,4 +38,11 @@ object Main {
 
         case _ =>
       }
+
+
+  @SideOnly(Side.CLIENT)
+  @SubscribeEvent
+  def onGuiOpen(e: GuiOpenEvent): Unit = {
+    GuiFakeCreateWorld.replaceGuiByParent(e)
+  }
 }

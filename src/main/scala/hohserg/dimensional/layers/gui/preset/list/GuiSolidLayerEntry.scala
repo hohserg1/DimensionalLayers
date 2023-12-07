@@ -26,7 +26,5 @@ class GuiSolidLayerEntry(val parent: GuiLayersList, val layer: SolidLayerSpec) e
     GlStateManager.translate(-x, -y, 0)
   }
 
-  override def guiSettings(index: Int, prevGui: GuiSetupDimensionalLayersPreset): GuiBase = new solid.GuiSettingsLayer(prevGui, (block, biome, height) => {
-    parent.entries.update(index, new GuiSolidLayerEntry(parent, SolidLayerSpec(block, biome, height)))
-  }, layer.filler, layer.height)
+  override def guiSettings(index: Int, prevGui: GuiSetupDimensionalLayersPreset): GuiBase = new solid.GuiSettingsLayer(prevGui, layer, index)
 }

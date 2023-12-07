@@ -1,6 +1,6 @@
 package hohserg.dimensional.layers.gui.preset.list
 
-import hohserg.dimensional.layers.DimensionalLayersPreset.LayerSpec
+import hohserg.dimensional.layers.DimensionalLayersPreset.{DimensionLayerSpec, LayerSpec, SolidLayerSpec}
 import hohserg.dimensional.layers.Main
 import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
 import hohserg.dimensional.layers.gui.preset.list.GuiLayerEntry._
@@ -15,6 +15,12 @@ import java.awt.Rectangle
 
 
 object GuiLayerEntry {
+  def apply(parent: GuiLayersList, layer: LayerSpec): GuiLayerEntry =
+    layer match {
+      case spec: DimensionLayerSpec => new GuiDimensionLayerEntry(parent, spec)
+      case spec: SolidLayerSpec => new GuiSolidLayerEntry(parent, spec)
+    }
+
   val texture = new ResourceLocation(Main.modid, "textures/gui/layer_entry.png")
 
   val moveUp = DrawableArea(
