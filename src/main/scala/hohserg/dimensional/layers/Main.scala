@@ -10,6 +10,8 @@ import net.minecraftforge.fml.common.event.{FMLPostInitializationEvent, FMLPreIn
 import net.minecraftforge.fml.common.eventhandler.{EventPriority, SubscribeEvent}
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
+import java.util.Random
+
 @Mod(modid = Main.modid, name = "DimensionalLayers", modLanguage = "scala")
 @EventBusSubscriber
 object Main {
@@ -33,8 +35,10 @@ object Main {
       event.getGui match {
         case guiCreateWorld: GuiCreateWorld =>
           if (guiCreateWorld.worldSeed.isEmpty)
-            if (event.getButton == guiCreateWorld.btnMoreOptions)
+            if (event.getButton == guiCreateWorld.btnMoreOptions) {
               guiCreateWorld.selectedIndex = DimensionalLayersWorldType.getId
+              guiCreateWorld.worldSeed = new Random().nextLong.toString
+            }
 
         case _ =>
       }
