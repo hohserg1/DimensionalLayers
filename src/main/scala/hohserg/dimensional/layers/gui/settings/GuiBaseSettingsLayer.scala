@@ -26,9 +26,10 @@ abstract class GuiBaseSettingsLayer(parent: GuiSetupDimensionalLayersPreset, lay
   override def initGui(): Unit = {
     super.initGui()
 
-    addButton(new GuiClickableButton(0, width - 100, height - 30, 90, 20, "Cancel")(back))
+    // addButton(new GuiClickableButton(0, width - 80 - 10, 10, 80, 20, "Cancel")(back))
+    addButton(new GuiClickableButton(0, width - 80 - 10 - 80 - 10, height - 30, 80, 20, "Cancel")(back))
 
-    doneButton = addButton(new GuiClickableButton(1, width - 100, 10, 90, 20, "Done")(done) {
+    doneButton = addButton(new GuiClickableButton(1, width - 80 - 10, height - 30, 80, 20, "Done")(done) {
       enabled = hasChanges
     })
   }
