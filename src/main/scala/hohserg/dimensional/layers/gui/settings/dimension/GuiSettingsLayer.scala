@@ -71,7 +71,7 @@ class GuiSettingsLayer(parent: GuiSetupDimensionalLayersPreset, index: Int, laye
       guiFakeCreateWorld.chunkProviderSettingsJson = ""
     }))
 
-    worldTypeCustomizationButton = addButton(new GuiClickableButton(6, width - 150 - 10, height / 2 + 20 + 1, 150, 20, I18n.format("selectWorld.customizeType"))(() => {
+    worldTypeCustomizationButton = addButton(new GuiClickableButton(6, width - 150 - 10, height / 2 - 5 + 20 + 1, 150, 20, I18n.format("selectWorld.customizeType"))(() => {
       currentWorldType.onCustomizeButton(mc, guiFakeCreateWorld)
     }) {
       visible = currentWorldType.isCustomizable
