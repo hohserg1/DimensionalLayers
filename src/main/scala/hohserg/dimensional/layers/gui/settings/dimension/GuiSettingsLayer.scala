@@ -19,6 +19,12 @@ object GuiSettingsLayer {
   val gridCellSize = 13
   val gridLeft = DimensionClientUtils.width + 10 * 2 + 70
 
+  lazy val possibleWorldTypes =
+    WorldType.WORLD_TYPES
+      .filter(_ != null)
+      .filter(_.canBeCreated)
+      .filter(_ != DimensionalLayersWorldType)
+
 }
 
 class GuiSettingsLayer(parent: GuiSetupDimensionalLayersPreset, index: Int, layer: DimensionLayerSpec) extends GuiBaseSettingsLayer(parent, layer, index) {
@@ -44,7 +50,7 @@ class GuiSettingsLayer(parent: GuiSetupDimensionalLayersPreset, index: Int, laye
   var bottomOffsetField: GuiOffsetField = _
   var worldTypeButton: GuiClickableButton = _
   var worldTypeCustomizationButton: GuiClickableButton = _
-  private var worldTypeIndex = WorldType.WORLD_TYPES.indexOf(layer.worldType)
+  private var worldTypeIndex = possibleWorldTypes.indexOf(layer.worldType)
   private val guiFakeCreateWorld = new GuiFakeCreateWorld(this, layer.worldTypePreset)
 
   override def initGui(): Unit = {
@@ -56,11 +62,8 @@ class GuiSettingsLayer(parent: GuiSetupDimensionalLayersPreset, index: Int, laye
     topOffsetField = new GuiOffsetField(3, gridTop, topOffset, true)
     bottomOffsetField = new GuiOffsetField(4, gridTop, bottomOffset, false)
 
-    worldTypeButton = addButton(new GuiClickableButton(5, width - 150 - 10, height / 2 - 5, 150, 20, makeWorldTypeLabel(layer.worldType))(() => {
-      var worldType = nextWorldType()
-      if (worldType == DimensionalLayersWorldType) {
-        worldType = nextWorldType()
-      }
+    worldTypeButton = addButton(new GuiClickableButton(5, width - 150 - 10, height / 2 - 5, 150, 20, makeWorldTypeLabel(currentWorldType))(() => {
+      val worldType = nextWorldType()
 
       worldTypeButton.displayString = makeWorldTypeLabel(worldType)
       markChanged()
@@ -77,14 +80,14 @@ class GuiSettingsLayer(parent: GuiSetupDimensionalLayersPreset, index: Int, laye
 
   private def nextWorldType() = {
     worldTypeIndex += 1
-    if (worldTypeIndex >= WorldType.WORLD_TYPES.length || currentWorldType == null) {
+    if (worldTypeIndex >= possibleWorldTypes.length)
       worldTypeIndex = 0
-    }
+
     currentWorldType
   }
 
   private def currentWorldType = {
-    WorldType.WORLD_TYPES(worldTypeIndex)
+    possibleWorldTypes(worldTypeIndex)
   }
 
   def makeWorldTypeLabel(worldType: WorldType): String =
