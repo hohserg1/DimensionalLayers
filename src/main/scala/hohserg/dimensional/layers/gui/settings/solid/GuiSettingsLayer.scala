@@ -37,7 +37,7 @@ class GuiSettingsLayer(parent: GuiSetupDimensionalLayersPreset, layer: SolidLaye
     if (currentBlockState != Blocks.AIR.getDefaultState)
       blocksList.select(GuiBlocksList.DrawableBlock(currentBlockState.getBlock))
 
-    heightField = new GuiNumericField(2, rightPaneMinX + fontRenderer.getStringWidth("height:") + 3, 10, 2, layerHeight, _.toInt)
+    heightField = new GuiNumericField(2, rightPaneMinX + fontRenderer.getStringWidth("height:") + 3, doneButton.y + doneButton.height + 10, 2, layerHeight, _.toInt)
   }
 
   override def drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float): Unit = {
