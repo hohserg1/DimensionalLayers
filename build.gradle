@@ -45,7 +45,7 @@ minecraft {
             workingDirectory project.file('run')
             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
             property 'forge.logging.console.level', 'debug'
-            property 'fml.coreMods.load', 'hohserg.dimensional.layers.DimensionalLayersCoreMod'
+            property 'fml.coreMods.load', 'hohserg.dimensional.layers.asm.DimensionalLayersCoreMod'
             //property 'mixin.env.remapRefMap', 'true'
             //property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
         }
@@ -94,7 +94,7 @@ jar {
                 "Implementation-Version"     : "${project.version}",
                 "Implementation-Vendor"      : "hohserg",
                 "Implementation-Timestamp"   : new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-                "FMLCorePlugin"              : "hohserg.dimensional.layers.DimensionalLayersCoreMod",
+                "FMLCorePlugin"              : "hohserg.dimensional.layers.asm.DimensionalLayersCoreMod",
                 "FMLCorePluginContainsFMLMod": "true",
                 'FMLAT'                      : 'dimensional_layers_at.cfg'
         ])
