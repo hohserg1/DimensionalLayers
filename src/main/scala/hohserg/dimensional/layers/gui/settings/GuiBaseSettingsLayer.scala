@@ -27,9 +27,9 @@ abstract class GuiBaseSettingsLayer(parent: GuiSetupDimensionalLayersPreset, lay
     super.initGui()
 
     // addButton(new GuiClickableButton(0, width - 80 - 10, 10, 80, 20, "Cancel")(back))
-    addButton(new GuiClickableButton(0, width - 80 - 10, height - 30, 80, 20, "Cancel")(back))
+    addButton(new GuiClickableButton(0, width - 80 - 10 - 80 - 10, height - 30, 80, 20, "Cancel")(back))
 
-    doneButton = addButton(new GuiClickableButton(1, width - 80 - 10, 10, 80, 20, "Done")(done) {
+    doneButton = addButton(new GuiClickableButton(1, width - 80 - 10, height - 30, 80, 20, "Done")(done) {
       enabled = hasChanges
     })
   }
