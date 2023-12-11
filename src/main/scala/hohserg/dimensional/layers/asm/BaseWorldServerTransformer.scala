@@ -12,9 +12,11 @@ class BaseWorldServerTransformer extends IClassTransformer {
     if (basicClass == null)
       return null
 
-    if (name == "hohserg.dimensional.layers.worldgen.proxy.BaseWorldServer") {
+    if (transformedName == "hohserg.dimensional.layers.worldgen.proxy.BaseWorldServer") {
+      println("transforming BaseWorldServer class")
       processClass(basicClass, transformBaseWorldServer)
-    } else if (name == "net.minecraft.world.WorldServer") {
+    } else if (transformedName == "net.minecraft.world.WorldServer") {
+      println("transforming WorldServer class")
       processClass(basicClass, transformWorldServer)
     } else
       basicClass
