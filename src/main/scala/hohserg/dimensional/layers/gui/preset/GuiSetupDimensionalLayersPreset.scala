@@ -33,7 +33,11 @@ class GuiSetupDimensionalLayersPreset(parent: GuiCreateWorld) extends GuiBase(pa
     addButton(new GuiClickableButton(4, width - 110 - 10, height - 30, 110, 20, "Import preset")(show(new GuiImportPreset(_))))
     addButton(new GuiClickableButton(5, width - 110 - 10, height - 30 - 20 - 1, 110, 20, "Export preset")(GuiImportPreset.export(this)))
 
-    layersList = new GuiLayersList(this, width - 200, height, if (layersList == null) parent.chunkProviderSettingsJson else layersList.toSettings)
+    initFromJson(if (layersList == null) parent.chunkProviderSettingsJson else layersList.toSettings)
+  }
+
+  def initFromJson(preset: String): Unit = {
+    layersList = new GuiLayersList(this, width - 200, height, preset)
   }
 
   override def drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float): Unit = {
