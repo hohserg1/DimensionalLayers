@@ -1,6 +1,7 @@
 package hohserg.dimensional.layers.gui.settings.dimension
 
 import hohserg.dimensional.layers.gui.GuiNumericField.NumberHolder
+import hohserg.dimensional.layers.gui.settings.dimension.GuiOffsetField._
 import hohserg.dimensional.layers.gui.settings.dimension.GuiSettingsLayer.{gridCellSize, gridLeft, texture}
 import hohserg.dimensional.layers.gui.{DrawableArea, GuiNumericField}
 import net.minecraft.client.Minecraft
@@ -12,17 +13,6 @@ import org.lwjgl.opengl.GL11
 import java.awt.Rectangle
 
 object GuiOffsetField {
-
-}
-
-class GuiOffsetField(id: Int, gridTop: Int, value: NumberHolder[Int], isTop: Boolean)
-                    (implicit fontRenderer: FontRenderer)
-  extends GuiNumericField[Int](id, gridLeft + 19, 0, 2, value, _.toInt, fontRenderer.FONT_HEIGHT)
-    with DrawableArea.Container {
-  implicit def self: DrawableArea.Container = this
-
-  setEnableBackgroundDrawing(false)
-
   val top = DrawableArea(
     new Rectangle(-80, -4, 138, 15),
     new Rectangle(53, 0, 138, 15),
@@ -34,6 +24,17 @@ class GuiOffsetField(id: Int, gridTop: Int, value: NumberHolder[Int], isTop: Boo
     new Rectangle(37, 32, 154, 15),
     new Rectangle(37, 48, 154, 15)
   )
+}
+
+class GuiOffsetField(id: Int, gridTop: Int, value: NumberHolder[Int], originalValue: Int, topCompanion: GuiOffsetField)
+                    (implicit fontRenderer: FontRenderer)
+  extends GuiNumericField[Int](id, gridLeft + 19, 0, 2, value, originalValue, _.toInt, fontRenderer.FONT_HEIGHT)
+    with DrawableArea.Container {
+  implicit def self: DrawableArea.Container = this
+
+  val isTop = topCompanion == null
+
+  setEnableBackgroundDrawing(false)
 
   val label = if (isTop) "top offset" else "bottom offset"
   val area = if (isTop) top else bottom
@@ -49,6 +50,10 @@ class GuiOffsetField(id: Int, gridTop: Int, value: NumberHolder[Int], isTop: Boo
 
   override def setText(textIn: String): Unit = {
     super.setText(textIn)
+    updateY()
+  }
+
+  private def updateY(): Unit = {
     y =
       if (isTop)
         gridTop + value.get * gridCellSize - 3
@@ -80,7 +85,7 @@ class GuiOffsetField(id: Int, gridTop: Int, value: NumberHolder[Int], isTop: Boo
   private var clickedY: Option[Int] = None
 
   override def mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int): Boolean = {
-    if (area.isHovering) {
+    if (area.isHovering && (isTop || !topCompanion.area.isHovering)) {
       clickedY = Some(mouseY)
       setFocused(false)
       true
@@ -88,7 +93,7 @@ class GuiOffsetField(id: Int, gridTop: Int, value: NumberHolder[Int], isTop: Boo
       false
   }
 
-  def mouseClickMove(mouseX: Int, mouseY: Int): Unit = {
+  override def mouseClickMove: Option[(Int, Int, Int) => Unit] = Some((_, mouseY, _) => {
     if (clickedY.isDefined) {
       val i =
         if (isTop)
@@ -97,12 +102,12 @@ class GuiOffsetField(id: Int, gridTop: Int, value: NumberHolder[Int], isTop: Boo
           -((mouseY + 7 + 3 - gridTop) / gridCellSize - 16)
       setText(i.toString)
     }
-  }
+  })
 
-  def mouseReleased(mouseX: Int, mouseY: Int, mouseButton: Int): Unit = {
+  override def mouseRelease: Option[(Int, Int, Int) => Unit] = Some((mouseX, mouseY, mouseButton) => {
     val yx = clickedY.map(_ - mouseY).getOrElse(0)
     if (yx < gridCellSize / 2)
       super.mouseClicked(mouseX, mouseY, mouseButton)
     clickedY = None
-  }
+  })
 }

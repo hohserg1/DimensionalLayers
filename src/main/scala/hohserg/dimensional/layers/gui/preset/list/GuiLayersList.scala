@@ -2,24 +2,18 @@ package hohserg.dimensional.layers.gui.preset.list
 
 import hohserg.dimensional.layers.DimensionalLayersPreset
 import hohserg.dimensional.layers.DimensionalLayersPreset.{DimensionLayerSpec, SolidLayerSpec}
-import hohserg.dimensional.layers.gui.DimensionClientUtils
 import hohserg.dimensional.layers.gui.mixin.AccessorGuiScrollingList
 import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
+import hohserg.dimensional.layers.gui.{DimensionClientUtils, GuiScrollingListElement}
 import net.minecraft.block.state.IBlockState
-import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.world.DimensionType
 import net.minecraft.world.biome.Biome
-import net.minecraftforge.fml.client.GuiScrollingList
 
 import scala.collection.mutable
 
 class GuiLayersList(val parent: GuiSetupDimensionalLayersPreset, val width: Int, height: Int, settings: String)
-  extends GuiScrollingList(
-    Minecraft.getMinecraft,
-    width, height, 10, height - 10, 10, DimensionClientUtils.width + 4,
-    Minecraft.getMinecraft.displayWidth, Minecraft.getMinecraft.displayHeight
-  ) {
+  extends GuiScrollingListElement(10, 10, width, height, DimensionClientUtils.width + 4) {
   val entries: mutable.Buffer[GuiLayerEntry] =
     DimensionalLayersPreset(settings).layers
       .map {

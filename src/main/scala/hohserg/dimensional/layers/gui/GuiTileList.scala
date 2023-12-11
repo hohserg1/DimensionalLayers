@@ -7,7 +7,6 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.client.renderer.{GlStateManager, Tessellator}
-import net.minecraftforge.fml.client.GuiScrollingList
 import org.lwjgl.opengl.GL11
 
 
@@ -121,11 +120,7 @@ object GuiTileList {
 
 abstract class GuiTileList[A <: Drawable](val parent: GuiScreen with SelectHandler[A], availableWidth: Int, height: Int, itemWidth: Int, linesCache: LoadingCache[Integer, Seq[GuiTileLine[A]]])
                                          (val fitHorizontal: Int = (availableWidth - 6) / slotWidth(itemWidth))
-  extends GuiScrollingList(
-    Minecraft.getMinecraft,
-    fitHorizontal * slotWidth(itemWidth) + 6, height, 10, height - 10, 10, slotWidth(itemWidth),
-    Minecraft.getMinecraft.displayWidth, Minecraft.getMinecraft.displayHeight
-  ) {
+  extends GuiScrollingListElement(10, 10, fitHorizontal * slotWidth(itemWidth) + 6, height, slotWidth(itemWidth)) {
   val lines = linesCache.get(fitHorizontal)
 
   var selection: Option[(Int, Int, A)] = None

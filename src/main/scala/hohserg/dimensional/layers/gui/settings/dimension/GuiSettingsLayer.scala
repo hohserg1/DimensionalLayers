@@ -2,10 +2,11 @@ package hohserg.dimensional.layers.gui.settings.dimension
 
 import hohserg.dimensional.layers.DimensionalLayersPreset.DimensionLayerSpec
 import hohserg.dimensional.layers.gui.GuiNumericField.NumberHolder
+import hohserg.dimensional.layers.gui.RelativeCoord.{alignLeft, alignTop}
 import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
 import hohserg.dimensional.layers.gui.settings.GuiBaseSettingsLayer
 import hohserg.dimensional.layers.gui.settings.dimension.GuiSettingsLayer._
-import hohserg.dimensional.layers.gui.{DimensionClientUtils, GuiClickableButton}
+import hohserg.dimensional.layers.gui.{DimensionClientUtils, GuiClickableButton, GuiTextFieldElement}
 import hohserg.dimensional.layers.{DimensionalLayersPreset, DimensionalLayersWorldType, Main, clamp}
 import net.minecraft.client.gui.GuiTextField
 import net.minecraft.client.resources.I18n
@@ -56,11 +57,17 @@ class GuiSettingsLayer(parent: GuiSetupDimensionalLayersPreset, index: Int, laye
   override def initGui(): Unit = {
     super.initGui()
 
-    seedOverrideField = new GuiTextField(2, fontRenderer, width - 180, height / 2 - 20 - 20, 170, 20)
-    layer.seedOverride.map(_.toString).foreach(seedOverrideField.setText)
+    addFreeDrawable(() => DimensionClientUtils.drawLogo(layer.dimensionType, 10, 10))
+    addFreeDrawable(() => drawLayerGrid())
 
-    topOffsetField = new GuiOffsetField(3, gridTop, topOffset, true)
-    bottomOffsetField = new GuiOffsetField(4, gridTop, bottomOffset, false)
+    seedOverrideField = addElement(new GuiTextFieldElement(2, width - 180, height / 2 - 20 - 20, 170, 20, layer.seedOverride.map(_.toString).getOrElse("")))
+    seedOverrideField.setMaxStringLength(32)
+
+    addCenteredLabel("seed override:", alignLeft(seedOverrideField.x + seedOverrideField.width / 2), alignTop(seedOverrideField.y - 13), 0xffa0a0a0)
+    addLabel(DimensionClientUtils.getDisplayName(layer.dimensionType), alignLeft(10), alignTop(DimensionClientUtils.width + 10 * 2), 0xffffffff)
+
+    topOffsetField = addElement(new GuiOffsetField(3, gridTop, topOffset, layer.topOffset, null))
+    bottomOffsetField = addElement(new GuiOffsetField(4, gridTop, bottomOffset, layer.bottomOffset, topOffsetField))
 
     worldTypeButton = addButton(new GuiClickableButton(5, width - 150 - 10, height / 2 - 5, 150, 20, makeWorldTypeLabel(currentWorldType))(() => {
       val worldType = nextWorldType()
@@ -96,23 +103,9 @@ class GuiSettingsLayer(parent: GuiSetupDimensionalLayersPreset, index: Int, laye
   def toLongSeed(str: String): Long =
     Try(str.toLong).filter(_ != 0).getOrElse(str.hashCode.toLong)
 
-  override def drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float): Unit = {
-    drawDefaultBackground()
-    DimensionClientUtils.drawLogo(layer.dimensionType, 10, 10)
-    drawLayerGrid(mouseX, mouseY)
-    super.drawScreen(mouseX, mouseY, partialTicks)
-
-    drawCenteredString(fontRenderer, "seed override:", seedOverrideField.x + seedOverrideField.width / 2, seedOverrideField.y - 13, 0xffa0a0a0)
-    drawString(fontRenderer, DimensionClientUtils.getDisplayName(layer.dimensionType), 10, DimensionClientUtils.width + 10 * 2, 0xffffffff)
-
-    seedOverrideField.drawTextBox()
-    topOffsetField.drawTextBox()
-    bottomOffsetField.drawTextBox()
-  }
-
   def gridTop = height / 2 - 209 / 2
 
-  def drawLayerGrid(mouseX: Int, mouseY: Int): Unit = {
+  def drawLayerGrid(): Unit = {
     val firstEnabled = 0 + topOffset.get
     val lastEnabled = 15 - bottomOffset.get
 
@@ -140,36 +133,5 @@ class GuiSettingsLayer(parent: GuiSetupDimensionalLayersPreset, index: Int, laye
 
   def drawEnabledCell(i: Int): Unit = {
     drawTexturedModalRect(gridLeft + 1, gridTop + i * gridCellSize + 1, 15, 1, 12, 12)
-  }
-
-  override def mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int): Unit = {
-    super.mouseClicked(mouseX, mouseY, mouseButton)
-    seedOverrideField.mouseClicked(mouseX, mouseY, mouseButton)
-
-    if (!topOffsetField.mouseClicked(mouseX, mouseY, mouseButton))
-      bottomOffsetField.mouseClicked(mouseX, mouseY, mouseButton)
-  }
-
-  override def mouseClickMove(mouseX: Int, mouseY: Int, clickedMouseButton: Int, timeSinceLastClick: Long): Unit = {
-    super.mouseClickMove(mouseX, mouseY, clickedMouseButton, timeSinceLastClick)
-    topOffsetField.mouseClickMove(mouseX, mouseY)
-    bottomOffsetField.mouseClickMove(mouseX, mouseY)
-  }
-
-  override def mouseReleased(mouseX: Int, mouseY: Int, mouseButton: Int): Unit = {
-    super.mouseReleased(mouseX, mouseY, mouseButton)
-    topOffsetField.mouseReleased(mouseX, mouseY, mouseButton)
-    bottomOffsetField.mouseReleased(mouseX, mouseY, mouseButton)
-    if (topOffset.get != layer.topOffset || bottomOffset.get != layer.bottomOffset)
-      markChanged()
-  }
-
-  override def keyTyped(typedChar: Char, keyCode: Int): Unit = {
-    super.keyTyped(typedChar, keyCode)
-    seedOverrideField.textboxKeyTyped(typedChar, keyCode)
-    topOffsetField.textboxKeyTyped(typedChar, keyCode)
-    bottomOffsetField.textboxKeyTyped(typedChar, keyCode)
-    if (layer.seedOverride.isEmpty && seedOverrideField.getText.nonEmpty || layer.seedOverride.nonEmpty && layer.seedOverride.get.toString != seedOverrideField.getText)
-      markChanged()
   }
 }

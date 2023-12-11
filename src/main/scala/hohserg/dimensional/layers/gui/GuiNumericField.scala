@@ -2,7 +2,7 @@ package hohserg.dimensional.layers.gui
 
 import com.google.common.base.Predicate
 import hohserg.dimensional.layers.gui.GuiNumericField.NumberHolder
-import net.minecraft.client.gui.{FontRenderer, GuiTextField}
+import net.minecraft.client.gui.FontRenderer
 
 import scala.util.Try
 
@@ -16,13 +16,9 @@ object GuiNumericField {
   }
 }
 
-class GuiNumericField[N: Numeric](id: Int, x: Int, y: Int, maxLen: Int, value: NumberHolder[N], fromString: String => N, h: Int = 18)
+class GuiNumericField[N: Numeric](id: Int, x: Int, y: Int, maxLen: Int, value: NumberHolder[N], originalValue: N, fromString: String => N, h: Int = 18)
                                  (implicit fontRenderer: FontRenderer)
-  extends GuiTextField(id, fontRenderer, x, y, maxLen * fontRenderer.getCharWidth('0') + 8, h) {
-
-  setText(value.get.toString)
-
-  // Try(fromString(str)).map(clamp(_, minValue, maxValue)).getOrElse(default)
+  extends GuiTextFieldElement(id, x, y, maxLen * fontRenderer.getCharWidth('0') + 8, h, originalValue.toString) {
 
   setMaxStringLength(maxLen)
 

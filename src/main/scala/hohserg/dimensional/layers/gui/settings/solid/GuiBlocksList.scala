@@ -39,5 +39,6 @@ class GuiBlocksList(parent: GuiSettingsLayer, availableWidth: Int, height: Int) 
   override def drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float): Unit = {
     RenderHelper.enableGUIStandardItemLighting()
     super.drawScreen(mouseX, mouseY, partialTicks)
+    RenderHelper.disableStandardItemLighting()
   }
 }
