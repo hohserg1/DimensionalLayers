@@ -20,7 +20,7 @@ class GuiImportPreset(parent: GuiSetupDimensionalLayersPreset) extends GuiBase(p
     super.initGui()
     val prevTest = if (textArea == null) parent.layersList.toSettings else textArea.getText
 
-    textArea = new GuiMultiLineTextField(0, 10, 10 + 15, width - 10 - 10 - 80 - 10, height - 10 - 15 - 10, prevTest)
+    textArea = new GuiMultiLineTextField(0, fontRenderer, 10, 10 + 15, width - 10 - 10 - 80 - 10, height - 10 - 15 - 10)
     Keyboard.enableRepeatEvents(true)
     textArea.setMaxStringLength(10000)
     textArea.setText(prevTest)
