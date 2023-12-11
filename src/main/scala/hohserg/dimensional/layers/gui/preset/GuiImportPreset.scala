@@ -10,9 +10,9 @@ import scala.util.Try
 class GuiImportPreset(parent: GuiSetupDimensionalLayersPreset) extends GuiBase(parent) {
   var textArea: GuiMultiLineTextField = _
 
-  override def done(): Unit = {
+  def done(): Unit = {
     parent.initFromJson(textArea.getText)
-    super.done()
+    back()
   }
 
 
@@ -30,9 +30,9 @@ class GuiImportPreset(parent: GuiSetupDimensionalLayersPreset) extends GuiBase(p
 
     addButton(new GuiClickableButton(1, width - 80 - 10, height / 2 - 10, 80, 20, "Beautify")(beautify))
 
-    addButton(new GuiClickableButton(0, width - 100, height - 30, 90, 20, "Cancel")(back))
+    addButton(new GuiClickableButton(0, width - 80 - 10, height - 30, 80, 20, "Cancel")(back))
 
-    addButton(new GuiClickableButton(1, width - 100, 10, 90, 20, "Done")(done))
+    addButton(new GuiClickableButton(1, width - 80 - 10, 10, 80, 20, "Done")(done))
   }
 
   override def onGuiClosed(): Unit = {
@@ -41,6 +41,8 @@ class GuiImportPreset(parent: GuiSetupDimensionalLayersPreset) extends GuiBase(p
 
 
   override def drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float): Unit = {
+    drawDefaultBackground()
+    super.drawScreen(mouseX, mouseY, partialTicks)
     drawString(fontRenderer, "Enter preset json:", 10, 10, 0xffffffff)
     textArea.drawTextBox()
   }
@@ -66,5 +68,6 @@ class GuiImportPreset(parent: GuiSetupDimensionalLayersPreset) extends GuiBase(p
 object GuiImportPreset {
   def export(parent: GuiSetupDimensionalLayersPreset): () => Unit = () => {
     GuiScreen.setClipboardString(parent.layersList.toSettings)
+    parent.exportButton.displayString = "Copied!"
   }
 }

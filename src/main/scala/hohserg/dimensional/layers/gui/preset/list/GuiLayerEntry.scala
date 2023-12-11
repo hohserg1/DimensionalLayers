@@ -107,6 +107,7 @@ trait GuiLayerEntry extends DrawableArea.Container {
     checkMoveDownClicked(index, mouseX, mouseY)
     checkRemoveClicked(index, mouseX, mouseY)
     checkSettingsClicked(index, mouseX, mouseY)
+    parent.parent.exportButton.displayString = "Export preset"
   }
 
   private def checkMoveUpClicked(index: Int, mouseX: Int, mouseY: Int): Unit = {
