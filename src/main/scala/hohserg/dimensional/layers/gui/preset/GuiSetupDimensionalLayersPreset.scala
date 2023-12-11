@@ -30,6 +30,9 @@ class GuiSetupDimensionalLayersPreset(parent: GuiCreateWorld) extends GuiBase(pa
 
     addButton(new GuiClickableButton(3, width - 110 - 10, 30, 110, 20, "Add solid layer")(show(new solid.GuiAddLayer(_))))
 
+    addButton(new GuiClickableButton(4, width - 110 - 10, height - 30, 110, 20, "Import preset")(show(new GuiImportPreset(_))))
+    addButton(new GuiClickableButton(5, width - 110 - 10, height - 30 - 20 - 1, 110, 20, "Export preset")(GuiImportPreset.export(this)))
+
     layersList = new GuiLayersList(this, width - 200, height, if (layersList == null) parent.chunkProviderSettingsJson else layersList.toSettings)
   }
 
