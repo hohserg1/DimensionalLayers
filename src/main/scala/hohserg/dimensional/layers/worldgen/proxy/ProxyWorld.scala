@@ -1,20 +1,22 @@
 package hohserg.dimensional.layers.worldgen.proxy
 
+import com.google.common.collect.ImmutableList
 import hohserg.dimensional.layers.worldgen.DimensionLayer
 import io.github.opencubicchunks.cubicchunks.api.world.IMinMaxHeight
 import net.minecraft.block.Block
 import net.minecraft.block.state.IBlockState
-import net.minecraft.entity.Entity
+import net.minecraft.entity.{Entity, EnumCreatureType}
 import net.minecraft.profiler.Profiler
 import net.minecraft.tileentity.{TileEntity, TileEntityLockableLoot}
-import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.BlockPos
+import net.minecraft.util.{EnumFacing, WeightedRandom}
 import net.minecraft.world.biome.Biome
 import net.minecraft.world.chunk.{Chunk, IChunkProvider}
 import net.minecraft.world.storage.WorldInfo
 import net.minecraft.world.storage.loot.LootTableManager
 import net.minecraft.world.{World, WorldLens, WorldSettings}
 
+import java.util
 import scala.collection.mutable
 
 object ProxyWorld {
@@ -155,5 +157,24 @@ class ProxyWorld private(original: World, val layer: DimensionLayer, actualWorld
     entityIn.world = original
     //original.spawnEntity(entityIn)
     false
+  }
+
+  override def getSpawnListEntryForTypeAt(creatureType: EnumCreatureType, pos: BlockPos): Biome.SpawnListEntry = {
+    val list = getPossibleCreatures(creatureType, pos)
+    if (!list.isEmpty)
+      WeightedRandom.getRandomItem(this.rand, list)
+    else
+      null
+  }
+
+  override def canCreatureTypeSpawnHere(creatureType: EnumCreatureType, spawnListEntry: Biome.SpawnListEntry, pos: BlockPos): Boolean =
+    getPossibleCreatures(creatureType, pos).contains(spawnListEntry)
+
+  private def getPossibleCreatures(creatureType: EnumCreatureType, pos: BlockPos): util.List[Biome.SpawnListEntry] = {
+    val localPos = pos match {
+      case _: ShiftedBlockPos => pos.down(layer.startBlockY)
+      case _ => pos
+    }
+    Option(layer.vanillaGenerator.getPossibleCreatures(creatureType, localPos)).getOrElse(ImmutableList.of())
   }
 }
