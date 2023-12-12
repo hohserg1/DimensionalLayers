@@ -5,7 +5,7 @@ import hohserg.dimensional.layers.worldgen.DimensionLayer
 import io.github.opencubicchunks.cubicchunks.api.world.IMinMaxHeight
 import net.minecraft.block.Block
 import net.minecraft.block.state.IBlockState
-import net.minecraft.entity.{Entity, EnumCreatureType}
+import net.minecraft.entity.{Entity, EntityList, EnumCreatureType}
 import net.minecraft.profiler.Profiler
 import net.minecraft.tileentity.{TileEntity, TileEntityLockableLoot}
 import net.minecraft.util.math.BlockPos
@@ -155,7 +155,9 @@ class ProxyWorld private(original: World, val layer: DimensionLayer, actualWorld
   override def spawnEntity(entityIn: Entity): Boolean = {
     entityIn.posY += layer.startBlockY
     entityIn.world = original
-    //original.spawnEntity(entityIn)
+    val newEntity = EntityList.newEntity(entityIn.getClass, original)
+    newEntity.deserializeNBT(entityIn.serializeNBT())
+    original.spawnEntity(newEntity)
     false
   }
 
