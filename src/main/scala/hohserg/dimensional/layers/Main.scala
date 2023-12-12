@@ -15,6 +15,9 @@ import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 object Main {
   final val modid = "dimensional_layers"
 
+  //-XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=./dump/oom.hprof
+  //-Dlegacy.debugClassLoading=true -Dlegacy.debugClassLoadingSave=true
+
   @EventHandler
   def preInit(e: FMLPreInitializationEvent): Unit = {
     DimensionalLayersWorldType.getName
