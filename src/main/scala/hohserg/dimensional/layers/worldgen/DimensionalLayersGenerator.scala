@@ -104,6 +104,7 @@ class DimensionalLayersGenerator(world: World) extends ICubeGenerator {
   }
 
   private def generateLayerFeatures(cubeX: Int, cubeY: Int, cubeZ: Int, cube: ICube, layer: DimensionLayer): Unit = {
+    //todo: wait for all terrain of column generated before population
     markColumnPopulated(cubeX, cubeZ, layer)
 
     try {

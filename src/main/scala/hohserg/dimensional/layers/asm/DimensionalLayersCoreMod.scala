@@ -1,4 +1,4 @@
-package hohserg.dimensional.layers
+package hohserg.dimensional.layers.asm
 
 import net.minecraftforge.common.ForgeVersion
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin
@@ -13,7 +13,7 @@ class DimensionalLayersCoreMod extends IFMLLoadingPlugin {
     Mixins.addConfiguration("dimensional_layers.mixins.proxy.json")
     Mixins.addConfiguration("dimensional_layers.mixins.gui.json")
 
-    Array()
+    Array("hohserg.dimensional.layers.asm.BaseWorldServerTransformer")
   }
 
   override def getModContainerClass: String = null

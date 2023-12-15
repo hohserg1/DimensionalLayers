@@ -1,19 +1,22 @@
 package hohserg.dimensional.layers.worldgen.proxy
 
+import com.google.common.collect.ImmutableList
 import hohserg.dimensional.layers.worldgen.DimensionLayer
 import io.github.opencubicchunks.cubicchunks.api.world.IMinMaxHeight
 import net.minecraft.block.Block
 import net.minecraft.block.state.IBlockState
+import net.minecraft.entity.{Entity, EntityList, EnumCreatureType}
 import net.minecraft.profiler.Profiler
 import net.minecraft.tileentity.{TileEntity, TileEntityLockableLoot}
-import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.BlockPos
+import net.minecraft.util.{EnumFacing, WeightedRandom}
 import net.minecraft.world.biome.Biome
 import net.minecraft.world.chunk.{Chunk, IChunkProvider}
 import net.minecraft.world.storage.WorldInfo
 import net.minecraft.world.storage.loot.LootTableManager
 import net.minecraft.world.{World, WorldLens, WorldSettings}
 
+import java.util
 import scala.collection.mutable
 
 object ProxyWorld {
@@ -35,12 +38,11 @@ object ProxyWorld {
 
 
 class ProxyWorld private(original: World, val layer: DimensionLayer, actualWorldInfo: WorldInfo)
-  extends World(
+  extends BaseWorldServer(
     new FakeSaveHandler(actualWorldInfo),
     actualWorldInfo,
     layer.spec.dimensionType.createDimension(),
-    new Profiler,
-    false
+    new Profiler
   ) with FakeCubicWorld with IMinMaxHeight {
 
   provider.setWorld(this)
@@ -131,8 +133,12 @@ class ProxyWorld private(original: World, val layer: DimensionLayer, actualWorld
         .getOrElse(0)
     )
 
-  override def getBiome(pos: BlockPos): Biome =
-    original.getBiome(layer.shift(pos).clamp)
+  override def getBiome(pos: BlockPos): Biome = {
+    val r = original.getBiome(layer.shift(pos).clamp)
+    if (r == null)
+      println("bruh biome null")
+    r
+  }
 
   override def getBiomeForCoordsBody(pos: BlockPos): Biome =
     original.getBiomeForCoordsBody(layer.shift(pos).clamp)
@@ -145,4 +151,32 @@ class ProxyWorld private(original: World, val layer: DimensionLayer, actualWorld
 
   override def getChunksLowestHorizon(x: Int, z: Int): Int =
     original.getChunksLowestHorizon(x, z)
+
+  override def spawnEntity(entityIn: Entity): Boolean = {
+    entityIn.posY += layer.startBlockY
+    entityIn.world = original
+    val newEntity = EntityList.newEntity(entityIn.getClass, original)
+    newEntity.deserializeNBT(entityIn.serializeNBT())
+    original.spawnEntity(newEntity)
+    false
+  }
+
+  override def getSpawnListEntryForTypeAt(creatureType: EnumCreatureType, pos: BlockPos): Biome.SpawnListEntry = {
+    val list = getPossibleCreatures(creatureType, pos)
+    if (!list.isEmpty)
+      WeightedRandom.getRandomItem(this.rand, list)
+    else
+      null
+  }
+
+  override def canCreatureTypeSpawnHere(creatureType: EnumCreatureType, spawnListEntry: Biome.SpawnListEntry, pos: BlockPos): Boolean =
+    getPossibleCreatures(creatureType, pos).contains(spawnListEntry)
+
+  private def getPossibleCreatures(creatureType: EnumCreatureType, pos: BlockPos): util.List[Biome.SpawnListEntry] = {
+    val localPos = pos match {
+      case _: ShiftedBlockPos => pos.down(layer.startBlockY)
+      case _ => pos
+    }
+    Option(layer.vanillaGenerator.getPossibleCreatures(creatureType, localPos)).getOrElse(ImmutableList.of())
+  }
 }
