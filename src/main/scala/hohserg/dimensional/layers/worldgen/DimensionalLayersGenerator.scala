@@ -8,6 +8,7 @@ import io.github.opencubicchunks.cubicchunks.api.worldgen.{CubePrimer, ICubeGene
 import io.github.opencubicchunks.cubicchunks.core.CubicChunks
 import io.github.opencubicchunks.cubicchunks.core.asm.mixin.ICubicWorldInternal
 import io.github.opencubicchunks.cubicchunks.core.asm.mixin.core.common.IGameRegistry
+import io.github.opencubicchunks.cubicchunks.core.worldgen.WorldgenHangWatchdog
 import net.minecraft.entity.EnumCreatureType
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
@@ -32,14 +33,13 @@ class DimensionalLayersGenerator(world: World) extends ICubeGenerator {
 
   private def generateWithWatchdog[BlockStateAcceptor](generator: (Int, Int, Int, BlockStateAcceptor, DimensionLayer) => Unit, cubeX: Int, cubeY: Int, cubeZ: Int, target: BlockStateAcceptor, layer: DimensionLayer): Unit = {
     try {
-      //WorldgenHangWatchdog.startWorldGen()
+      WorldgenHangWatchdog.startWorldGen()
       generator(cubeX, cubeY, cubeZ, target, layer)
     } catch {
       case e: Throwable =>
-        println("DimensionalLayersGenerator2#generateWithWatchdog error")
-        e.printStackTrace()
+        CubicChunks.LOGGER.error("DimensionalLayersGenerator2#generateWithWatchdog error", e)
     } finally {
-      //WorldgenHangWatchdog.endWorldGen()
+      WorldgenHangWatchdog.endWorldGen()
     }
   }
 
