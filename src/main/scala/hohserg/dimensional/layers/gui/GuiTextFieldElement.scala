@@ -8,14 +8,17 @@ import scala.util.Try
 
 class GuiTextFieldElement[A](x: Int, y: Int, w: Int, h: Int, value: ValueHolder[A], fromString: String => A)
                             (implicit gui: GuiBase)
-  extends GuiTextField(gui.nextElementId(), gui.fr, x, y, w, h) {
+  extends GuiTextField(gui.nextElementId(), gui.fr, x, y, w, h)
+    with GuiEditableElement[A] {
 
-  setText(value.get.toString)
-
+  value.initControlElement(this)
 
   setValidator(new Predicate[String] {
     override def apply(input: String): Boolean = input.isEmpty || Try(fromString(input)).isSuccess
   })
+
+  override def updateVisual(v: A): Unit =
+    super.setText(v.toString)
 
   override def setText(textIn: String): Unit = {
     Try(fromString(textIn)).foreach { nv =>

@@ -1,16 +1,19 @@
 package hohserg.dimensional.layers.gui.preset
 
 import com.google.gson.{GsonBuilder, JsonParser}
-import hohserg.dimensional.layers.gui.{GuiBase, GuiClickableButton}
+import hohserg.dimensional.layers.gui.GuiBaseSettings.ValueHolder
+import hohserg.dimensional.layers.gui.{GuiBaseSettings, GuiClickableButton}
 import net.minecraft.client.gui.GuiScreen
 import org.lwjgl.input.Keyboard
 
 import scala.util.Try
 
-class GuiImportPreset(parent: GuiSetupDimensionalLayersPreset) extends GuiBase(parent) {
+class GuiImportPreset(parent: GuiSetupDimensionalLayersPreset) extends GuiBaseSettings(parent) {
+  val presetJson = new ValueHolder[String](parent.layersList.toSettings)
+
   var textArea: GuiMultiLineTextField = _
 
-  def done(): Unit = {
+  override def done(): Unit = {
     parent.initFromJson(textArea.getText)
     back()
   }
@@ -18,21 +21,15 @@ class GuiImportPreset(parent: GuiSetupDimensionalLayersPreset) extends GuiBase(p
 
   override def initGui(): Unit = {
     super.initGui()
-    val prevTest = if (textArea == null) parent.layersList.toSettings else textArea.getText
 
-    textArea = new GuiMultiLineTextField(0, fontRenderer, 10, 10 + 15, width - 10 - 10 - 80 - 10, height - 10 - 15 - 10)
+    textArea = new GuiMultiLineTextFieldElement(10, 10 + 15, width - 10 - 10 - 80 - 10, height - 10 - 15 - 10, presetJson)
     Keyboard.enableRepeatEvents(true)
     textArea.setMaxStringLength(10000)
-    textArea.setText(prevTest)
     textArea.setCanLoseFocus(false)
     textArea.setFocused(true)
     textArea.setEnableBackgroundDrawing(true)
 
     addButton(new GuiClickableButton(width - 80 - 10, height / 2 - 10, 80, 20, "Beautify")(beautify))
-
-    addButton(new GuiClickableButton(width - 80 - 10, height - 30, 80, 20, "Cancel")(back))
-
-    addButton(new GuiClickableButton(width - 80 - 10, 10, 80, 20, "Done")(done))
   }
 
   override def onGuiClosed(): Unit = {
@@ -59,9 +56,9 @@ class GuiImportPreset(parent: GuiSetupDimensionalLayersPreset) extends GuiBase(p
 
   def beautify(): Unit = {
     val gson = new GsonBuilder().setPrettyPrinting().create()
-    Try(new JsonParser().parse(textArea.getText))
+    Try(new JsonParser().parse(presetJson.get))
       .map(gson.toJson)
-      .foreach(textArea.setText)
+      .foreach(presetJson.set)
   }
 }
 

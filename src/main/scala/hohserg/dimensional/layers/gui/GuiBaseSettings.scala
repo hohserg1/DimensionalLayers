@@ -40,12 +40,22 @@ object GuiBaseSettings {
 
     gui.state += this
 
+    private var controlElement: GuiEditableElement[A] = _
+
+    def initControlElement(e: GuiEditableElement[A]): Unit = {
+      controlElement = e
+      controlElement.updateVisual(get)
+    }
+
     def get: A = value
 
     def set(v: A): Unit = {
       value = validate(v)
       hasChanges = value != init
       gui.onStateChanged()
+
+      if (controlElement != null)
+        controlElement.updateVisual(value)
     }
   }
 }

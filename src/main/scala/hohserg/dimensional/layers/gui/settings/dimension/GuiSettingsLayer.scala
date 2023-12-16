@@ -2,12 +2,11 @@ package hohserg.dimensional.layers.gui.settings.dimension
 
 import hohserg.dimensional.layers.DimensionalLayersPreset.DimensionLayerSpec
 import hohserg.dimensional.layers.gui.GuiBaseSettings.ValueHolder
+import hohserg.dimensional.layers.gui._
 import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
 import hohserg.dimensional.layers.gui.settings.GuiBaseSettingsLayer
 import hohserg.dimensional.layers.gui.settings.dimension.GuiSettingsLayer._
-import hohserg.dimensional.layers.gui.{DimensionClientUtils, GuiBaseSettings, GuiClickableButton, GuiTextFieldElement}
 import hohserg.dimensional.layers.{DimensionalLayersPreset, DimensionalLayersWorldType, Main, clamp}
-import net.minecraft.client.gui.GuiTextField
 import net.minecraft.client.resources.I18n
 import net.minecraft.util.ResourceLocation
 import net.minecraft.world.WorldType
@@ -55,7 +54,7 @@ class GuiSettingsLayer(parent: GuiSetupDimensionalLayersPreset, index: Int, laye
       worldTypePresetH.get
     )
 
-  var seedOverrideField: GuiTextField = _
+  var seedOverrideField: GuiTextFieldElement[String] = _
   var topOffsetField: GuiOffsetField = _
   var bottomOffsetField: GuiOffsetField = _
   var worldTypeButton: GuiClickableButton = _
@@ -71,13 +70,17 @@ class GuiSettingsLayer(parent: GuiSetupDimensionalLayersPreset, index: Int, laye
     topOffsetField = new GuiOffsetField(gridTop, topOffset, true)
     bottomOffsetField = new GuiOffsetField(gridTop, bottomOffset, false)
 
-    worldTypeButton = addButton(new GuiClickableButton(width - 150 - 10, height / 2 - 5, 150, 20, makeWorldTypeLabel(worldTypeH.getA))(() => {
-      val worldType = worldTypeH.next()
+    worldTypeButton = addButton(new GuiClickableButton(width - 150 - 10, height / 2 - 5, 150, 20, makeWorldTypeLabel(worldTypeH.getA))(worldTypeH.next)
+      with GuiEditableElement[Int] {
 
-      worldTypeButton.displayString = makeWorldTypeLabel(worldType)
-      worldTypeCustomizationButton.visible = worldType.isCustomizable
-      guiFakeCreateWorld.chunkProviderSettingsJson = ""
-    }))
+      worldTypeH.initControlElement(this)
+
+      override def updateVisual(v: Int): Unit = {
+        worldTypeButton.displayString = makeWorldTypeLabel(worldTypeH.getA)
+        worldTypeCustomizationButton.visible = worldTypeH.getA.isCustomizable
+        guiFakeCreateWorld.chunkProviderSettingsJson = ""
+      }
+    })
 
     worldTypeCustomizationButton = addButton(new GuiClickableButton(width - 150 - 10, height / 2 - 5 + 20 + 1, 150, 20, I18n.format("selectWorld.customizeType"))(() => {
       worldTypeH.getA.onCustomizeButton(mc, guiFakeCreateWorld)
