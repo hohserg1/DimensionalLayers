@@ -12,10 +12,11 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ChatAllowedCharacters;
-import net.minecraft.util.math.MathHelper;
 import org.lwjgl.input.Mouse;
 
 import java.util.ArrayList;
+
+import static net.minecraft.util.math.MathHelper.clamp;
 
 //made by Draco18s
 //https://gist.github.com/Draco18s/2b02762b597e67a9b887aed241f25077
@@ -103,14 +104,14 @@ public class GuiMultiLineTextField extends Gui {
         if (this.validator.apply(textIn)) {
             String[] lines = textIn.split("\n");
             for (int l = 0; l < lines.length; l++) {
-                if (lines[l].length() > this.maxStringLength) {
-                    text.set(l, lines[l].substring(0, this.maxStringLength));
+                String forInsert = lines[l];
+                if (forInsert.length() > this.maxStringLength) {
+                    forInsert = forInsert.substring(0, this.maxStringLength);
+                }
+                if (text.size() <= l) {
+                    text.add(forInsert);
                 } else {
-                    if (text.size() <= l) {
-                        text.add(lines[l]);
-                    } else {
-                        text.set(l, lines[l]);
-                    }
+                    text.set(l, forInsert);
                 }
             }
             this.setCursorPositionEnd();
@@ -333,7 +334,7 @@ public class GuiMultiLineTextField extends Gui {
                 this.lineScrollOffset = i;
             }
         }
-        this.cursorPosition = MathHelper.clamp(this.cursorPosition, 0, i);
+        this.cursorPosition = clamp(this.cursorPosition, 0, i);
         this.setSelectionPos(this.cursorPosition);
     }
 
@@ -520,9 +521,9 @@ public class GuiMultiLineTextField extends Gui {
             int j = mouseY - this.y;
             j /= fontRenderer.FONT_HEIGHT;
 
-            currentLine = MathHelper.clamp(j + this.verticalScrollOffset, 0, text.size() - 1);
+            currentLine = clamp(j + this.verticalScrollOffset, 0, text.size() - 1);
 
-            String s = this.fontRenderer.trimStringToWidth(this.text.get(currentLine).substring(this.lineScrollOffset), this.getWidth());
+            String s = this.fontRenderer.trimStringToWidth(this.text.get(currentLine).substring(clamp(this.lineScrollOffset, 0, this.text.get(currentLine).length())), this.getWidth());
 
             this.setCursorPosition(this.fontRenderer.trimStringToWidth(s, i).length() + this.lineScrollOffset);
 
@@ -610,7 +611,7 @@ public class GuiMultiLineTextField extends Gui {
         if (md != 0) {
             int m = md > 0 ? -1 : 1;
             this.verticalScrollOffset += m;
-            verticalScrollOffset = MathHelper.clamp(verticalScrollOffset, 0, text.size() - 1);
+            verticalScrollOffset = clamp(verticalScrollOffset, 0, text.size() - 1);
         }
     }
 
@@ -793,7 +794,7 @@ public class GuiMultiLineTextField extends Gui {
                 this.lineScrollOffset -= this.lineScrollOffset - position;
             }
 
-            this.lineScrollOffset = MathHelper.clamp(this.lineScrollOffset, 0, i);
+            this.lineScrollOffset = clamp(this.lineScrollOffset, 0, i);
         }
     }
 

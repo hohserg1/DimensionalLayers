@@ -35,9 +35,10 @@ object GuiBlocksList {
   }
 }
 
-class GuiBlocksList(parent: GuiSettingsLayer, availableWidth: Int, height: Int) extends GuiTileList(parent, availableWidth, height, itemWidth, blockLinesByLen)() {
+class GuiBlocksList(parent: GuiSettingsLayer, availableWidth: Int) extends GuiTileList(parent, availableWidth, itemWidth, blockLinesByLen)() {
   override def drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float): Unit = {
     RenderHelper.enableGUIStandardItemLighting()
     super.drawScreen(mouseX, mouseY, partialTicks)
+    RenderHelper.disableStandardItemLighting()
   }
 }

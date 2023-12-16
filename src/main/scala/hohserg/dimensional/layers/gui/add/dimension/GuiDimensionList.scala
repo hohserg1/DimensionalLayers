@@ -26,5 +26,5 @@ object GuiDimensionList {
 
 }
 
-class GuiDimensionList(parent: GuiAddLayer, availableWidth: Int, height: Int) extends GuiTileList(parent, availableWidth, height, itemWidth, dimLinesByLen)() {
+class GuiDimensionList(parent: GuiAddLayer, availableWidth: Int) extends GuiTileList(parent, availableWidth, itemWidth, dimLinesByLen)() {
 }
