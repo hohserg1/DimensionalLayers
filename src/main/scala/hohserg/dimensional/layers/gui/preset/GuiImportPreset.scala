@@ -21,7 +21,7 @@ class GuiImportPreset(parent: GuiSetupDimensionalLayersPreset) extends GuiBaseSe
 
     val textArea = addElement(new GuiMultiLineTextFieldElement(10, 10 + 15, width - 10 - 10 - 80 - 10, height - 10 - 15 - 10, presetJson))
     Keyboard.enableRepeatEvents(true)
-    textArea.setMaxStringLength(10000)
+    textArea.setMaxStringLength(1000000)
     textArea.setCanLoseFocus(false)
     textArea.setFocused(true)
     textArea.setEnableBackgroundDrawing(true)
