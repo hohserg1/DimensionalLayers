@@ -1,10 +1,9 @@
 package hohserg.dimensional.layers.gui.settings.dimension
 
-import hohserg.dimensional.layers.gui.GuiNumericField.NumberHolder
+import hohserg.dimensional.layers.gui.GuiBaseSettings.ValueHolder
 import hohserg.dimensional.layers.gui.settings.dimension.GuiSettingsLayer.{gridCellSize, gridLeft, texture}
-import hohserg.dimensional.layers.gui.{DrawableArea, GuiNumericField}
+import hohserg.dimensional.layers.gui.{DrawableArea, GuiBase, GuiNumericField}
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.client.renderer.{GlStateManager, Tessellator}
 import org.lwjgl.opengl.GL11
@@ -15,11 +14,13 @@ object GuiOffsetField {
 
 }
 
-class GuiOffsetField(id: Int, gridTop: Int, value: NumberHolder[Int], isTop: Boolean)
-                    (implicit fontRenderer: FontRenderer)
-  extends GuiNumericField[Int](id, gridLeft + 19, 0, 2, value, _.toInt, fontRenderer.FONT_HEIGHT)
+class GuiOffsetField(gridTop: Int, value: ValueHolder[Int], topPair: GuiOffsetField)
+                    (implicit gui: GuiBase)
+  extends GuiNumericField[Int](gridLeft + 19, 0, 2, value, _.toInt, gui.fr.FONT_HEIGHT)
     with DrawableArea.Container {
   implicit def self: DrawableArea.Container = this
+
+  val isTop: Boolean = topPair == null
 
   setEnableBackgroundDrawing(false)
 
@@ -46,9 +47,8 @@ class GuiOffsetField(id: Int, gridTop: Int, value: NumberHolder[Int], isTop: Boo
 
   override def maxY: Int = y + height
 
-
-  override def setText(textIn: String): Unit = {
-    super.setText(textIn)
+  override def updateVisual(v: Int): Unit = {
+    super.updateVisual(v)
     y =
       if (isTop)
         gridTop + value.get * gridCellSize - 3
@@ -80,7 +80,7 @@ class GuiOffsetField(id: Int, gridTop: Int, value: NumberHolder[Int], isTop: Boo
   private var clickedY: Option[Int] = None
 
   override def mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int): Boolean = {
-    if (area.isHovering) {
+    if (area.isHovering && (isTop || !topPair.area.isHovering(topPair))) {
       clickedY = Some(mouseY)
       setFocused(false)
       true
@@ -88,7 +88,7 @@ class GuiOffsetField(id: Int, gridTop: Int, value: NumberHolder[Int], isTop: Boo
       false
   }
 
-  def mouseClickMove(mouseX: Int, mouseY: Int): Unit = {
+  override def mouseClickMove: Option[(Int, Int, Int) => Unit] = Some((_, mouseY, _) => {
     if (clickedY.isDefined) {
       val i =
         if (isTop)
@@ -97,12 +97,12 @@ class GuiOffsetField(id: Int, gridTop: Int, value: NumberHolder[Int], isTop: Boo
           -((mouseY + 7 + 3 - gridTop) / gridCellSize - 16)
       setText(i.toString)
     }
-  }
+  })
 
-  def mouseReleased(mouseX: Int, mouseY: Int, mouseButton: Int): Unit = {
+  override def mouseRelease: Option[(Int, Int, Int) => Unit] = Some((mouseX, mouseY, mouseButton) => {
     val yx = clickedY.map(_ - mouseY).getOrElse(0)
     if (yx < gridCellSize / 2)
       super.mouseClicked(mouseX, mouseY, mouseButton)
     clickedY = None
-  }
+  })
 }
