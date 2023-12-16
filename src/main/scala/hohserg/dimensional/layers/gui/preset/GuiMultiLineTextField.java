@@ -15,7 +15,6 @@ import net.minecraft.util.ChatAllowedCharacters;
 import org.lwjgl.input.Mouse;
 
 import java.util.ArrayList;
-import java.util.function.Consumer;
 
 import static net.minecraft.util.math.MathHelper.clamp;
 
@@ -105,12 +104,14 @@ public class GuiMultiLineTextField extends Gui {
         if (this.validator.apply(textIn)) {
             String[] lines = textIn.split("\n");
             for (int l = 0; l < lines.length; l++) {
-                int finalL = l;
-                Consumer<String> insert = text.size() <= l ? text::add : str -> text.set(finalL, str);
-                if (lines[l].length() > this.maxStringLength) {
-                    insert.accept(lines[l].substring(0, this.maxStringLength));
+                String forInsert = lines[l];
+                if (forInsert.length() > this.maxStringLength) {
+                    forInsert = forInsert.substring(0, this.maxStringLength);
+                }
+                if (text.size() <= l) {
+                    text.add(forInsert);
                 } else {
-                    insert.accept(lines[l]);
+                    text.set(l, forInsert);
                 }
             }
             this.setCursorPositionEnd();
