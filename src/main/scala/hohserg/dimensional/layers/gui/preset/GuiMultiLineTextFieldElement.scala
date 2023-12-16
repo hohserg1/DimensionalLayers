@@ -16,7 +16,7 @@ class GuiMultiLineTextFieldElement(x: Int, y: Int, w: Int, h: Int, value: ValueH
 
   override def setText(textIn: String): Unit = {
     value.set(textIn)
-    super.setText(value.get)
+    updateVisual(value.get)
   }
 
   override def writeText(textToWrite: String): Unit = {
@@ -28,4 +28,10 @@ class GuiMultiLineTextFieldElement(x: Int, y: Int, w: Int, h: Int, value: ValueH
     super.deleteFromCursor(num)
     setText(getText)
   }
+
+  override def draw: Option[(Int, Int, Float) => Unit] = Some((_, _, _) => drawTextBox())
+
+  override def mouseClick: Option[(Int, Int, Int) => Unit] = Some(mouseClicked)
+
+  override def keyTyped: Option[(Char, Int) => Unit] = Some(textboxKeyTyped)
 }

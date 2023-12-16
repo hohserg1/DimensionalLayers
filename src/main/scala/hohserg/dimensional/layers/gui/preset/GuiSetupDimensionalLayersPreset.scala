@@ -2,7 +2,7 @@ package hohserg.dimensional.layers.gui.preset
 
 import hohserg.dimensional.layers.gui.add._
 import hohserg.dimensional.layers.gui.preset.list.GuiLayersList
-import hohserg.dimensional.layers.gui.{GuiBase, GuiClickableButton, MouseUtils}
+import hohserg.dimensional.layers.gui.{GuiBase, GuiClickableButton}
 import net.minecraft.client.gui.GuiCreateWorld
 
 import java.util.Random
@@ -38,18 +38,6 @@ class GuiSetupDimensionalLayersPreset(parent: GuiCreateWorld) extends GuiBase(pa
   }
 
   def initFromJson(preset: String): Unit = {
-    layersList = new GuiLayersList(this, width - 200, height, preset)
-  }
-
-  override def drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float): Unit = {
-    drawDefaultBackground()
-    super.drawScreen(mouseX, mouseY, partialTicks)
-    layersList.drawScreen(mouseX, mouseY, partialTicks)
-  }
-
-  override def handleMouseInput(): Unit = {
-    super.handleMouseInput()
-    val (mouseX, mouseY) = MouseUtils.getMousePos
-    layersList.handleMouseInput(mouseX, mouseY)
+    layersList = addElement(new GuiLayersList(this, preset, if (layersList == null) 0 else layersList.accessor.getScrollDistance))
   }
 }

@@ -1,25 +1,25 @@
 package hohserg.dimensional.layers.gui.preset.list
 
 import hohserg.dimensional.layers.DimensionalLayersPreset
-import hohserg.dimensional.layers.DimensionalLayersPreset.{DimensionLayerSpec, SolidLayerSpec}
-import hohserg.dimensional.layers.gui.DimensionClientUtils
+import hohserg.dimensional.layers.DimensionalLayersPreset.{DimensionLayerSpec, LayerSpec, SolidLayerSpec}
 import hohserg.dimensional.layers.gui.mixin.AccessorGuiScrollingList
 import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
-import net.minecraft.block.state.IBlockState
-import net.minecraft.client.Minecraft
+import hohserg.dimensional.layers.gui.{DimensionClientUtils, GuiLayersListElement}
 import net.minecraft.client.renderer.Tessellator
-import net.minecraft.world.DimensionType
-import net.minecraft.world.biome.Biome
-import net.minecraftforge.fml.client.GuiScrollingList
 
 import scala.collection.mutable
 
-class GuiLayersList(val parent: GuiSetupDimensionalLayersPreset, val width: Int, height: Int, settings: String)
-  extends GuiScrollingList(
-    Minecraft.getMinecraft,
-    width, height, 10, height - 10, 10, DimensionClientUtils.width + 4,
-    Minecraft.getMinecraft.displayWidth, Minecraft.getMinecraft.displayHeight
-  ) {
+class GuiLayersList(val parent: GuiSetupDimensionalLayersPreset, settings: String, scrollDistance: Float)
+  extends GuiLayersListElement(10, 10, parent.width - 200, parent.height - 20, DimensionClientUtils.width + 4) {
+  val accessor = this.asInstanceOf[AccessorGuiScrollingList]
+
+  def setScrollDistance(v: Float): Unit = {
+    accessor.setScrollDistance(v)
+    accessor.invokeApplyScrollLimits()
+  }
+
+  setScrollDistance(scrollDistance)
+
   val entries: mutable.Buffer[GuiLayerEntry] =
     DimensionalLayersPreset(settings).layers
       .map {
@@ -28,24 +28,16 @@ class GuiLayersList(val parent: GuiSetupDimensionalLayersPreset, val width: Int,
       }
       .toBuffer
 
-  def add(block: IBlockState, biome: Biome, height: Int): Unit = {
-    new GuiSolidLayerEntry(this, SolidLayerSpec(block, biome, height)) +=: entries
-  }
-
-  def add(dimensionType: DimensionType): Unit = {
-    new GuiDimensionLayerEntry(this, DimensionLayerSpec(dimensionType)) +=: entries
+  def add(layer: LayerSpec): Unit = {
+    GuiLayerEntry(this, layer) +=: entries
   }
 
   def scrollUpOnce(): Unit = {
-    val accessor = this.asInstanceOf[AccessorGuiScrollingList]
-    accessor.setScrollDistance(accessor.getScrollDistance - this.slotHeight)
-    accessor.invokeApplyScrollLimits()
+    setScrollDistance(accessor.getScrollDistance - this.slotHeight)
   }
 
   def scrollDownOnce(): Unit = {
-    val accessor = this.asInstanceOf[AccessorGuiScrollingList]
-    accessor.setScrollDistance(accessor.getScrollDistance + this.slotHeight)
-    accessor.invokeApplyScrollLimits()
+    setScrollDistance(accessor.getScrollDistance + this.slotHeight)
   }
 
   def toSettings: String = DimensionalLayersPreset(entries.map(_.layer).toList).toSettings

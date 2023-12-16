@@ -23,7 +23,7 @@ class GuiTextFieldElement[A](x: Int, y: Int, w: Int, h: Int, value: ValueHolder[
   override def setText(textIn: String): Unit = {
     Try(fromString(textIn)).foreach { nv =>
       value.set(nv)
-      super.setText(value.get.toString)
+      updateVisual(value.get)
     }
   }
 
@@ -36,4 +36,10 @@ class GuiTextFieldElement[A](x: Int, y: Int, w: Int, h: Int, value: ValueHolder[
     super.deleteFromCursor(num)
     setText(getText)
   }
+
+  override def draw: Option[(Int, Int, Float) => Unit] = Some((_, _, _) => drawTextBox())
+
+  override def mouseClick: Option[(Int, Int, Int) => Unit] = Some(mouseClicked)
+
+  override def keyTyped: Option[(Char, Int) => Unit] = Some(textboxKeyTyped)
 }

@@ -14,11 +14,13 @@ object GuiOffsetField {
 
 }
 
-class GuiOffsetField(gridTop: Int, value: ValueHolder[Int], isTop: Boolean)
+class GuiOffsetField(gridTop: Int, value: ValueHolder[Int], topPair: GuiOffsetField)
                     (implicit gui: GuiBase)
   extends GuiNumericField[Int](gridLeft + 19, 0, 2, value, _.toInt, gui.fr.FONT_HEIGHT)
     with DrawableArea.Container {
   implicit def self: DrawableArea.Container = this
+
+  val isTop: Boolean = topPair == null
 
   setEnableBackgroundDrawing(false)
 
@@ -45,9 +47,8 @@ class GuiOffsetField(gridTop: Int, value: ValueHolder[Int], isTop: Boolean)
 
   override def maxY: Int = y + height
 
-
-  override def setText(textIn: String): Unit = {
-    super.setText(textIn)
+  override def updateVisual(v: Int): Unit = {
+    super.updateVisual(v)
     y =
       if (isTop)
         gridTop + value.get * gridCellSize - 3
@@ -79,7 +80,7 @@ class GuiOffsetField(gridTop: Int, value: ValueHolder[Int], isTop: Boolean)
   private var clickedY: Option[Int] = None
 
   override def mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int): Boolean = {
-    if (area.isHovering) {
+    if (area.isHovering && (isTop || !topPair.area.isHovering(topPair))) {
       clickedY = Some(mouseY)
       setFocused(false)
       true
@@ -87,7 +88,7 @@ class GuiOffsetField(gridTop: Int, value: ValueHolder[Int], isTop: Boolean)
       false
   }
 
-  def mouseClickMove(mouseX: Int, mouseY: Int): Unit = {
+  override def mouseClickMove: Option[(Int, Int, Int) => Unit] = Some((_, mouseY, _) => {
     if (clickedY.isDefined) {
       val i =
         if (isTop)
@@ -96,12 +97,12 @@ class GuiOffsetField(gridTop: Int, value: ValueHolder[Int], isTop: Boolean)
           -((mouseY + 7 + 3 - gridTop) / gridCellSize - 16)
       setText(i.toString)
     }
-  }
+  })
 
-  def mouseReleased(mouseX: Int, mouseY: Int, mouseButton: Int): Unit = {
+  override def mouseRelease: Option[(Int, Int, Int) => Unit] = Some((mouseX, mouseY, mouseButton) => {
     val yx = clickedY.map(_ - mouseY).getOrElse(0)
     if (yx < gridCellSize / 2)
       super.mouseClicked(mouseX, mouseY, mouseButton)
     clickedY = None
-  }
+  })
 }

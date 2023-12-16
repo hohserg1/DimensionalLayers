@@ -7,7 +7,6 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.client.renderer.{GlStateManager, Tessellator}
-import net.minecraftforge.fml.client.GuiScrollingList
 import org.lwjgl.opengl.GL11
 
 
@@ -119,13 +118,11 @@ object GuiTileList {
   def slotWidth(itemWidth: Int): Int = itemWidth + border * 2
 }
 
-abstract class GuiTileList[A <: Drawable](val parent: GuiScreen with SelectHandler[A], availableWidth: Int, height: Int, itemWidth: Int, linesCache: LoadingCache[Integer, Seq[GuiTileLine[A]]])
+abstract class GuiTileList[A <: Drawable](val parent: GuiScreen with SelectHandler[A], availableWidth: Int, itemWidth: Int, linesCache: LoadingCache[Integer, Seq[GuiTileLine[A]]])
                                          (val fitHorizontal: Int = (availableWidth - 6) / slotWidth(itemWidth))
-  extends GuiScrollingList(
-    Minecraft.getMinecraft,
-    fitHorizontal * slotWidth(itemWidth) + 6, height, 10, height - 10, 10, slotWidth(itemWidth),
-    Minecraft.getMinecraft.displayWidth, Minecraft.getMinecraft.displayHeight
-  ) {
+  extends GuiLayersListElement(10, 10, fitHorizontal * slotWidth(itemWidth) + 6, parent.height - 20, slotWidth(itemWidth))
+    with GuiElement {
+
   val lines = linesCache.get(fitHorizontal)
 
   var selection: Option[(Int, Int, A)] = None
@@ -185,4 +182,8 @@ abstract class GuiTileList[A <: Drawable](val parent: GuiScreen with SelectHandl
       }
     }
   }
+
+  override def draw: Option[(Int, Int, Float) => Unit] = Some(drawScreen)
+
+  override def mouseInput: Option[(Int, Int) => Unit] = Some(handleMouseInput)
 }
