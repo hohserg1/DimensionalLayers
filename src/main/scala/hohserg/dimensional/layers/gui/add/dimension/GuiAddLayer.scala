@@ -9,7 +9,7 @@ class GuiAddLayer(parent: GuiSetupDimensionalLayersPreset) extends GuiBase(paren
 
   override def initGui(): Unit = {
     super.initGui()
-    addButton(new GuiClickableButton(0, width - 100, height - 30, 90, 20, "Cancel")(back))
+    addButton(new GuiClickableButton(width - 100, height - 30, 90, 20, "Cancel")(back))
     dimensionTypesList = new GuiDimensionList(this, width - 110, height)
   }
 

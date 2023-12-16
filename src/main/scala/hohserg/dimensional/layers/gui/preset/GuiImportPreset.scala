@@ -28,11 +28,11 @@ class GuiImportPreset(parent: GuiSetupDimensionalLayersPreset) extends GuiBase(p
     textArea.setFocused(true)
     textArea.setEnableBackgroundDrawing(true)
 
-    addButton(new GuiClickableButton(1, width - 80 - 10, height / 2 - 10, 80, 20, "Beautify")(beautify))
+    addButton(new GuiClickableButton(width - 80 - 10, height / 2 - 10, 80, 20, "Beautify")(beautify))
 
-    addButton(new GuiClickableButton(0, width - 80 - 10, height - 30, 80, 20, "Cancel")(back))
+    addButton(new GuiClickableButton(width - 80 - 10, height - 30, 80, 20, "Cancel")(back))
 
-    addButton(new GuiClickableButton(1, width - 80 - 10, 10, 80, 20, "Done")(done))
+    addButton(new GuiClickableButton(width - 80 - 10, 10, 80, 20, "Done")(done))
   }
 
   override def onGuiClosed(): Unit = {

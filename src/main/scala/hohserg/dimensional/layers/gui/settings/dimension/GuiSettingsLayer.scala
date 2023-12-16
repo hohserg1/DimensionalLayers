@@ -62,8 +62,8 @@ class GuiSettingsLayer(parent: GuiSetupDimensionalLayersPreset, index: Int, laye
     topOffsetField = new GuiOffsetField(3, gridTop, topOffset, true)
     bottomOffsetField = new GuiOffsetField(4, gridTop, bottomOffset, false)
 
-    worldTypeButton = addButton(new GuiClickableButton(5, width - 150 - 10, height / 2 - 5, 150, 20, makeWorldTypeLabel(currentWorldType))(() => {
-      val worldType = nextWorldType()
+    worldTypeButton = addButton(new GuiClickableButton(width - 150 - 10, height / 2 - 5, 150, 20, makeWorldTypeLabel(worldTypeH.getA))(() => {
+      val worldType = worldTypeH.next()
 
       worldTypeButton.displayString = makeWorldTypeLabel(worldType)
       markChanged()
@@ -71,8 +71,8 @@ class GuiSettingsLayer(parent: GuiSetupDimensionalLayersPreset, index: Int, laye
       guiFakeCreateWorld.chunkProviderSettingsJson = ""
     }))
 
-    worldTypeCustomizationButton = addButton(new GuiClickableButton(6, width - 150 - 10, height / 2 - 5 + 20 + 1, 150, 20, I18n.format("selectWorld.customizeType"))(() => {
       currentWorldType.onCustomizeButton(mc, guiFakeCreateWorld)
+    worldTypeCustomizationButton = addButton(new GuiClickableButton(width - 150 - 10, height / 2 - 5 + 20 + 1, 150, 20, I18n.format("selectWorld.customizeType"))(() => {
     }) {
       visible = currentWorldType.isCustomizable
     })

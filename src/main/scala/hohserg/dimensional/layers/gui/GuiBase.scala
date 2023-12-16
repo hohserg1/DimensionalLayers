@@ -6,6 +6,20 @@ import net.minecraft.client.gui.{FontRenderer, GuiScreen}
 class GuiBase(val parent: GuiScreen) extends GuiScreen {
   implicit def fr: FontRenderer = fontRenderer
 
+  implicit def self: this.type = this
+
+  private var elementId = 0
+
+  def nextElementId(): Int = {
+    elementId += 1
+    elementId
+  }
+
+  override def initGui(): Unit = {
+    super.initGui()
+    elementId = 0
+  }
+
   protected def back(): Unit = {
     mc.displayGuiScreen(parent)
   }
