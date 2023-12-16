@@ -13,12 +13,10 @@ class GuiLayersList(val parent: GuiSetupDimensionalLayersPreset, settings: Strin
   extends GuiLayersListElement(10, 10, parent.width - 200, parent.height - 20, DimensionClientUtils.width + 4) {
   val accessor = this.asInstanceOf[AccessorGuiScrollingList]
 
-  def setScrollDistance(v: Float): Unit = {
+  def setScrollDistanceWithLimits(v: Float): Unit = {
     accessor.setScrollDistance(v)
     accessor.invokeApplyScrollLimits()
   }
-
-  setScrollDistance(scrollDistance)
 
   val entries: mutable.Buffer[GuiLayerEntry] =
     DimensionalLayersPreset(settings).layers
@@ -28,16 +26,18 @@ class GuiLayersList(val parent: GuiSetupDimensionalLayersPreset, settings: Strin
       }
       .toBuffer
 
+  setScrollDistanceWithLimits(scrollDistance)
+
   def add(layer: LayerSpec): Unit = {
     GuiLayerEntry(this, layer) +=: entries
   }
 
   def scrollUpOnce(): Unit = {
-    setScrollDistance(accessor.getScrollDistance - this.slotHeight)
+    setScrollDistanceWithLimits(accessor.getScrollDistance - this.slotHeight)
   }
 
   def scrollDownOnce(): Unit = {
-    setScrollDistance(accessor.getScrollDistance + this.slotHeight)
+    setScrollDistanceWithLimits(accessor.getScrollDistance + this.slotHeight)
   }
 
   def toSettings: String = DimensionalLayersPreset(entries.map(_.layer).toList).toSettings
