@@ -1,10 +1,9 @@
 package hohserg.dimensional.layers.gui.settings.dimension
 
-import hohserg.dimensional.layers.gui.GuiNumericField.NumberHolder
+import hohserg.dimensional.layers.gui.GuiBaseSettings.ValueHolder
 import hohserg.dimensional.layers.gui.settings.dimension.GuiSettingsLayer.{gridCellSize, gridLeft, texture}
-import hohserg.dimensional.layers.gui.{DrawableArea, GuiNumericField}
+import hohserg.dimensional.layers.gui.{DrawableArea, GuiBase, GuiNumericField}
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.client.renderer.{GlStateManager, Tessellator}
 import org.lwjgl.opengl.GL11
@@ -15,9 +14,9 @@ object GuiOffsetField {
 
 }
 
-class GuiOffsetField(id: Int, gridTop: Int, value: NumberHolder[Int], isTop: Boolean)
-                    (implicit fontRenderer: FontRenderer)
-  extends GuiNumericField[Int](id, gridLeft + 19, 0, 2, value, _.toInt, fontRenderer.FONT_HEIGHT)
+class GuiOffsetField(gridTop: Int, value: ValueHolder[Int], isTop: Boolean)
+                    (implicit gui: GuiBase)
+  extends GuiNumericField[Int](gridLeft + 19, 0, 2, value, _.toInt, gui.fr.FONT_HEIGHT)
     with DrawableArea.Container {
   implicit def self: DrawableArea.Container = this
 

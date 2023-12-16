@@ -1,11 +1,11 @@
 package hohserg.dimensional.layers.gui.settings.dimension
 
 import hohserg.dimensional.layers.DimensionalLayersPreset.DimensionLayerSpec
-import hohserg.dimensional.layers.gui.GuiNumericField.NumberHolder
+import hohserg.dimensional.layers.gui.GuiBaseSettings.ValueHolder
 import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
 import hohserg.dimensional.layers.gui.settings.GuiBaseSettingsLayer
 import hohserg.dimensional.layers.gui.settings.dimension.GuiSettingsLayer._
-import hohserg.dimensional.layers.gui.{DimensionClientUtils, GuiClickableButton}
+import hohserg.dimensional.layers.gui.{DimensionClientUtils, GuiBaseSettings, GuiClickableButton, GuiTextFieldElement}
 import hohserg.dimensional.layers.{DimensionalLayersPreset, DimensionalLayersWorldType, Main, clamp}
 import net.minecraft.client.gui.GuiTextField
 import net.minecraft.client.resources.I18n
@@ -25,69 +25,65 @@ object GuiSettingsLayer {
       .filter(_.canBeCreated)
       .filter(_ != DimensionalLayersWorldType)
 
+  class CyclicValueHolder[A](init: A, possible: Seq[A])(implicit gui: GuiBaseSettings)
+    extends ValueHolder[Int](possible.indexOf(init), _ % possible.size) {
+
+    def getA: A = possible(get)
+
+    def next(): A = {
+      set(get + 1)
+      getA
+    }
+  }
+
 }
 
-class GuiSettingsLayer(parent: GuiSetupDimensionalLayersPreset, index: Int, layer: DimensionLayerSpec) extends GuiBaseSettingsLayer(parent, layer, index) {
+class GuiSettingsLayer(parent: GuiSetupDimensionalLayersPreset, index: Int, layer: DimensionLayerSpec) extends GuiBaseSettingsLayer(parent, index) {
+  val seedOverrideH = new ValueHolder[String](layer.seedOverride.map(_.toString).getOrElse(""))
+  val topOffset: ValueHolder[Int] = new ValueHolder[Int](layer.topOffset, clamp(_, 0, 15 - bottomOffset.get))
+  val bottomOffset: ValueHolder[Int] = new ValueHolder[Int](layer.bottomOffset, clamp(_, 0, 15 - topOffset.get))
+  val worldTypeH = new CyclicValueHolder[WorldType](layer.worldType, possibleWorldTypes)
+  val worldTypePresetH = new ValueHolder[String](layer.worldTypePreset)
+
   override def buildLayerSpec(): DimensionalLayersPreset.LayerSpec =
     DimensionLayerSpec(
       layer.dimensionType,
-      Some(seedOverrideField.getText).filter(_.nonEmpty).map(toLongSeed),
+      Some(seedOverrideH.get).filter(_.nonEmpty).map(toLongSeed),
       topOffset.get,
       bottomOffset.get,
-      currentWorldType,
-      guiFakeCreateWorld.chunkProviderSettingsJson
+      worldTypeH.getA,
+      worldTypePresetH.get
     )
-
-  val topOffset: NumberHolder[Int] = new NumberHolder[Int](layer.topOffset) {
-    override def validate(v: Int): Int = clamp(v, 0, 15 - bottomOffset.get)
-  }
-  val bottomOffset: NumberHolder[Int] = new NumberHolder[Int](layer.bottomOffset) {
-    override def validate(v: Int): Int = clamp(v, 0, 15 - topOffset.get)
-  }
 
   var seedOverrideField: GuiTextField = _
   var topOffsetField: GuiOffsetField = _
   var bottomOffsetField: GuiOffsetField = _
   var worldTypeButton: GuiClickableButton = _
   var worldTypeCustomizationButton: GuiClickableButton = _
-  private var worldTypeIndex = possibleWorldTypes.indexOf(layer.worldType)
+
   private val guiFakeCreateWorld = new GuiFakeCreateWorld(this, layer.worldTypePreset)
 
   override def initGui(): Unit = {
     super.initGui()
 
-    seedOverrideField = new GuiTextField(2, fontRenderer, width - 180, height / 2 - 20 - 20, 170, 20)
-    layer.seedOverride.map(_.toString).foreach(seedOverrideField.setText)
+    seedOverrideField = new GuiTextFieldElement(width - 180, height / 2 - 20 - 20, 170, 20, seedOverrideH, identity)
 
-    topOffsetField = new GuiOffsetField(3, gridTop, topOffset, true)
-    bottomOffsetField = new GuiOffsetField(4, gridTop, bottomOffset, false)
+    topOffsetField = new GuiOffsetField(gridTop, topOffset, true)
+    bottomOffsetField = new GuiOffsetField(gridTop, bottomOffset, false)
 
     worldTypeButton = addButton(new GuiClickableButton(width - 150 - 10, height / 2 - 5, 150, 20, makeWorldTypeLabel(worldTypeH.getA))(() => {
       val worldType = worldTypeH.next()
 
       worldTypeButton.displayString = makeWorldTypeLabel(worldType)
-      markChanged()
       worldTypeCustomizationButton.visible = worldType.isCustomizable
       guiFakeCreateWorld.chunkProviderSettingsJson = ""
     }))
 
-      currentWorldType.onCustomizeButton(mc, guiFakeCreateWorld)
     worldTypeCustomizationButton = addButton(new GuiClickableButton(width - 150 - 10, height / 2 - 5 + 20 + 1, 150, 20, I18n.format("selectWorld.customizeType"))(() => {
+      worldTypeH.getA.onCustomizeButton(mc, guiFakeCreateWorld)
     }) {
-      visible = currentWorldType.isCustomizable
+      visible = worldTypeH.getA.isCustomizable
     })
-  }
-
-  private def nextWorldType() = {
-    worldTypeIndex += 1
-    if (worldTypeIndex >= possibleWorldTypes.length)
-      worldTypeIndex = 0
-
-    currentWorldType
-  }
-
-  private def currentWorldType = {
-    possibleWorldTypes(worldTypeIndex)
   }
 
   def makeWorldTypeLabel(worldType: WorldType): String =
@@ -160,8 +156,6 @@ class GuiSettingsLayer(parent: GuiSetupDimensionalLayersPreset, index: Int, laye
     super.mouseReleased(mouseX, mouseY, mouseButton)
     topOffsetField.mouseReleased(mouseX, mouseY, mouseButton)
     bottomOffsetField.mouseReleased(mouseX, mouseY, mouseButton)
-    if (topOffset.get != layer.topOffset || bottomOffset.get != layer.bottomOffset)
-      markChanged()
   }
 
   override def keyTyped(typedChar: Char, keyCode: Int): Unit = {
@@ -169,7 +163,5 @@ class GuiSettingsLayer(parent: GuiSetupDimensionalLayersPreset, index: Int, laye
     seedOverrideField.textboxKeyTyped(typedChar, keyCode)
     topOffsetField.textboxKeyTyped(typedChar, keyCode)
     bottomOffsetField.textboxKeyTyped(typedChar, keyCode)
-    if (layer.seedOverride.isEmpty && seedOverrideField.getText.nonEmpty || layer.seedOverride.nonEmpty && layer.seedOverride.get.toString != seedOverrideField.getText)
-      markChanged()
   }
 }
