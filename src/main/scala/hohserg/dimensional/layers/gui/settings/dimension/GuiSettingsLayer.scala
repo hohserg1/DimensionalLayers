@@ -77,7 +77,9 @@ class GuiSettingsLayer(parent: GuiSetupDimensionalLayersPreset, index: Int, laye
 
     worldTypeCustomizationButton = addButton(new GuiClickableButton(width - 150 - 10, height / 2 - 5 + 20 + 1, 150, 20, I18n.format("selectWorld.customizeType"))(() => {
       worldTypeH.getA.onCustomizeButton(mc, guiFakeCreateWorld)
-    }))
+    }) {
+      visible = worldTypeH.getA.isCustomizable
+    })
     worldTypeButton = addButton(new GuiClickableButton(width - 150 - 10, height / 2 - 5, 150, 20, makeWorldTypeLabel(worldTypeH.getA))(() => {
       val worldType = worldTypeH.next()
       worldTypeButton.displayString = makeWorldTypeLabel(worldType)
