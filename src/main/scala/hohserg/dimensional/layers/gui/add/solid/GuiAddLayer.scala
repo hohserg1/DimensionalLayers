@@ -1,8 +1,8 @@
 package hohserg.dimensional.layers.gui.add.solid
 
-import hohserg.dimensional.layers.DimensionalLayersPreset.SolidLayerSpec
 import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
 import hohserg.dimensional.layers.gui.settings.solid
+import hohserg.dimensional.layers.preset.SolidLayerSpec
 import net.minecraft.init.Blocks
 
 class GuiAddLayer(parent: GuiSetupDimensionalLayersPreset) extends solid.GuiSettingsLayer(parent, SolidLayerSpec(Blocks.AIR.getDefaultState), 0) {

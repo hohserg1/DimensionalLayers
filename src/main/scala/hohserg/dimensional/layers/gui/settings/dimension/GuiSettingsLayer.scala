@@ -1,13 +1,13 @@
 package hohserg.dimensional.layers.gui.settings.dimension
 
-import hohserg.dimensional.layers.DimensionalLayersPreset.DimensionLayerSpec
 import hohserg.dimensional.layers.gui.GuiBaseSettings.ValueHolder
 import hohserg.dimensional.layers.gui.RelativeCoord.{alignLeft, alignTop}
 import hohserg.dimensional.layers.gui._
 import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
 import hohserg.dimensional.layers.gui.settings.GuiBaseSettingsLayer
 import hohserg.dimensional.layers.gui.settings.dimension.GuiSettingsLayer._
-import hohserg.dimensional.layers.{DimensionalLayersPreset, DimensionalLayersWorldType, Main, clamp}
+import hohserg.dimensional.layers.preset.{DimensionLayerSpec, LayerSpec}
+import hohserg.dimensional.layers.{DimensionalLayersWorldType, Main, clamp}
 import net.minecraft.client.resources.I18n
 import net.minecraft.util.ResourceLocation
 import net.minecraft.world.WorldType
@@ -45,7 +45,7 @@ class GuiSettingsLayer(parent: GuiSetupDimensionalLayersPreset, index: Int, laye
   val worldTypeH = new CyclicValueHolder[WorldType](layer.worldType, possibleWorldTypes)
   val worldTypePresetH = new ValueHolder[String](layer.worldTypePreset)
 
-  override def buildLayerSpec(): DimensionalLayersPreset.LayerSpec =
+  override def buildLayerSpec(): LayerSpec =
     DimensionLayerSpec(
       layer.dimensionType,
       Some(seedOverrideH.get).filter(_.nonEmpty).map(toLongSeed),

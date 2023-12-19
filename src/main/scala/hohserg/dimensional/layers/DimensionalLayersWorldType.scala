@@ -1,6 +1,7 @@
 package hohserg.dimensional.layers
 
 import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
+import hohserg.dimensional.layers.preset.DimensionalLayersPreset
 import hohserg.dimensional.layers.worldgen.DimensionalLayersGenerator
 import io.github.opencubicchunks.cubicchunks.api.util.IntRange
 import io.github.opencubicchunks.cubicchunks.api.world.ICubicWorldType

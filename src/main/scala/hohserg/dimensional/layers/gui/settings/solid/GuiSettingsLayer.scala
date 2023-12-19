@@ -1,7 +1,5 @@
 package hohserg.dimensional.layers.gui.settings.solid
 
-import hohserg.dimensional.layers.DimensionalLayersPreset
-import hohserg.dimensional.layers.DimensionalLayersPreset.SolidLayerSpec
 import hohserg.dimensional.layers.gui.GuiBaseSettings.ValueHolder
 import hohserg.dimensional.layers.gui.GuiNumericField
 import hohserg.dimensional.layers.gui.GuiTileList.SelectHandler
@@ -9,6 +7,7 @@ import hohserg.dimensional.layers.gui.RelativeCoord.{alignLeft, alignTop}
 import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
 import hohserg.dimensional.layers.gui.settings.GuiBaseSettingsLayer
 import hohserg.dimensional.layers.gui.settings.solid.GuiBlocksList.DrawableBlock
+import hohserg.dimensional.layers.preset.{LayerSpec, SolidLayerSpec}
 import net.minecraft.block.state.IBlockState
 import net.minecraft.world.biome.Biome
 
@@ -21,7 +20,7 @@ class GuiSettingsLayer(parent: GuiSetupDimensionalLayersPreset, layer: SolidLaye
   val biomeH = new ValueHolder[Biome](layer.biome)
   val heightH = new ValueHolder[Int](layer.height)
 
-  override def buildLayerSpec(): DimensionalLayersPreset.LayerSpec = SolidLayerSpec(fillerH.get, biomeH.get, heightH.get)
+  override def buildLayerSpec(): LayerSpec = SolidLayerSpec(fillerH.get, biomeH.get, heightH.get)
 
   override def initGui(): Unit = {
     super.initGui()

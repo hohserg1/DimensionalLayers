@@ -1,10 +1,9 @@
 package hohserg.dimensional.layers.gui.preset.list
 
-import hohserg.dimensional.layers.DimensionalLayersPreset
-import hohserg.dimensional.layers.DimensionalLayersPreset.{DimensionLayerSpec, LayerSpec, SolidLayerSpec}
 import hohserg.dimensional.layers.gui.mixin.AccessorGuiScrollingList
 import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
 import hohserg.dimensional.layers.gui.{DimensionClientUtils, GuiLayersListElement}
+import hohserg.dimensional.layers.preset._
 import net.minecraft.client.renderer.Tessellator
 
 import scala.collection.mutable

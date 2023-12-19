@@ -1,10 +1,10 @@
 package hohserg.dimensional.layers.gui.preset.list
 
-import hohserg.dimensional.layers.DimensionalLayersPreset.SolidLayerSpec
 import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
 import hohserg.dimensional.layers.gui.settings.solid
 import hohserg.dimensional.layers.gui.settings.solid.GuiBlocksList.DrawableBlock
 import hohserg.dimensional.layers.gui.{DimensionClientUtils, GuiBase}
+import hohserg.dimensional.layers.preset.SolidLayerSpec
 import net.minecraft.client.renderer.{GlStateManager, RenderHelper}
 
 class GuiSolidLayerEntry(val parent: GuiLayersList, val layer: SolidLayerSpec) extends GuiLayerEntry {

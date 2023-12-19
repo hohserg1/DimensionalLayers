@@ -1,9 +1,9 @@
 package hohserg.dimensional.layers.gui.preset.list
 
-import hohserg.dimensional.layers.DimensionalLayersPreset.DimensionLayerSpec
 import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
 import hohserg.dimensional.layers.gui.settings.dimension
 import hohserg.dimensional.layers.gui.{DimensionClientUtils, GuiBase}
+import hohserg.dimensional.layers.preset.DimensionLayerSpec
 
 class GuiDimensionLayerEntry(val parent: GuiLayersList, val layer: DimensionLayerSpec) extends GuiLayerEntry {
   override def drawEntry(index: Int, minX: Int, minY: Int, maxX: Int, maxY: Int, mouseX: Int, mouseY: Int): Unit = {

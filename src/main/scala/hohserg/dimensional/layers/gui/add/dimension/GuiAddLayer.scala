@@ -1,9 +1,9 @@
 package hohserg.dimensional.layers.gui.add.dimension
 
-import hohserg.dimensional.layers.DimensionalLayersPreset.DimensionLayerSpec
 import hohserg.dimensional.layers.gui.add.dimension.GuiDimensionList.DrawableDim
 import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
 import hohserg.dimensional.layers.gui.{GuiBase, GuiClickableButton, GuiTileList}
+import hohserg.dimensional.layers.preset.DimensionLayerSpec
 
 class GuiAddLayer(parent: GuiSetupDimensionalLayersPreset) extends GuiBase(parent) with GuiTileList.SelectHandler[DrawableDim] {
   override def initGui(): Unit = {

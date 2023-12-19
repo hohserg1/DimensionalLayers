@@ -1,7 +1,7 @@
 package hohserg.dimensional.layers.worldgen
 
 import com.google.common.collect.ImmutableList
-import hohserg.dimensional.layers.DimensionalLayersPreset
+import hohserg.dimensional.layers.preset.DimensionalLayersPreset
 import io.github.opencubicchunks.cubicchunks.api.util.{Box, Coords}
 import io.github.opencubicchunks.cubicchunks.api.world.{ICube, ICubicWorld}
 import io.github.opencubicchunks.cubicchunks.api.worldgen.{CubePrimer, ICubeGenerator}

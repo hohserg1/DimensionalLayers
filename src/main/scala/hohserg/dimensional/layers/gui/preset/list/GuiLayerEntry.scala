@@ -1,10 +1,10 @@
 package hohserg.dimensional.layers.gui.preset.list
 
-import hohserg.dimensional.layers.DimensionalLayersPreset.{DimensionLayerSpec, LayerSpec, SolidLayerSpec}
 import hohserg.dimensional.layers.Main
 import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
 import hohserg.dimensional.layers.gui.preset.list.GuiLayerEntry._
 import hohserg.dimensional.layers.gui.{DimensionClientUtils, DrawableArea, GuiBase, RelativeCoord}
+import hohserg.dimensional.layers.preset.{DimensionLayerSpec, LayerSpec, SolidLayerSpec}
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats

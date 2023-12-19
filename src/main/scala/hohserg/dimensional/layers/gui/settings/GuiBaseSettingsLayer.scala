@@ -1,9 +1,9 @@
 package hohserg.dimensional.layers.gui.settings
 
-import hohserg.dimensional.layers.DimensionalLayersPreset.LayerSpec
 import hohserg.dimensional.layers.gui.GuiBaseSettings
 import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
 import hohserg.dimensional.layers.gui.preset.list.GuiLayerEntry
+import hohserg.dimensional.layers.preset.LayerSpec
 
 abstract class GuiBaseSettingsLayer(parent: GuiSetupDimensionalLayersPreset, index: Int) extends GuiBaseSettings(parent) {
 

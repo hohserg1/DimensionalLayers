@@ -1,14 +1,13 @@
-package hohserg.dimensional.layers
+package hohserg.dimensional.layers.preset
 
 import com.google.gson._
-import hohserg.dimensional.layers.DimensionalLayersPreset.{DimensionLayerSpec, LayerSpec, SolidLayerSpec}
+import hohserg.dimensional.layers.Configuration
 import hohserg.dimensional.layers.worldgen.{DimensionLayer, Layer, SolidLayer}
 import io.github.opencubicchunks.cubicchunks.api.util.IntRange
 import net.minecraft.block.Block
 import net.minecraft.block.state.IBlockState
 import net.minecraft.init.{Biomes, Blocks}
 import net.minecraft.util.ResourceLocation
-import net.minecraft.world.biome.Biome
 import net.minecraft.world.{DimensionType, World, WorldType}
 import net.minecraftforge.common.DimensionManager
 import net.minecraftforge.fml.common.registry.ForgeRegistries
@@ -42,20 +41,6 @@ object DimensionalLayersPreset {
       .getOrElse(DimensionalLayersPreset(
         DimensionManager.getRegisteredDimensions.keySet().asScala.map(DimensionLayerSpec(_)).toList :+ SolidLayerSpec(Blocks.BEDROCK.getDefaultState)
       ))
-
-
-  sealed trait LayerSpec {
-    def height: Int
-  }
-
-  case class DimensionLayerSpec(dimensionType: DimensionType,
-                                seedOverride: Option[Long] = None,
-                                topOffset: Int = 0, bottomOffset: Int = 0,
-                                worldType: WorldType = WorldType.DEFAULT, worldTypePreset: String = "") extends LayerSpec {
-    override def height: Int = 16 - topOffset - bottomOffset
-  }
-
-  case class SolidLayerSpec(filler: IBlockState, biome: Biome = Biomes.PLAINS, height: Int = 1) extends LayerSpec
 
 
   private val gson: Gson =
