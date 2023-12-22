@@ -1,14 +1,18 @@
 package hohserg.dimensional.layers.preset
 
+import com.google.gson.JsonParseException
 import hohserg.dimensional.layers.Configuration
 import hohserg.dimensional.layers.worldgen.{DimensionLayer, Layer, SolidLayer}
 import io.github.opencubicchunks.cubicchunks.api.util.IntRange
+import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.toasts.SystemToast
 import net.minecraft.init.Blocks
+import net.minecraft.util.text.TextComponentString
 import net.minecraft.world.World
 import net.minecraftforge.common.DimensionManager
 
 import scala.collection.JavaConverters.asScalaSetConverter
-import scala.util.Try
+import scala.util.{Failure, Success, Try}
 
 case class DimensionalLayersPreset(layers: List[LayerSpec]) {
   def toLayerMap: Map[IntRange, World => Layer] =
@@ -32,7 +36,33 @@ object DimensionalLayersPreset {
       .filter(_.nonEmpty)
       .orElse(Try(Configuration.defaultPreset).filter(_.nonEmpty))
       .map(Serialization.gson.fromJson(_, classOf[DimensionalLayersPreset]))
-      .getOrElse(DimensionalLayersPreset(
-        DimensionManager.getRegisteredDimensions.keySet().asScala.map(DimensionLayerSpec(_)).toList :+ SolidLayerSpec(Blocks.BEDROCK.getDefaultState, 1)
-      ))
+    match {
+      case Failure(exception) =>
+        handleError(exception)
+        mixedPreset
+      case Success(value) =>
+        value
+    }
+
+  private def mixedPreset =
+    DimensionalLayersPreset(
+      DimensionManager.getRegisteredDimensions.keySet().asScala.map(DimensionLayerSpec(_)).toList
+        :+ SolidLayerSpec(Blocks.BEDROCK.getDefaultState, 1)
+    )
+
+  private def handleError(exception: Throwable): Unit = {
+    println("DimensionalLayersPreset json parsing error")
+    exception.printStackTrace()
+    val (title, msg) = exception match {
+      case badJson: JsonParseException =>
+        "Malformed json:" -> badJson.getMessage
+      case unexpected: Throwable =>
+        "Error while parsing json. Plz report to author" -> unexpected.getMessage
+    }
+    Minecraft.getMinecraft.getToastGui.add(new SystemToast(
+      SystemToast.Type.NARRATOR_TOGGLE,
+      new TextComponentString(title),
+      new TextComponentString(msg + "\nfull stacktrace in log")
+    ))
+  }
 }
