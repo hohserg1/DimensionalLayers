@@ -1,7 +1,7 @@
 package hohserg.dimensional.layers
 
 import hohserg.dimensional.layers.gui.settings.dimension.GuiFakeCreateWorld
-import hohserg.dimensional.layers.preset.DimensionalLayersPreset
+import hohserg.dimensional.layers.preset.{DimensionalLayersPreset, Serialization}
 import net.minecraft.client.gui.GuiCreateWorld
 import net.minecraftforge.client.event.GuiOpenEvent
 import net.minecraftforge.client.event.GuiScreenEvent.ActionPerformedEvent
@@ -27,6 +27,7 @@ object Main {
   @EventHandler
   def postInit(e: FMLPostInitializationEvent): Unit = {
     DimensionalLayersPreset("")
+    println(Serialization.gson)
   }
 
 
