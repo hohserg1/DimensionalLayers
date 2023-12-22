@@ -5,7 +5,7 @@ import hohserg.dimensional.layers.gui.settings.solid
 import hohserg.dimensional.layers.preset.SolidLayerSpec
 import net.minecraft.init.Blocks
 
-class GuiAddLayer(parent: GuiSetupDimensionalLayersPreset) extends solid.GuiSettingsLayer(parent, SolidLayerSpec(Blocks.AIR.getDefaultState), 0) {
+class GuiAddLayer(parent: GuiSetupDimensionalLayersPreset) extends solid.GuiSettingsLayer(parent, SolidLayerSpec(Blocks.AIR.getDefaultState, 1), 0) {
   override def done(): Unit = {
     parent.layersList.add(buildLayerSpec())
     back()

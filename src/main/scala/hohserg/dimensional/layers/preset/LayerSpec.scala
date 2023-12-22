@@ -13,9 +13,8 @@ case class DimensionLayerSpec(dimensionType: DimensionType,
                               seedOverride: Option[Long] = None,
                               topOffset: Int = 0, bottomOffset: Int = 0,
                               worldType: WorldType = WorldType.DEFAULT, worldTypePreset: String = "") extends LayerSpec {
-  println("DimensionLayerSpec constructor")
 
   override def height: Int = 16 - topOffset - bottomOffset
 }
 
-case class SolidLayerSpec(filler: IBlockState, biome: Biome = Biomes.PLAINS, height: Int = 1) extends LayerSpec
+case class SolidLayerSpec(filler: IBlockState, height: Int, biome: Biome = Biomes.PLAINS) extends LayerSpec

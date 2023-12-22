@@ -20,7 +20,7 @@ class GuiSettingsLayer(parent: GuiSetupDimensionalLayersPreset, layer: SolidLaye
   val biomeH = new ValueHolder[Biome](layer.biome)
   val heightH = new ValueHolder[Int](layer.height)
 
-  override def buildLayerSpec(): LayerSpec = SolidLayerSpec(fillerH.get, biomeH.get, heightH.get)
+  override def buildLayerSpec(): LayerSpec = SolidLayerSpec(fillerH.get, heightH.get, biomeH.get)
 
   override def initGui(): Unit = {
     super.initGui()

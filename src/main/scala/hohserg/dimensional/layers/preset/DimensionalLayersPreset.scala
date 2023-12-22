@@ -17,7 +17,7 @@ case class DimensionalLayersPreset(layers: List[LayerSpec]) {
         case (spec: DimensionLayerSpec, (acc, lastFreeCubic)) =>
           (range(lastFreeCubic, spec.height) -> (new DimensionLayer(_: World, spec, lastFreeCubic)) :: acc) -> (lastFreeCubic + spec.height)
 
-        case (SolidLayerSpec(filler, biome, height), (acc, lastFreeCubic)) =>
+        case (SolidLayerSpec(filler, height, biome), (acc, lastFreeCubic)) =>
           (range(lastFreeCubic, height) -> { _: World => SolidLayer(filler, biome, lastFreeCubic, height) } :: acc) -> (lastFreeCubic + height)
       }._1.toMap
 
@@ -33,6 +33,6 @@ object DimensionalLayersPreset {
       .orElse(Try(Configuration.defaultPreset).filter(_.nonEmpty))
       .map(Serialization.gson.fromJson(_, classOf[DimensionalLayersPreset]))
       .getOrElse(DimensionalLayersPreset(
-        DimensionManager.getRegisteredDimensions.keySet().asScala.map(DimensionLayerSpec(_)).toList :+ SolidLayerSpec(Blocks.BEDROCK.getDefaultState)
+        DimensionManager.getRegisteredDimensions.keySet().asScala.map(DimensionLayerSpec(_)).toList :+ SolidLayerSpec(Blocks.BEDROCK.getDefaultState, 1)
       ))
 }
