@@ -99,15 +99,25 @@ object Serialization {
   class CoproductSerializer2(cl: ClassSymbol) extends JsonSerializer[Any] with JsonDeserializer[Any] {
     val possibilities: Set[ClassSymbol] = getDirectSubClasses(cl).filter(_.isCaseClass)
 
-    val uniqueFieldForClass: Seq[(String, Class[_])] = possibilities.flatMap { s =>
-      val cl = currentMirror.runtimeClass(s)
+    val classesForField: Map[String, Set[universe.ClassSymbol]] = possibilities.flatMap { s =>
       s.toType.members
-        .collect { case m: MethodSymbol if m.isCaseAccessor && !m.isParamWithDefault => m }
-        .map(_.name).map(_ -> cl)
-    }.groupBy(_._1.toString)
+        .collect(onlyMandatoryCaseClassAccessor)
+        .map(_.name.toString)
+        .map(_ -> s)
+    }.groupBy { case (fieldName, _) => fieldName }
+      .mapValues(_.map { case (_, classSymbol) => classSymbol })
+
+    val uniqueFieldForClass: Seq[(String, Class[_])] = classesForField
       .filter(_._2.size == 1)
-      .mapValues(_.head._2)
+      .mapValues(_.head)
+      .mapValues(currentMirror.runtimeClass)
       .toSeq
+
+    assert(uniqueFieldForClass.map { case (_, cl) => cl }.toSet.size == possibilities.size, "bruh, we have overlapsed case classes in sealed trait " + cl.name)
+
+    def onlyMandatoryCaseClassAccessor: PartialFunction[Symbol, MethodSymbol] = {
+      case m: MethodSymbol if m.isCaseAccessor && !m.isParamWithDefault => m
+    }
 
     override def serialize(src: Any, typeOfSrc: Type, context: JsonSerializationContext): JsonElement =
       context.serialize(src, typeOfSrc)
@@ -115,7 +125,7 @@ object Serialization {
     override def deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): Any = {
       val o = json.getAsJsonObject
       uniqueFieldForClass
-        .find { case (f, _) => o.has(f) }
+        .find { case (fieldName, _) => o.has(fieldName) }
         .map { case (_, cl) => context.deserialize[Any](json, cl) }
         .getOrElse(throw new JsonParseException("unknown structure in json: " + o))
     }
