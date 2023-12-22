@@ -25,7 +25,8 @@ version = '3.7'
 group = 'hohserg.dimensional.layers' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'DimensionalLayers'
 
-sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
+java.toolchain.languageVersion = JavaLanguageVersion.of(8)
+compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 
 minecraft {
     mappings channel: 'stable', version: '39-1.12'
@@ -64,13 +65,14 @@ repositories {
     maven {
         url = "https://oss.sonatype.org/content/repositories/snapshots/"
     }
+    mavenCentral()
 }
 
 dependencies {
     minecraft 'net.minecraftforge:forge:1.12.2-14.23.5.2860'
 
     compileOnly 'abc:CubicChunks:1.12.2:dev'
-    //compileOnly 'abc:CubicChunks-1.12.2:0.0.1266.0-SNAPSHOT:dev_all'
+
     implementation 'abc:DivineRPG:1.7.1'
     implementation fg.deobf('abc:aether_ii-1.12.2:0.3.0')
     implementation fg.deobf('abc:orbis-lib-1.12.2:0.2.0')
