@@ -1,150 +1,260 @@
 package hohserg.dimensional.layers.preset
 
 import com.google.gson._
-import net.minecraft.block.Block
+import net.minecraft.block.properties.IProperty
 import net.minecraft.block.state.IBlockState
-import net.minecraft.init.Biomes
+import net.minecraft.command.CommandBase
 import net.minecraft.util.ResourceLocation
+import net.minecraft.world.biome.Biome
 import net.minecraft.world.{DimensionType, WorldType}
 import net.minecraftforge.fml.common.registry.ForgeRegistries
 
-import java.lang.reflect.Type
-import scala.collection.JavaConverters.{asScalaIteratorConverter, asScalaSetConverter, mapAsScalaMapConverter}
+import java.lang.reflect.{ParameterizedType, Type}
+import scala.collection.JavaConverters._
+import scala.reflect.ClassTag
+import scala.reflect.runtime._
+import scala.reflect.runtime.universe._
 
 object Serialization {
-  val gson: Gson =
-    (new GsonBuilder)
-      .registerTypeHierarchyAdapter(classOf[LayerSpec], LayerSpecSerializer)
-      .registerTypeHierarchyAdapter(classOf[DimensionalLayersPreset], Serializer)
-      .create()
+  val gson: Gson = {
+    val builder = new GsonBuilder
+    builder
+      .registerSerializer(optionSerializer[Long])
+      .registerMapper[DimensionType, String](_.getName, DimensionType.byName)
+      .registerMapper[WorldType, String](_.getName, WorldType.byName)
+      .registerSerializer(blockStateSerializer)
+      .registerMapper[Biome, String](biome => biome.getRegistryName.toString, x => ForgeRegistries.BIOMES.getValue(new ResourceLocation(x)))
+      .registerMapper[DimensionalLayersPreset, java.util.List[LayerSpec]](_.layers.asJava, x => DimensionalLayersPreset(x.asScala.toList), hierarchic = false)
 
-  private object Serializer extends JsonSerializer[DimensionalLayersPreset] with JsonDeserializer[DimensionalLayersPreset] {
-    override def serialize(src: DimensionalLayersPreset, typeOfSrc: Type, context: JsonSerializationContext): JsonElement = {
-      val r = new JsonArray
-      src.layers.foreach(l => r.add(context.serialize(l)))
-      r
-    }
+    val layerSpecSymbol = implicitly[TypeTag[LayerSpec]].tpe.typeSymbol.asClass
+    val caseClasses = getAllSubCaseClasses(layerSpecSymbol)
+    val traits = getAllTraits(layerSpecSymbol)
 
-    override def deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): DimensionalLayersPreset =
-      DimensionalLayersPreset(json.getAsJsonArray.iterator().asScala.map(je => context.deserialize[LayerSpec](je, classOf[LayerSpec])).toList)
+    caseClasses.foreach { cl => builder.registerTypeAdapter(currentMirror.runtimeClass(cl), new ProductSerializer(cl)) }
+    traits.foreach { cl => builder.registerTypeAdapter(currentMirror.runtimeClass(cl), new CoproductSerializer2(cl)) }
+
+    builder.create()
   }
 
-  private object LayerSpecSerializer extends JsonSerializer[LayerSpec] with JsonDeserializer[LayerSpec] {
+  class ProductSerializer(cl: ClassSymbol) extends JsonSerializer[Product] with JsonDeserializer[Product] {
+    val companionType = cl.companion.asModule.typeSignature
 
-    final val dimensionTypeKey = "dimensionType"
-    final val topOffsetKey = "topOffset"
-    final val bottomOffsetKey = "bottomOffset"
-    final val seedOverrideKey = "seedOverride"
-    final val worldTypeKey = "worldType"
-    final val worldTypePresetKey = "worldTypePreset"
-    final val biomeKey = "biome"
-    final val heightKey = "height"
-    final val fillerKey = "filler"
-    final val propertiesKey = "properties"
+    val companionMirror = currentMirror.reflect(currentMirror.reflectModule(cl.companion.asModule).instance)
 
-    override def serialize(src: LayerSpec, typeOfSrc: Type, context: JsonSerializationContext): JsonElement = {
-      val r = new JsonObject
-      src match {
-        case DimensionLayerSpec(dimensionType, seedOverride, topOffset, bottomOffset, worldType, worldTypePreset) =>
-          r.add(dimensionTypeKey, new JsonPrimitive(dimensionType.getName))
-          seedOverride.foreach(seed => r.add(seedOverrideKey, new JsonPrimitive(seed)))
+    val applyMethod = companionType.member(TermName("apply")).asMethod
 
-          if (topOffset > 0)
-            r.add(topOffsetKey, new JsonPrimitive(topOffset))
+    val applyMirror = companionMirror.reflectMethod(applyMethod)
 
-          if (bottomOffset > 0)
-            r.add(bottomOffsetKey, new JsonPrimitive(bottomOffset))
+    val fields: IndexedSeq[(String, Type, Option[Any])] = applyMethod.paramLists.head
+      .collect { case m: TermSymbol => m }
+      .zipWithIndex
+      .map { case (m, i) =>
+        val paramName = m.name.toString
+        val default: Option[Any] =
+          if (m.isParamWithDefault) {
+            val defaultGetterName = "apply$default$" + (i + 1)
+            val defaultGetter = companionType.member(TermName(defaultGetterName))
+            if (defaultGetter != NoSymbol) {
+              Some(companionMirror.reflectMethod(defaultGetter.asMethod).apply())
 
-          if (worldType != WorldType.DEFAULT)
-            r.add(worldTypeKey, new JsonPrimitive(worldType.getName))
+            } else
+              throw new RuntimeException("bruh, missing default getter for argument \"" + paramName + "\", required \"" + defaultGetterName + "\"")
 
-          if (worldTypePreset.nonEmpty)
-            r.add(worldTypePresetKey, new JsonPrimitive(worldTypePreset))
-
-
-        case SolidLayerSpec(filler, biome, height) =>
-          serializeBlockState(r, filler)
-          r.add(heightKey, new JsonPrimitive(height))
-          if (biome != Biomes.PLAINS) {
-            r.add(biomeKey, new JsonPrimitive(biome.getRegistryName.toString))
+          } else {
+            None
           }
+
+        (paramName, parameterizedType(m.typeSignature), default)
+      }.toIndexedSeq
+
+    override def serialize(src: Product, typeOfSrc: Type, context: JsonSerializationContext): JsonElement = {
+      val r = new JsonObject
+      for {
+        i <- 0 until src.productArity
+        v = src.productElement(i)
+        (name, argType, default) = fields(i)
+        if !default.contains(v)
+      } {
+        r.add(name, context.serialize(v, argType))
       }
       r
     }
 
-    private def serializeBlockState(r: JsonObject, filler: IBlockState) = {
-      r.add(fillerKey, new JsonPrimitive(filler.getBlock.getRegistryName.toString))
-      if (filler != filler.getBlock.getDefaultState) {
-        val jsonProps = new JsonObject
-        filler.getProperties.asScala.foreach { case (p, v) => jsonProps.add(p.getName, new JsonPrimitive(p.getName(v.asInstanceOf))) }
-        r.add(propertiesKey, jsonProps)
-      }
-    }
+    override def deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): Product = {
+      val o = json.getAsJsonObject
 
-    override def deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): LayerSpec = {
-      val jsonObject = json.getAsJsonObject
-      if (jsonObject.has(dimensionTypeKey))
-        DimensionLayerSpec(
-          deserializeDimType(jsonObject),
-          deserializeSeed(jsonObject),
-          deserializeOffset(jsonObject, topOffsetKey),
-          deserializeOffset(jsonObject, bottomOffsetKey),
-          deserializeWorldType(jsonObject),
-          if (jsonObject.has(worldTypePresetKey)) jsonObject.getAsJsonPrimitive(worldTypePresetKey).getAsString else ""
-        )
-      else {
-        SolidLayerSpec(
-          deserializeBlockState(jsonObject),
-          deserializeBiome(jsonObject),
-          jsonObject.getAsJsonPrimitive(heightKey).getAsInt)
-      }
-    }
-
-    def deserializeWorldType(jsonObject: JsonObject): WorldType =
-      if (jsonObject.has(worldTypeKey))
-        WorldType.byName(jsonObject.getAsJsonPrimitive(worldTypeKey).getAsString)
-      else
-        WorldType.DEFAULT
-
-
-    private def deserializeBiome(jsonObject: JsonObject) =
-      if (jsonObject.has(biomeKey))
-        ForgeRegistries.BIOMES.getValue(new ResourceLocation(jsonObject.getAsJsonPrimitive(biomeKey).getAsString))
-      else
-        Biomes.PLAINS
-
-
-    private def deserializeBlockState(jsonObject: JsonObject) = {
-      val block = Block.getBlockFromName(jsonObject.getAsJsonPrimitive(fillerKey).getAsString)
-
-      if (jsonObject.has(propertiesKey)) {
-        var state = block.getDefaultState
-        val jsonProps = jsonObject.getAsJsonObject(propertiesKey)
-        jsonProps.entrySet().asScala.foreach { e =>
-          val propName = e.getKey
-          val valueName = e.getValue.getAsString
-          val p = block.getBlockState.getProperty(propName)
-          val maybeValue = p.parseValue(valueName)
-          if (maybeValue.isPresent) {
-            state = state.withProperty(p, maybeValue.get().asInstanceOf)
-          }
+      applyMirror.apply((
+        for {
+          (name, argType, default) <- fields
+        } yield {
+          if (o.has(name))
+            context.deserialize(o.get(name), argType)
+          else
+            default.getOrElse(throw new JsonParseException("missing mandatory value: " + name))
         }
-        state
-      } else
-        block.getDefaultState
+        ): _*).asInstanceOf[Product]
+    }
+  }
+
+  class CoproductSerializer2(cl: ClassSymbol) extends JsonSerializer[Any] with JsonDeserializer[Any] {
+    val possibilities: Set[ClassSymbol] = getDirectSubClasses(cl).filter(_.isCaseClass)
+
+    val uniqueFieldForClass: Seq[(String, Class[_])] = possibilities.flatMap { s =>
+      val cl = currentMirror.runtimeClass(s)
+      s.toType.members
+        .collect { case m: MethodSymbol if m.isCaseAccessor && !m.isParamWithDefault => m }
+        .map(_.name).map(_ -> cl)
+    }.groupBy(_._1.toString)
+      .filter(_._2.size == 1)
+      .mapValues(_.head._2)
+      .toSeq
+
+    override def serialize(src: Any, typeOfSrc: Type, context: JsonSerializationContext): JsonElement =
+      context.serialize(src, typeOfSrc)
+
+    override def deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): Any = {
+      val o = json.getAsJsonObject
+      uniqueFieldForClass
+        .find { case (f, _) => o.has(f) }
+        .map { case (_, cl) => context.deserialize[Any](json, cl) }
+        .getOrElse(throw new JsonParseException("unknown structure in json: " + o))
+    }
+  }
+
+  def getAllSubCaseClasses(s: ClassSymbol): Set[ClassSymbol] = {
+    s match {
+      case t if t.isTrait => getDirectSubClasses(t).flatMap(getAllSubCaseClasses)
+      case c if c.isCaseClass => Set(c)
+    }
+  }
+
+  def getAllTraits(s: ClassSymbol): Set[ClassSymbol] = {
+    s match {
+      case t if t.isTrait => getDirectSubClasses(t).flatMap(getAllTraits) + t
+      case c if c.isCaseClass => Set()
+    }
+  }
+
+  def getDirectSubClasses(t: ClassSymbol): Set[ClassSymbol] = {
+    t.knownDirectSubclasses.filter(_.isClass).map(_.asClass)
+  }
+
+
+  implicit class RichGsonBuilder(val gb: GsonBuilder) extends AnyVal {
+    def registerMapper[A: ClassTag, B: TypeTag](to: A => B, from: B => A, hierarchic: Boolean = true): GsonBuilder = {
+      registerSerializer(mapperSerializer[A, B](to, from))
+      gb
     }
 
-    private def deserializeOffset(jsonObject: JsonObject, key: String) =
-      if (jsonObject.has(key)) jsonObject.getAsJsonPrimitive(key).getAsInt else 0
+    def registerSerializer[A: ClassTag](s: JsonSerializer[A] with JsonDeserializer[A], hierarchic: Boolean = true): GsonBuilder = {
+      val register: (Class[_], Any) => GsonBuilder = if (hierarchic) gb.registerTypeHierarchyAdapter else gb.registerTypeAdapter
+      register(implicitly[ClassTag[A]].runtimeClass, s)
+      gb
+    }
+  }
+
+  def blockStateSerializer: JsonSerializer[IBlockState] with JsonDeserializer[IBlockState] =
+    mapperSerializer[IBlockState, String](
+      { blockstate =>
+        blockstate.getBlock.getRegistryName.toString + (
+          if (blockstate == blockstate.getBlock.getDefaultState)
+            ""
+          else
+            blockstate.getProperties.asScala.map { case (prop, v) => prop.getName + ":" + getPropValueName(prop, v) }.mkString("[", ",", "]")
+          )
+      },
+      { str =>
+        val propStart = str.indexOf('[')
+        val block = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(if (propStart == -1) str else str.substring(0, propStart)))
+        if (propStart == -1)
+          block.getDefaultState
+        else {
+          val props = str.substring(propStart + 1, str.length - 1)
+          CommandBase.convertArgToBlockState(block, props)
+        }
+      }
+    )
+
+  def getPropValueName[A <: Comparable[A]](prop: IProperty[A], v: Comparable[_]): String =
+    prop.getName(v.asInstanceOf[A])
+
+  def enumSerializer[A <: Enum[A] : ClassTag]: JsonSerializer[A] with JsonDeserializer[A] = {
+    val cl = implicitly[ClassTag[A]].runtimeClass.asInstanceOf[Class[A]]
+    mapperSerializer[A, String](_.name, Enum.valueOf(cl, _))
+  }
+
+  class CoproductSerializer[A: TypeTag] extends JsonSerializer[A] with JsonDeserializer[A] {
+    val tt = implicitly[TypeTag[A]]
+    val possibilities: Set[Symbol] = tt.tpe.typeSymbol.asClass.knownDirectSubclasses
+
+    val uniqueFieldForClass: Seq[(String, Class[_])] = possibilities.flatMap { s =>
+      val cl = currentMirror.runtimeClass(s.asClass)
+      s.asClass.toType.members
+        .collect { case m: MethodSymbol if m.isCaseAccessor && !m.isParamWithDefault => m }
+        .map(_.name).map(_ -> cl)
+    }.groupBy(_._1.toString)
+      .filter(_._2.size == 1)
+      .mapValues(_.head._2)
+      .toSeq
+
+    override def serialize(src: A, typeOfSrc: Type, context: JsonSerializationContext): JsonElement = {
+      context.serialize(src, src.getClass)
+    }
+
+    override def deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): A = {
+      val o = json.getAsJsonObject
+      uniqueFieldForClass
+        .find { case (f, _) => o.has(f) }
+        .map { case (_, cl) => context.deserialize[A](json, cl) }
+        .getOrElse(throw new JsonParseException("unknown layer json"))
+    }
+  }
 
 
-    private def deserializeSeed(jsonObject: JsonObject) =
-      if (jsonObject.has(seedOverrideKey))
-        Some(jsonObject.getAsJsonPrimitive(seedOverrideKey).getAsLong)
-      else
-        None
+  case class ParameterizedTypeImpl(getRawType: Type, getActualTypeArguments: Array[Type]) extends ParameterizedType {
+    override def getOwnerType: Type = null
+  }
 
-    private def deserializeDimType(jsonObject: JsonObject) =
-      DimensionType.byName(jsonObject.getAsJsonPrimitive(dimensionTypeKey).getAsString)
+  def parameterizedType[A](t: scala.reflect.runtime.universe.Type): Type = {
+    val typeConstructor = currentMirror.runtimeClass(t)
+
+    val innerTypes = t.typeArgs.map(parameterizedType).toArray
+
+    if (innerTypes.isEmpty)
+      typeConstructor
+    else
+      ParameterizedTypeImpl(typeConstructor, innerTypes)
+  }
+
+  def optionSerializer[A: TypeTag]: JsonSerializer[Option[A]] with JsonDeserializer[Option[A]] = {
+    val elementType = parameterizedType(implicitly[TypeTag[A]].tpe)
+
+    new JsonSerializer[Option[A]] with JsonDeserializer[Option[A]] {
+      override def serialize(src: Option[A], typeOfSrc: Type, context: JsonSerializationContext): JsonElement =
+        src match {
+          case Some(x) => context.serialize(x, elementType)
+          case None => new JsonObject
+        }
+
+      override def deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): Option[A] = {
+        if (json.isJsonObject && json.getAsJsonObject.entrySet().isEmpty)
+          None
+        else {
+          Some(context.deserialize(json, elementType))
+        }
+      }
+    }
+  }
+
+  def mapperSerializer[A, B: TypeTag](to: A => B, from: B => A): JsonSerializer[A] with JsonDeserializer[A] = {
+    val b_type = parameterizedType(implicitly[TypeTag[B]].tpe)
+
+    new JsonSerializer[A] with JsonDeserializer[A] {
+      override def serialize(src: A, typeOfSrc: Type, context: JsonSerializationContext): JsonElement =
+        context.serialize(to(src), b_type)
+
+      override def deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): A =
+        from(context.deserialize(json, b_type))
+    }
   }
 }
