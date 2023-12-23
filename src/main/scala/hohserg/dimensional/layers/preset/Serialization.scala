@@ -193,34 +193,6 @@ object Serialization {
     mapperSerializer[A, String](_.name, Enum.valueOf(cl, _))
   }
 
-  class CoproductSerializer[A: TypeTag] extends JsonSerializer[A] with JsonDeserializer[A] {
-    val tt = implicitly[TypeTag[A]]
-    val possibilities: Set[Symbol] = tt.tpe.typeSymbol.asClass.knownDirectSubclasses
-
-    val uniqueFieldForClass: Seq[(String, Class[_])] = possibilities.flatMap { s =>
-      val cl = currentMirror.runtimeClass(s.asClass)
-      s.asClass.toType.members
-        .collect { case m: MethodSymbol if m.isCaseAccessor && !m.isParamWithDefault => m }
-        .map(_.name).map(_ -> cl)
-    }.groupBy(_._1.toString)
-      .filter(_._2.size == 1)
-      .mapValues(_.head._2)
-      .toSeq
-
-    override def serialize(src: A, typeOfSrc: Type, context: JsonSerializationContext): JsonElement = {
-      context.serialize(src, src.getClass)
-    }
-
-    override def deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): A = {
-      val o = json.getAsJsonObject
-      uniqueFieldForClass
-        .find { case (f, _) => o.has(f) }
-        .map { case (_, cl) => context.deserialize[A](json, cl) }
-        .getOrElse(throw new JsonParseException("unknown layer json"))
-    }
-  }
-
-
   case class ParameterizedTypeImpl(getRawType: Type, getActualTypeArguments: Array[Type]) extends ParameterizedType {
     override def getOwnerType: Type = null
   }
