@@ -53,6 +53,7 @@ object DimensionalLayersPreset {
   private def handleError(exception: Throwable): Unit = {
     println("DimensionalLayersPreset json parsing error")
     exception.printStackTrace()
+    
     (exception match {
       case ignore: NoSuchElementException =>
         None
