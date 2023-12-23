@@ -31,7 +31,7 @@ object Serialization {
     val traits = getAllTraits(layerSpecSymbol)
 
     caseClasses.foreach { cl => builder.registerTypeAdapter(currentMirror.runtimeClass(cl), new ProductSerializer(cl)) }
-    traits.foreach { cl => builder.registerTypeAdapter(currentMirror.runtimeClass(cl), new CoproductSerializer2(cl)) }
+    traits.foreach { cl => builder.registerTypeAdapter(currentMirror.runtimeClass(cl), new CoproductSerializer(cl)) }
 
     builder.create()
   }
@@ -96,7 +96,7 @@ object Serialization {
     }
   }
 
-  class CoproductSerializer2(cl: ClassSymbol) extends JsonSerializer[Any] with JsonDeserializer[Any] {
+  class CoproductSerializer(cl: ClassSymbol) extends JsonSerializer[Any] with JsonDeserializer[Any] {
     val possibilities: Set[ClassSymbol] = getDirectSubClasses(cl).filter(_.isCaseClass)
 
     val classesForField: Map[String, Set[universe.ClassSymbol]] = possibilities.flatMap { s =>
