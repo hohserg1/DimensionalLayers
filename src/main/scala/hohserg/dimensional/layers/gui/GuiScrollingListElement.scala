@@ -1,5 +1,6 @@
 package hohserg.dimensional.layers.gui
 
+import hohserg.dimensional.layers.gui.mixin.AccessorGuiScrollingList
 import net.minecraft.client.Minecraft
 import net.minecraftforge.fml.client.GuiScrollingList
 
@@ -9,6 +10,13 @@ abstract class GuiScrollingListElement(x: Int, y: Int, w: Int, h: Int, entryHeig
     Minecraft.getMinecraft.displayWidth, Minecraft.getMinecraft.displayHeight
   )
     with GuiElement {
+
+  val accessor = this.asInstanceOf[AccessorGuiScrollingList]
+
+  def setScrollDistanceWithLimits(v: Float): Unit = {
+    accessor.setScrollDistance(v)
+    accessor.invokeApplyScrollLimits()
+  }
 
   override def draw: Option[(Int, Int, Float) => Unit] = Some(drawScreen)
 
