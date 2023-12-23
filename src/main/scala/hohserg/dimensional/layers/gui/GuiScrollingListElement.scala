@@ -18,6 +18,10 @@ abstract class GuiScrollingListElement(x: Int, y: Int, w: Int, h: Int, entryHeig
     accessor.invokeApplyScrollLimits()
   }
 
+  def scrollToElement(index: Int): Unit = {
+    setScrollDistanceWithLimits((slotHeight * index - listHeight.toDouble / 2 + slotHeight.toDouble / 2).toInt)
+  }
+
   override def draw: Option[(Int, Int, Float) => Unit] = Some(drawScreen)
 
   override def mouseInput: Option[(Int, Int) => Unit] = Some(handleMouseInput)
