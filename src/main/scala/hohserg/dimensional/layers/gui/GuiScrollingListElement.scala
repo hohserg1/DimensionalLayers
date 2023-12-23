@@ -3,7 +3,7 @@ package hohserg.dimensional.layers.gui
 import net.minecraft.client.Minecraft
 import net.minecraftforge.fml.client.GuiScrollingList
 
-abstract class GuiLayersListElement(x: Int, y: Int, w: Int, h: Int, entryHeight: Int)
+abstract class GuiScrollingListElement(x: Int, y: Int, w: Int, h: Int, entryHeight: Int)
   extends GuiScrollingList(
     Minecraft.getMinecraft, w, h, y, y + h, x, entryHeight,
     Minecraft.getMinecraft.displayWidth, Minecraft.getMinecraft.displayHeight

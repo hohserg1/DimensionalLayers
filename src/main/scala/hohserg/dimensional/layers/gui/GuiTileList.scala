@@ -120,7 +120,7 @@ object GuiTileList {
 
 abstract class GuiTileList[A <: Drawable](val parent: GuiScreen with SelectHandler[A], availableWidth: Int, itemWidth: Int, linesCache: LoadingCache[Integer, Seq[GuiTileLine[A]]])
                                          (val fitHorizontal: Int = (availableWidth - 6) / slotWidth(itemWidth))
-  extends GuiLayersListElement(10, 10, fitHorizontal * slotWidth(itemWidth) + 6, parent.height - 20, slotWidth(itemWidth))
+  extends GuiScrollingListElement(10, 10, fitHorizontal * slotWidth(itemWidth) + 6, parent.height - 20, slotWidth(itemWidth))
     with GuiElement {
 
   val lines = linesCache.get(fitHorizontal)

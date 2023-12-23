@@ -2,14 +2,14 @@ package hohserg.dimensional.layers.gui.preset.list
 
 import hohserg.dimensional.layers.gui.mixin.AccessorGuiScrollingList
 import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
-import hohserg.dimensional.layers.gui.{DimensionClientUtils, GuiLayersListElement}
+import hohserg.dimensional.layers.gui.{DimensionClientUtils, GuiScrollingListElement}
 import hohserg.dimensional.layers.preset._
 import net.minecraft.client.renderer.Tessellator
 
 import scala.collection.mutable
 
 class GuiLayersList(val parent: GuiSetupDimensionalLayersPreset, settings: String, scrollDistance: Float)
-  extends GuiLayersListElement(10, 10, parent.width - 200, parent.height - 20, DimensionClientUtils.width + 4) {
+  extends GuiScrollingListElement(10, 10, parent.width - 200, parent.height - 20, DimensionClientUtils.width + 4) {
   val accessor = this.asInstanceOf[AccessorGuiScrollingList]
 
   def setScrollDistanceWithLimits(v: Float): Unit = {
