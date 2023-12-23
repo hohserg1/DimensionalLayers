@@ -2,7 +2,6 @@ package hohserg.dimensional.layers.gui
 
 import com.google.common.cache.{CacheBuilder, CacheLoader, LoadingCache}
 import hohserg.dimensional.layers.gui.GuiTileList.{GuiTileLine, SelectHandler, slotWidth}
-import hohserg.dimensional.layers.gui.mixin.AccessorGuiScrollingList
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
@@ -176,7 +175,7 @@ abstract class GuiTileList[A <: Drawable](val parent: GuiScreen with SelectHandl
       for ((i, horizontalIndex) <- line.line.zipWithIndex) {
         if (i == item) {
           selection = Some((verticalIndex, horizontalIndex, item))
-          this.asInstanceOf[AccessorGuiScrollingList].setScrollDistance(slotHeight * verticalIndex)
+          scrollToElement(verticalIndex)
           return
         }
       }
