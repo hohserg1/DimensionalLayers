@@ -53,16 +53,19 @@ object DimensionalLayersPreset {
   private def handleError(exception: Throwable): Unit = {
     println("DimensionalLayersPreset json parsing error")
     exception.printStackTrace()
-    val (title, msg) = exception match {
+    (exception match {
+      case ignore: NoSuchElementException =>
+        None
       case badJson: JsonParseException =>
-        "Malformed json:" -> badJson.getMessage
+        Some("Malformed json:")
       case unexpected: Throwable =>
-        "Error while parsing json. Plz report to author" -> unexpected.getMessage
+        Some("Error while parsing json. Plz report to author")
+    }).foreach { title =>
+      Minecraft.getMinecraft.getToastGui.add(new SystemToast(
+        SystemToast.Type.NARRATOR_TOGGLE,
+        new TextComponentString(title),
+        new TextComponentString(exception.getMessage + "\nfull stacktrace in log")
+      ))
     }
-    Minecraft.getMinecraft.getToastGui.add(new SystemToast(
-      SystemToast.Type.NARRATOR_TOGGLE,
-      new TextComponentString(title),
-      new TextComponentString(msg + "\nfull stacktrace in log")
-    ))
   }
 }
