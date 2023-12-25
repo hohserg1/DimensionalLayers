@@ -9,6 +9,7 @@ import io.github.opencubicchunks.cubicchunks.api.worldgen.ICubeGenerator
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiCreateWorld
 import net.minecraft.world.{World, WorldServer, WorldType}
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 object DimensionalLayersWorldType extends WorldType("dimlayers") with ICubicWorldType {
 
@@ -33,6 +34,7 @@ object DimensionalLayersWorldType extends WorldType("dimlayers") with ICubicWorl
 
   override def isCustomizable: Boolean = true
 
+  @SideOnly(Side.CLIENT)
   override def onCustomizeButton(mc: Minecraft, guiCreateWorld: GuiCreateWorld): Unit = {
     mc.displayGuiScreen(new GuiSetupDimensionalLayersPreset(guiCreateWorld))
   }

@@ -10,6 +10,8 @@ import net.minecraft.init.Blocks
 import net.minecraft.util.text.TextComponentString
 import net.minecraft.world.World
 import net.minecraftforge.common.DimensionManager
+import net.minecraftforge.fml.common.FMLCommonHandler
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 import scala.collection.JavaConverters.asScalaSetConverter
 import scala.util.{Failure, Success, Try}
@@ -51,22 +53,29 @@ object DimensionalLayersPreset {
     )
 
   private def handleError(exception: Throwable): Unit = {
-    println("DimensionalLayersPreset json parsing error")
-    exception.printStackTrace()
-    
+
     (exception match {
       case ignore: NoSuchElementException =>
-        None
+        Some("Empty string, will be used mixed preset")
       case badJson: JsonParseException =>
         Some("Malformed json:")
       case unexpected: Throwable =>
         Some("Error while parsing json. Plz report to author")
     }).foreach { title =>
-      Minecraft.getMinecraft.getToastGui.add(new SystemToast(
-        SystemToast.Type.NARRATOR_TOGGLE,
-        new TextComponentString(title),
-        new TextComponentString(exception.getMessage + "\nfull stacktrace in log")
-      ))
+      if (FMLCommonHandler.instance().getEffectiveSide == Side.CLIENT)
+        showErrorMsgClient(exception, title)
+
+      println("DimensionalLayersPreset json parsing error: " + title)
+      exception.printStackTrace()
     }
+  }
+
+  @SideOnly(Side.CLIENT)
+  private def showErrorMsgClient(exception: Throwable, title: String): Unit = {
+    Minecraft.getMinecraft.getToastGui.add(new SystemToast(
+      SystemToast.Type.NARRATOR_TOGGLE,
+      new TextComponentString(title),
+      new TextComponentString(exception.getMessage + "\nfull stacktrace in log")
+    ))
   }
 }
