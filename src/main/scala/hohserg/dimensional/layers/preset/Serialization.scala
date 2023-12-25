@@ -198,7 +198,11 @@ object Serialization {
   }
 
   def parameterizedType[A](t: scala.reflect.runtime.universe.Type): Type = {
-    val typeConstructor = currentMirror.runtimeClass(t)
+    val tt = t match {
+      case refinedType: RefinedType => refinedType.parents.head
+      case _ => t
+    }
+    val typeConstructor = currentMirror.runtimeClass(tt)
 
     val innerTypes = t.typeArgs.map(parameterizedType).toArray
 
