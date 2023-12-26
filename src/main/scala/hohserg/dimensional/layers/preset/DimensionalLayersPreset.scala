@@ -2,7 +2,7 @@ package hohserg.dimensional.layers.preset
 
 import com.google.gson.JsonParseException
 import hohserg.dimensional.layers.Configuration
-import hohserg.dimensional.layers.worldgen.{DimensionLayer, Layer, SolidLayer}
+import hohserg.dimensional.layers.worldgen.{CubicWorldTypeLayer, DimensionLayer, Layer, SolidLayer}
 import io.github.opencubicchunks.cubicchunks.api.util.IntRange
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.toasts.SystemToast
@@ -17,15 +17,30 @@ import scala.collection.JavaConverters.asScalaSetConverter
 import scala.util.{Failure, Success, Try}
 
 case class DimensionalLayersPreset(layers: List[LayerSpec]) {
-  def toLayerMap: Map[IntRange, World => Layer] =
+  def toLayerMap(original: World): Map[Int, Layer] =
     layers
-      .foldRight(List[(IntRange, World => Layer)]() -> 0) {
-        case (spec: DimensionLayerSpec, (acc, lastFreeCubic)) =>
-          (range(lastFreeCubic, spec.height) -> (new DimensionLayer(_: World, spec, lastFreeCubic)) :: acc) -> (lastFreeCubic + spec.height)
+      .foldRight(List[(IntRange, Layer)]() -> 0) {
+        case (spec, (acc, lastFreeCubic)) =>
 
-        case (SolidLayerSpec(filler, height, biome), (acc, lastFreeCubic)) =>
-          (range(lastFreeCubic, height) -> { _: World => SolidLayer(filler, biome, lastFreeCubic, height) } :: acc) -> (lastFreeCubic + height)
-      }._1.toMap
+          val layer = spec match {
+            case spec: DimensionLayerSpec =>
+              new DimensionLayer(original, spec, lastFreeCubic)
+
+            case SolidLayerSpec(filler, height, biome) =>
+              SolidLayer(filler, biome, lastFreeCubic, height)
+
+            case spec: CubicWorldTypeLayerSpec =>
+              new CubicWorldTypeLayer(original, spec, lastFreeCubic)
+          }
+
+          (range(lastFreeCubic, layer.height) -> layer :: acc) -> (lastFreeCubic + layer.height)
+      }
+      ._1
+      .toMap
+      .flatMap { case (range, layer) =>
+        for (i <- range.getMin to range.getMax)
+          yield i -> layer
+      }
 
   private def range(lastFreeCubic: Int, height: Int) = IntRange.of(lastFreeCubic, lastFreeCubic + height - 1)
 
