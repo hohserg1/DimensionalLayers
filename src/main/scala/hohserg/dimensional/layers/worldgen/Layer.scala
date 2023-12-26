@@ -13,8 +13,8 @@ import net.minecraft.world.gen.IChunkGenerator
 
 import java.util.concurrent.TimeUnit
 
-trait Layer {
   def startCubeY: Int
+sealed trait Layer {
 
   def height: Int
 }
