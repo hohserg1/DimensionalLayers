@@ -1,7 +1,7 @@
 package hohserg.dimensional.layers.worldgen.proxy
 
 import com.google.common.collect.ImmutableList
-import hohserg.dimensional.layers.worldgen.DimensionLayer
+import hohserg.dimensional.layers.worldgen.{BaseDimensionLayer, CubicWorldTypeLayer, DimensionLayer}
 import io.github.opencubicchunks.cubicchunks.api.world.IMinMaxHeight
 import net.minecraft.block.Block
 import net.minecraft.block.state.IBlockState
@@ -14,34 +14,42 @@ import net.minecraft.world.biome.Biome
 import net.minecraft.world.chunk.{Chunk, IChunkProvider}
 import net.minecraft.world.storage.WorldInfo
 import net.minecraft.world.storage.loot.LootTableManager
-import net.minecraft.world.{World, WorldLens, WorldSettings}
+import net.minecraft.world.{World, WorldLens, WorldSettings, WorldType}
 
 import java.util
 import scala.collection.mutable
 
 object ProxyWorld {
   def apply(original: World, layer: DimensionLayer): ProxyWorld = {
+    new ProxyWorld(original, layer, createLayerWorldInfo(original, layer.spec.seedOverride, layer.spec.worldType, layer.spec.worldTypePreset))
+  }
+
+  def apply(original: World, layer: CubicWorldTypeLayer): ProxyWorld = {
+    new ProxyWorld(original, layer, createLayerWorldInfo(original, layer.spec.seedOverride, layer.spec.cubicWorldType, layer.spec.worldTypePreset))
+  }
+
+  def createLayerWorldInfo(original: World, seedOverride: Option[Long], worldType: WorldType, worldTypePreset: String): WorldInfo = {
     val originalWorldInfo = original.getWorldInfo
     val actualWorldInfo = new WorldInfo(originalWorldInfo)
     actualWorldInfo.populateFromWorldSettings(
       new WorldSettings(
-        layer.spec.seedOverride.getOrElse(original.getSeed),
+        seedOverride.getOrElse(original.getSeed),
         originalWorldInfo.getGameType,
         originalWorldInfo.isMapFeaturesEnabled,
         originalWorldInfo.isHardcoreModeEnabled,
-        layer.spec.worldType
-      ).setGeneratorOptions(layer.spec.worldTypePreset)
+        worldType
+      ).setGeneratorOptions(worldTypePreset)
     )
-    new ProxyWorld(original, layer, actualWorldInfo)
+    actualWorldInfo
   }
 }
 
 
-class ProxyWorld private(original: World, val layer: DimensionLayer, actualWorldInfo: WorldInfo)
+class ProxyWorld private(original: World, val layer: BaseDimensionLayer, actualWorldInfo: WorldInfo, override val isCubicWorld: Boolean = false)
   extends BaseWorldServer(
     new FakeSaveHandler(actualWorldInfo),
     actualWorldInfo,
-    layer.spec.dimensionType.createDimension(),
+    layer.dimensionType.createDimension(),
     new Profiler
   ) with FakeCubicWorld with IMinMaxHeight {
 
@@ -57,9 +65,9 @@ class ProxyWorld private(original: World, val layer: DimensionLayer, actualWorld
 
   override def getSeed: Long = worldInfo.getSeed
 
-  override def getMinHeight: Int = layer.startBlockY
+  override def getMinHeight: Int = layer.realStartBlockY
 
-  override def getMaxHeight: Int = layer.endBlockY + 1
+  override def getMaxHeight: Int = layer.realEndBlockY + 1
 
   override def isOutsideBuildHeight(pos: BlockPos): Boolean = {
     pos match {
@@ -128,8 +136,8 @@ class ProxyWorld private(original: World, val layer: DimensionLayer, actualWorld
 
   override def getHeight(x: Int, z: Int): Int =
     heightCache.getOrElseUpdate(x -> z,
-      (layer.endBlockY to layer.startBlockY by -1).dropWhile(y => original.isAirBlock(new BlockPos(x, y, z))).headOption
-        .map(_ - layer.startBlockY)
+      (layer.realEndBlockY to layer.realStartBlockY by -1).dropWhile(y => original.isAirBlock(new BlockPos(x, y, z))).headOption
+        .map(_ - layer.realStartBlockY)
         .getOrElse(0)
     )
 
@@ -153,7 +161,7 @@ class ProxyWorld private(original: World, val layer: DimensionLayer, actualWorld
     original.getChunksLowestHorizon(x, z)
 
   override def spawnEntity(entityIn: Entity): Boolean = {
-    entityIn.posY += layer.startBlockY
+    entityIn.posY += layer.realStartBlockY
     entityIn.world = original
     val newEntity = EntityList.newEntity(entityIn.getClass, original)
     newEntity.deserializeNBT(entityIn.serializeNBT())
@@ -172,11 +180,7 @@ class ProxyWorld private(original: World, val layer: DimensionLayer, actualWorld
   override def canCreatureTypeSpawnHere(creatureType: EnumCreatureType, spawnListEntry: Biome.SpawnListEntry, pos: BlockPos): Boolean =
     getPossibleCreatures(creatureType, pos).contains(spawnListEntry)
 
-  private def getPossibleCreatures(creatureType: EnumCreatureType, pos: BlockPos): util.List[Biome.SpawnListEntry] = {
-    val localPos = pos match {
-      case _: ShiftedBlockPos => pos.down(layer.startBlockY)
-      case _ => pos
-    }
-    Option(layer.vanillaGenerator.getPossibleCreatures(creatureType, localPos)).getOrElse(ImmutableList.of())
-  }
+  private def getPossibleCreatures(creatureType: EnumCreatureType, pos: BlockPos): util.List[Biome.SpawnListEntry] =
+    Option(layer.getPossibleCreatures(creatureType, ShiftedBlockPos.unshift(pos))).getOrElse(ImmutableList.of())
+
 }

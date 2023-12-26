@@ -1,6 +1,6 @@
 package hohserg.dimensional.layers.worldgen.proxy
 
-import hohserg.dimensional.layers.worldgen.DimensionLayer
+import hohserg.dimensional.layers.worldgen.BaseDimensionLayer
 import io.github.opencubicchunks.cubicchunks.api.util.Coords
 import io.github.opencubicchunks.cubicchunks.api.world.IColumn
 import net.minecraft.block.state.IBlockState
@@ -12,7 +12,7 @@ import net.minecraft.world.EnumSkyBlock
 import net.minecraft.world.chunk.Chunk
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage
 
-class ProxyChunk(proxy: ProxyWorld, original: Chunk, layer: DimensionLayer) extends Chunk(original.getWorld, original.x, original.z) {
+class ProxyChunk(proxy: ProxyWorld, original: Chunk, layer: BaseDimensionLayer) extends Chunk(original.getWorld, original.x, original.z) {
   val column = original.asInstanceOf[IColumn]
 
   override def getBlockState(pos: BlockPos): IBlockState =
@@ -28,7 +28,7 @@ class ProxyChunk(proxy: ProxyWorld, original: Chunk, layer: DimensionLayer) exte
 
   override def getBlockState(x: Int, y: Int, z: Int): IBlockState =
     if (isInLayer(y))
-      getBlockStateShifted(x, y + layer.startBlockY, z)
+      getBlockStateShifted(x, y + layer.realStartBlockY, z)
     else
       Blocks.AIR.getDefaultState
 
@@ -41,7 +41,7 @@ class ProxyChunk(proxy: ProxyWorld, original: Chunk, layer: DimensionLayer) exte
   override def getHeightValue(x: Int, z: Int): Int = original.getHeightValue(x, z)
 
   override def getTopFilledSegment: Int = {
-    for (i <- layer.endCubeY to layer.startCubeY by -1) {
+    for (i <- layer.realEndCubeY to layer.realStartCubeY by -1) {
       val cube = original.asInstanceOf[IColumn].getCube(i)
       if (!cube.isEmpty) {
         return Coords.cubeToMinBlock(i)
@@ -60,7 +60,7 @@ class ProxyChunk(proxy: ProxyWorld, original: Chunk, layer: DimensionLayer) exte
     executeInLayer(pos, original.getLightSubtracted(_, amount), 0)
 
   override def addEntity(entityIn: Entity): Unit = {
-    entityIn.posY = entityIn.posY + layer.startBlockY
+    entityIn.posY = entityIn.posY + layer.realStartBlockY
     entityIn.prevPosY = entityIn.posY
     original.addEntity(entityIn)
   }
@@ -88,12 +88,12 @@ class ProxyChunk(proxy: ProxyWorld, original: Chunk, layer: DimensionLayer) exte
     proxy.getHeight(pos).up()
 
   override def isEmptyBetween(startY: Int, endY: Int): Boolean =
-    original.isEmptyBetween(startY + layer.startBlockY, endY + layer.startBlockY)
+    original.isEmptyBetween(startY + layer.realStartBlockY, endY + layer.realStartBlockY)
 
   override lazy val getBlockStorageArray: Array[ExtendedBlockStorage] =
     (for {
       i <- 0 to 15
-    } yield column.getCube(layer.startCubeY + i).getStorage).toArray
+    } yield column.getCube(layer.realStartCubeY + i).getStorage).toArray
 
 
   private def executeInLayer[A](pos: BlockPos, f: ShiftedBlockPos => A, default: A): A = {

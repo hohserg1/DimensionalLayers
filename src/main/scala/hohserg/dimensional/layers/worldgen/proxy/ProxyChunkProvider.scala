@@ -1,11 +1,11 @@
 package hohserg.dimensional.layers.worldgen.proxy
 
 import com.google.common.cache.{CacheBuilder, CacheLoader, LoadingCache}
-import hohserg.dimensional.layers.worldgen.DimensionLayer
+import hohserg.dimensional.layers.worldgen.BaseDimensionLayer
 import net.minecraft.world.World
 import net.minecraft.world.chunk.{Chunk, IChunkProvider}
 
-class ProxyChunkProvider(proxy: ProxyWorld, original: World, layer: DimensionLayer) extends IChunkProvider {
+class ProxyChunkProvider(proxy: ProxyWorld, original: World, layer: BaseDimensionLayer) extends IChunkProvider {
 
   val proxyChunkCache: LoadingCache[Chunk, ProxyChunk] =
     CacheBuilder.newBuilder()

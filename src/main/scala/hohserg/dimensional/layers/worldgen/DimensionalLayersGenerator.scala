@@ -85,7 +85,7 @@ class DimensionalLayersGenerator(original: World) extends ICubeGenerator {
   }
 
   private def recursiveGeneration(cubeX: Int, cubeY: Int, cubeZ: Int, layer: DimensionLayer): Unit = {
-    for (y <- (layer.startCubeY + layer.height - 1) to layer.startCubeY by -1)
+    for (y <- (layer.realStartCubeY + layer.height - 1) to layer.realStartCubeY by -1)
       if (y != cubeY)
         original.asInstanceOf[ICubicWorld].getCubeFromCubeCoords(cubeX, y, cubeZ)
   }
@@ -133,7 +133,7 @@ class DimensionalLayersGenerator(original: World) extends ICubeGenerator {
   }
 
   private def markColumnPopulated(cubeX: Int, cubeZ: Int, layer: DimensionLayer): Unit = {
-    for (y <- (layer.startCubeY + layer.height - 1) to layer.startCubeY by -1) {
+    for (y <- (layer.realStartCubeY + layer.height - 1) to layer.realStartCubeY by -1) {
       cubicWorld.getCubeFromCubeCoords(cubeX, y, cubeZ).setPopulated(true)
     }
   }
@@ -148,7 +148,7 @@ class DimensionalLayersGenerator(original: World) extends ICubeGenerator {
   override def getFullPopulationRequirements(cube: ICube): Box = {
     layerAtCubeY.get(cube.getY).collect {
       case layer: DimensionLayer =>
-        val i = cube.getY - layer.startCubeY
+        val i = cube.getY - layer.realStartCubeY
         new Box(-1, -i, -1, 0, layer.height - i - 1, 0)
     }.getOrElse(ICubeGenerator.NO_REQUIREMENT)
   }
@@ -158,7 +158,7 @@ class DimensionalLayersGenerator(original: World) extends ICubeGenerator {
   override def getPopulationPregenerationRequirements(cube: ICube): Box = {
     layerAtCubeY.get(cube.getY).collect {
       case layer: DimensionLayer =>
-        val i = cube.getY - layer.startCubeY
+        val i = cube.getY - layer.realStartCubeY
         new Box(0, -i, 0, 1, layer.height - i - 1, 1)
     }.getOrElse(ICubeGenerator.NO_REQUIREMENT)
   }
@@ -179,7 +179,7 @@ class DimensionalLayersGenerator(original: World) extends ICubeGenerator {
   override def getPossibleCreatures(enumCreatureType: EnumCreatureType, blockPos: BlockPos): util.List[Biome.SpawnListEntry] =
     layerAtCubeY.get(Coords.blockToCube(blockPos.getY)).collect {
       case layer: DimensionLayer =>
-        layer.vanillaGenerator.getPossibleCreatures(enumCreatureType, blockPos.down(layer.startBlockY))
+        layer.vanillaGenerator.getPossibleCreatures(enumCreatureType, blockPos.down(layer.realStartBlockY))
     }.getOrElse(ImmutableList.of())
 
   override def getClosestStructure(name: String, blockPos: BlockPos, findUnexplored: Boolean): BlockPos =
