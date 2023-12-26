@@ -19,10 +19,10 @@ import java.util
 import java.util.Random
 import scala.collection.JavaConverters._
 
-class DimensionalLayersGenerator(world: World) extends ICubeGenerator {
-  val preset = DimensionalLayersPreset(world.getWorldInfo.getGeneratorOptions)
+class DimensionalLayersGenerator(original: World) extends ICubeGenerator {
+  val preset = DimensionalLayersPreset(original.getWorldInfo.getGeneratorOptions)
 
-  val cubicWorld = world.asInstanceOf[ICubicWorldInternal]
+  val cubicWorld = original.asInstanceOf[ICubicWorldInternal]
 
   val layerAtCubeY: Map[Int, Layer] =
     preset.toLayerMap
@@ -78,7 +78,7 @@ class DimensionalLayersGenerator(world: World) extends ICubeGenerator {
       layer.optimizationHack = false
     }
 
-    val storage = chunk.getBlockStorageArray()((cubeY - layer.startCubeY + layer.spec.bottomOffset) & 15)
+    val storage = chunk.getBlockStorageArray()((cubeY - layer.realStartCubeY + layer.spec.bottomOffset) & 15)
     if (storage != null && !storage.isEmpty) {
       for {
         x <- 0 to 15
@@ -92,7 +92,7 @@ class DimensionalLayersGenerator(world: World) extends ICubeGenerator {
   private def recursiveGeneration(cubeX: Int, cubeY: Int, cubeZ: Int, layer: DimensionLayer): Unit = {
     for (y <- (layer.startCubeY + layer.height - 1) to layer.startCubeY by -1)
       if (y != cubeY)
-        world.asInstanceOf[ICubicWorld].getCubeFromCubeCoords(cubeX, y, cubeZ)
+        original.asInstanceOf[ICubicWorld].getCubeFromCubeCoords(cubeX, y, cubeZ)
   }
 
   override def populate(cube: ICube): Unit = {
@@ -124,7 +124,7 @@ class DimensionalLayersGenerator(world: World) extends ICubeGenerator {
 
     val generators = IGameRegistry.getSortedGeneratorList.asScala
 
-    val worldSeed = world.getSeed
+    val worldSeed = original.getSeed
     val fmlRandom = new Random(worldSeed)
     val xSeed = fmlRandom.nextLong() >> 3L
     val zSeed = fmlRandom.nextLong() >> 3L
@@ -190,7 +190,7 @@ class DimensionalLayersGenerator(world: World) extends ICubeGenerator {
   override def getClosestStructure(name: String, blockPos: BlockPos, findUnexplored: Boolean): BlockPos =
     layerAtCubeY.get(Coords.blockToCube(blockPos.getY)).collect {
       case layer: DimensionLayer =>
-        layer.vanillaGenerator.getNearestStructurePos(this.world, name, blockPos, findUnexplored)
+        layer.vanillaGenerator.getNearestStructurePos(this.original, name, blockPos, findUnexplored)
     }.orNull
 
   override def generateCube(cubeX: Int, cubeY: Int, cubeZ: Int): CubePrimer = generateCube(cubeX, cubeY, cubeZ, new CubePrimer())
