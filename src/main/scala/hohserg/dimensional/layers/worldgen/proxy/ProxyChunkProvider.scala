@@ -2,10 +2,12 @@ package hohserg.dimensional.layers.worldgen.proxy
 
 import com.google.common.cache.{CacheBuilder, CacheLoader, LoadingCache}
 import hohserg.dimensional.layers.worldgen.DimensionLayer
-import net.minecraft.world.World
-import net.minecraft.world.chunk.{Chunk, IChunkProvider}
+import net.minecraft.world.chunk.Chunk
+import net.minecraft.world.gen.ChunkProviderServer
+import net.minecraft.world.{World, WorldServer}
 
-class ProxyChunkProvider(proxy: ProxyWorld, original: World, layer: DimensionLayer) extends IChunkProvider {
+class ProxyChunkProvider(proxy: ProxyWorld, original: World, layer: DimensionLayer)
+  extends ChunkProviderServer(proxy.asInstanceOf[WorldServer], proxy.getSaveHandler.getChunkLoader(proxy.provider), layer.vanillaGenerator) {
 
   val proxyChunkCache: LoadingCache[Chunk, ProxyChunk] =
     CacheBuilder.newBuilder()
@@ -21,7 +23,18 @@ class ProxyChunkProvider(proxy: ProxyWorld, original: World, layer: DimensionLay
 
   override def tick(): Boolean = false
 
-  override def makeString(): String = ""
+  override def makeString(): String = "ProxyChunkProvider"
 
   override def isChunkGeneratedAt(x: Int, z: Int): Boolean = original.getChunkProvider.isChunkGeneratedAt(x, z)
+
+  override def loadChunk(x: Int, z: Int): Chunk = ???
+
+  override def loadChunk(x: Int, z: Int, runnable: Runnable): Chunk = ???
+
+  override def saveChunks(all: Boolean): Boolean = false
+
+  override def flushToDisk(): Unit = ()
+
+  override def canSave: Boolean = false
+
 }

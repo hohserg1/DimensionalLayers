@@ -172,7 +172,7 @@ class ProxyWorld private(original: World, val layer: DimensionLayer, actualWorld
   override def canCreatureTypeSpawnHere(creatureType: EnumCreatureType, spawnListEntry: Biome.SpawnListEntry, pos: BlockPos): Boolean =
     getPossibleCreatures(creatureType, pos).contains(spawnListEntry)
 
-  private def getPossibleCreatures(creatureType: EnumCreatureType, pos: BlockPos): util.List[Biome.SpawnListEntry] = {
+  def getPossibleCreatures(creatureType: EnumCreatureType, pos: BlockPos): util.List[Biome.SpawnListEntry] = {
     val localPos = pos match {
       case _: ShiftedBlockPos => pos.down(layer.startBlockY)
       case _ => pos
