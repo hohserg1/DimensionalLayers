@@ -21,10 +21,10 @@ object DimensionalLayersWorldType extends WorldType("dimlayers") with ICubicWorl
   }
 
   override def calculateGenerationHeightRange(worldServer: WorldServer): IntRange = {
-    val layers = DimensionalLayersPreset(worldServer.getWorldInfo.getGeneratorOptions).toLayerMap
+    val layers = DimensionalLayersPreset(worldServer.getWorldInfo.getGeneratorOptions).toLayerMap(worldServer)
     IntRange.of(
-      layers.keys.minBy(_.getMin).getMin * 16,
-      layers.keys.maxBy(_.getMax).getMax * 16 + 16
+      layers.keys.min * 16,
+      layers.keys.max * 16 + 16
     )
   }
 
