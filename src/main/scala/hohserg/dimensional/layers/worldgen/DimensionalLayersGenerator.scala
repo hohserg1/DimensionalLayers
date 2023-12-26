@@ -24,12 +24,7 @@ class DimensionalLayersGenerator(original: World) extends ICubeGenerator {
 
   val cubicWorld = original.asInstanceOf[ICubicWorldInternal]
 
-  val layerAtCubeY: Map[Int, Layer] =
-    preset.toLayerMap
-      .map { case (range, layerFactory) => range -> layerFactory(world) }.flatMap { case (range, layer) =>
-      for (i <- range.getMin to range.getMax)
-        yield i -> layer
-    }
+  val layerAtCubeY: Map[Int, Layer] = preset.toLayerMap(original)
 
   private def generateWithWatchdog[BlockStateAcceptor](generator: (Int, Int, Int, BlockStateAcceptor, DimensionLayer) => Unit, cubeX: Int, cubeY: Int, cubeZ: Int, target: BlockStateAcceptor, layer: DimensionLayer): Unit = {
     try {
