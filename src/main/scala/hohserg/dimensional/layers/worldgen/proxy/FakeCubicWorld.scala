@@ -14,8 +14,6 @@ import net.minecraftforge.common.ForgeChunkManager
 import java.util.function.Predicate
 
 trait FakeCubicWorld extends ICubicWorldInternal.Server {
-  override def isCubicWorld: Boolean = false
-
   override def getVanillaNetworkHandler: VanillaNetworkHandler = ???
 
   override def initCubicWorldServer(intRange: IntRange, intRange1: IntRange): Unit = ()
