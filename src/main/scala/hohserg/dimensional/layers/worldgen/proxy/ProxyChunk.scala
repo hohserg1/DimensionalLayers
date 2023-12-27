@@ -27,7 +27,7 @@ class ProxyChunk(proxy: ProxyWorld, original: Chunk, layer: BaseDimensionLayer) 
     }
 
   override def getBlockState(x: Int, y: Int, z: Int): IBlockState =
-    if (isInLayer(y))
+    if (layer.isInLayer(y))
       getBlockStateShifted(x, y + layer.realStartBlockY, z)
     else
       Blocks.AIR.getDefaultState
@@ -96,15 +96,6 @@ class ProxyChunk(proxy: ProxyWorld, original: Chunk, layer: BaseDimensionLayer) 
     } yield column.getCube(layer.realStartCubeY + i).getStorage).toArray
 
 
-  private def executeInLayer[A](pos: BlockPos, f: ShiftedBlockPos => A, default: A): A = {
-    val p = layer.shift(pos)
-    if (p.isInLayer)
-      f(p)
-    else
-      default
-  }
-
-  private def isInLayer(y: Int): Boolean = {
-    layer.virtualStartBlockY <= y && y <= layer.virtualEndBlockY
-  }
+  private def executeInLayer[A](pos: BlockPos, f: ShiftedBlockPos => A, default: A): A =
+    layer.executeInLayer(pos, f, default)
 }

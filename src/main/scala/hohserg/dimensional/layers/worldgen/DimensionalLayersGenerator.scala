@@ -107,6 +107,8 @@ class DimensionalLayersGenerator(original: World) extends ICubeGenerator {
     layerAtCubeY.get(cube.getY).foreach {
       case layer: DimensionLayer =>
         generateWithWatchdog(generateLayerFeatures, cube.getX, cube.getY, cube.getZ, cube, layer)
+      case layer: CubicWorldTypeLayer =>
+        layer.generator.populate(new ProxyCube(cube, layer))
       case _ =>
     }
   }
