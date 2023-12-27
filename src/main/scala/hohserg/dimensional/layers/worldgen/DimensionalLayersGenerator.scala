@@ -26,13 +26,16 @@ class DimensionalLayersGenerator(original: World) extends ICubeGenerator {
 
   val layerAtCubeY: Map[Int, Layer] = preset.toLayerMap(original)
 
-  private def generateWithWatchdog[BlockStateAcceptor](generator: (Int, Int, Int, BlockStateAcceptor, DimensionLayer) => Unit, cubeX: Int, cubeY: Int, cubeZ: Int, target: BlockStateAcceptor, layer: DimensionLayer): Unit = {
+  private def generateWithWatchdog[BlockStateAcceptor, Result, Layer <: BaseDimensionLayer](generator: (Int, Int, Int, BlockStateAcceptor, Layer) => Result,
+                                                                                            cubeX: Int, cubeY: Int, cubeZ: Int,
+                                                                                            target: BlockStateAcceptor, layer: Layer): Option[Result] = {
     try {
       WorldgenHangWatchdog.startWorldGen()
-      generator(cubeX, cubeY, cubeZ, target, layer)
+      Some(generator(cubeX, cubeY, cubeZ, target, layer))
     } catch {
       case e: Throwable =>
         CubicChunks.LOGGER.error("DimensionalLayersGenerator2#generateWithWatchdog error", e)
+        None
     } finally {
       WorldgenHangWatchdog.endWorldGen()
     }
