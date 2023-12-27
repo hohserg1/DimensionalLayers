@@ -64,7 +64,7 @@ class DimensionalLayersGenerator(original: World) extends ICubeGenerator {
     } primer.setBiome(localBiomeX, localBiomeY, localBiomeZ, calcBiome(localBiomeX, localBiomeY, localBiomeZ))
   }
 
-  private def generateLayerTerrain(cubeX: Int, cubeY: Int, cubeZ: Int, primer: CubePrimer, layer: DimensionLayer): Unit = {
+  private def generateDimensionLayerTerrain(cubeX: Int, cubeY: Int, cubeZ: Int, primer: CubePrimer, layer: DimensionLayer): Unit = {
     val chunk = layer.lastChunks.get(cubeX -> cubeZ)
 
     if (!layer.optimizationHack) {
