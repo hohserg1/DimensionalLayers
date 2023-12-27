@@ -2,6 +2,7 @@ package hohserg.dimensional.layers.worldgen
 
 import com.google.common.collect.ImmutableList
 import hohserg.dimensional.layers.preset.DimensionalLayersPreset
+import hohserg.dimensional.layers.worldgen.proxy.ProxyCube
 import io.github.opencubicchunks.cubicchunks.api.util.{Box, Coords}
 import io.github.opencubicchunks.cubicchunks.api.world.{ICube, ICubicWorld}
 import io.github.opencubicchunks.cubicchunks.api.worldgen.{CubePrimer, ICubeGenerator}
@@ -42,11 +43,12 @@ class DimensionalLayersGenerator(original: World) extends ICubeGenerator {
   }
 
   override def generateCube(cubeX: Int, cubeY: Int, cubeZ: Int, primer: CubePrimer): CubePrimer = {
-    layerAtCubeY.get(cubeY).foreach {
+    layerAtCubeY.get(cubeY).flatMap {
       case layer: DimensionLayer =>
-        generateWithWatchdog(generateLayerTerrain, cubeX, cubeY, cubeZ, primer, layer)
+        generateWithWatchdog(generateDimensionLayerTerrain, cubeX, cubeY, cubeZ, primer, layer)
         layer.biomes = layer.proxyWorld.getBiomeProvider.getBiomes(layer.biomes, Coords.cubeToMinBlock(cubeX), Coords.cubeToMinBlock(cubeZ), 16, 16)
         generateBiomes(primer, (localBiomeX, _, localBiomeZ) => layer.biomes((localBiomeX << 2) & 15 | ((localBiomeZ << 2) & 15) << 4))
+        Some(primer)
 
       case layer: SolidLayer =>
         for {
@@ -55,8 +57,16 @@ class DimensionalLayersGenerator(original: World) extends ICubeGenerator {
           z <- 0 to 15
         } primer.setBlockState(x, y, z, layer.filler)
         generateBiomes(primer, (_, _, _) => layer.biome)
-    }
-    primer
+        Some(primer)
+
+      case layer: CubicWorldTypeLayer =>
+        generateWithWatchdog(generateCubicWorldTypeLayerTerrain, cubeX, cubeY - layer.realStartCubeY + layer.virtualStartCubeY, cubeZ, primer, layer)
+
+    }.getOrElse(primer)
+  }
+
+  private def generateCubicWorldTypeLayerTerrain(cubeX: Int, cubeY: Int, cubeZ: Int, primer: CubePrimer, layer: CubicWorldTypeLayer): CubePrimer = {
+    layer.generator.generateCube(cubeX, cubeY, cubeZ, primer)
   }
 
   private def generateBiomes(primer: CubePrimer, calcBiome: (Int, Int, Int) => Biome): Unit = {
