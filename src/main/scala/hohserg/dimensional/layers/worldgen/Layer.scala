@@ -90,3 +90,18 @@ class DimensionLayer(original: World, val spec: DimensionLayerSpec, val realStar
 }
 
 case class SolidLayer(filler: IBlockState, biome: Biome, realStartCubeY: Int, height: Int) extends Layer
+
+class CubicWorldTypeLayer(original: World, val spec: CubicWorldTypeLayerSpec, val realStartCubeY: Int) extends BaseDimensionLayer {
+  val (virtualStartCubeY, virtualEndCubeT) = spec.rangeCube(original)
+
+  val height: Int = virtualEndCubeT - virtualStartCubeY + 1
+
+  val proxyWorld = ProxyWorld(original, this)
+
+  val generator = spec.cubicWorldType.createCubeGenerator(proxyWorld)
+
+  override def dimensionType: DimensionType = spec.dimensionType1
+
+  override def getPossibleCreatures(creatureType: EnumCreatureType, localPos: BlockPos): util.List[Biome.SpawnListEntry] =
+
+}
