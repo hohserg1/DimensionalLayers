@@ -1,7 +1,9 @@
 package hohserg.dimensional.layers.worldgen.proxy
 
+import hohserg.dimensional.layers.CCWorld
 import hohserg.dimensional.layers.worldgen.{BaseDimensionLayer, CubicWorldTypeLayer, DimensionLayer}
-import io.github.opencubicchunks.cubicchunks.api.world.IMinMaxHeight
+import io.github.opencubicchunks.cubicchunks.api.util.Coords
+import io.github.opencubicchunks.cubicchunks.api.world.ICube
 import net.minecraft.block.Block
 import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.{Entity, EntityList, EnumCreatureType}
@@ -10,7 +12,7 @@ import net.minecraft.tileentity.{TileEntity, TileEntityLockableLoot}
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.{EnumFacing, WeightedRandom}
 import net.minecraft.world.biome.Biome
-import net.minecraft.world.chunk.{Chunk, IChunkProvider}
+import net.minecraft.world.chunk.Chunk
 import net.minecraft.world.storage.WorldInfo
 import net.minecraft.world.storage.loot.LootTableManager
 import net.minecraft.world.{World, WorldLens, WorldSettings, WorldType}
@@ -19,11 +21,11 @@ import java.util
 import scala.collection.mutable
 
 object ProxyWorld {
-  def apply(original: World, layer: DimensionLayer): ProxyWorld = {
+  def apply(original: CCWorld, layer: DimensionLayer): ProxyWorld = {
     new ProxyWorld(original, layer, createLayerWorldInfo(original, layer.spec.seedOverride, layer.spec.worldType, layer.spec.worldTypePreset))
   }
 
-  def apply(original: World, layer: CubicWorldTypeLayer): ProxyWorld = {
+  def apply(original: CCWorld, layer: CubicWorldTypeLayer): ProxyWorld = {
     new ProxyWorld(original, layer, createLayerWorldInfo(original, layer.spec.seedOverride, layer.spec.cubicWorldType, layer.spec.worldTypePreset))
   }
 
@@ -44,19 +46,21 @@ object ProxyWorld {
 }
 
 
-class ProxyWorld private(original: World, val layer: BaseDimensionLayer, actualWorldInfo: WorldInfo, override val isCubicWorld: Boolean = false)
+class ProxyWorld private(original: CCWorld, val layer: BaseDimensionLayer, actualWorldInfo: WorldInfo, override val isCubicWorld: Boolean = false)
   extends BaseWorldServer(
     new FakeSaveHandler(actualWorldInfo),
     actualWorldInfo,
     layer.dimensionType.createDimension(),
     new Profiler
-  ) with FakeCubicWorld with IMinMaxHeight {
+  ) with FakeCubicWorld {
 
   provider.setWorld(this)
 
-  override def createChunkProvider(): IChunkProvider = new ProxyChunkProvider(this, original, layer)
+  override def createChunkProvider(): ProxyChunkProvider = new ProxyChunkProvider(this, original, layer)
 
-  chunkProvider = createChunkProvider()
+  val proxyChunkProvider: ProxyChunkProvider = createChunkProvider()
+
+  chunkProvider = proxyChunkProvider
 
   lootTable = new LootTableManager(null)
 
@@ -181,4 +185,10 @@ class ProxyWorld private(original: World, val layer: BaseDimensionLayer, actualW
 
   private def getPossibleCreatures(creatureType: EnumCreatureType, pos: BlockPos): util.List[Biome.SpawnListEntry] =
     layer.getPossibleCreatures(creatureType, ShiftedBlockPos.unshift(pos))
+
+  override def getCubeFromCubeCoords(cx: Int, cy: Int, cz: Int): ICube =
+    proxyChunkProvider.getCube(cx, cy, cz)
+
+  override def getCubeFromBlockCoords(pos: BlockPos): ICube =
+    proxyChunkProvider.getCube(Coords.blockToCube(pos.getX), Coords.blockToCube(pos.getY), Coords.blockToCube(pos.getZ))
 }

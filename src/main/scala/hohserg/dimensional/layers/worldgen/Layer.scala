@@ -2,6 +2,7 @@ package hohserg.dimensional.layers.worldgen
 
 import com.google.common.cache.{CacheBuilder, CacheLoader, LoadingCache}
 import com.google.common.collect.ImmutableList
+import hohserg.dimensional.layers.CCWorld
 import hohserg.dimensional.layers.preset.{CubicWorldTypeLayerSpec, DimensionLayerSpec}
 import hohserg.dimensional.layers.worldgen.proxy.{ProxyWorld, ShiftedBlockPos}
 import io.github.opencubicchunks.cubicchunks.api.util.Coords
@@ -43,6 +44,8 @@ sealed trait BaseDimensionLayer extends Layer {
 
   def shift(pos: BlockPos): ShiftedBlockPos = ShiftedBlockPos(pos, this)
 
+  def shiftBlockY[N: Numeric](y: N): N = ShiftedBlockPos.shiftBlockY(y, this)
+
   def markShifted(pos: BlockPos): ShiftedBlockPos = ShiftedBlockPos.markShifted(pos, this)
 
   def isInLayer(y: Int): Boolean =
@@ -62,7 +65,7 @@ sealed trait BaseDimensionLayer extends Layer {
   def getPossibleCreaturesNullable(creatureType: EnumCreatureType, localPos: BlockPos): util.List[Biome.SpawnListEntry]
 }
 
-class DimensionLayer(original: World, val spec: DimensionLayerSpec, val realStartCubeY: Int) extends BaseDimensionLayer {
+class DimensionLayer(original: CCWorld, val spec: DimensionLayerSpec, val realStartCubeY: Int) extends BaseDimensionLayer {
   val virtualStartCubeY: Int = spec.bottomOffset
   val virtualEndCubeT: Int = 16 - spec.topOffset - 1
 
@@ -94,14 +97,14 @@ class DimensionLayer(original: World, val spec: DimensionLayerSpec, val realStar
 
 case class SolidLayer(filler: IBlockState, biome: Biome, realStartCubeY: Int, height: Int) extends Layer
 
-class CubicWorldTypeLayer(original: World, val spec: CubicWorldTypeLayerSpec, val realStartCubeY: Int) extends BaseDimensionLayer {
+class CubicWorldTypeLayer(original: CCWorld, val spec: CubicWorldTypeLayerSpec, val realStartCubeY: Int) extends BaseDimensionLayer {
   val (virtualStartCubeY, virtualEndCubeT) = spec.rangeCube(original)
 
   val height: Int = virtualEndCubeT - virtualStartCubeY + 1
 
   val proxyWorld = ProxyWorld(original, this)
 
-  val generator = spec.cubicWorldType.createCubeGenerator(proxyWorld)
+  lazy val generator = spec.cubicWorldType.createCubeGenerator(proxyWorld)
 
   override def dimensionType: DimensionType = spec.dimensionType1
 

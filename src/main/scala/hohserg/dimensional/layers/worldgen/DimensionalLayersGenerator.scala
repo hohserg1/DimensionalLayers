@@ -1,18 +1,18 @@
 package hohserg.dimensional.layers.worldgen
 
 import com.google.common.collect.ImmutableList
+import hohserg.dimensional.layers.CCWorld
 import hohserg.dimensional.layers.preset.DimensionalLayersPreset
 import hohserg.dimensional.layers.worldgen.proxy.ProxyCube
 import io.github.opencubicchunks.cubicchunks.api.util.{Box, Coords}
 import io.github.opencubicchunks.cubicchunks.api.world.{ICube, ICubicWorld}
 import io.github.opencubicchunks.cubicchunks.api.worldgen.{CubePrimer, ICubeGenerator}
 import io.github.opencubicchunks.cubicchunks.core.CubicChunks
-import io.github.opencubicchunks.cubicchunks.core.asm.mixin.ICubicWorldInternal
 import io.github.opencubicchunks.cubicchunks.core.asm.mixin.core.common.IGameRegistry
+import io.github.opencubicchunks.cubicchunks.core.world.cube.Cube
 import io.github.opencubicchunks.cubicchunks.core.worldgen.WorldgenHangWatchdog
 import net.minecraft.entity.EnumCreatureType
 import net.minecraft.util.math.BlockPos
-import net.minecraft.world.World
 import net.minecraft.world.biome.Biome
 import net.minecraft.world.chunk.Chunk
 
@@ -20,10 +20,8 @@ import java.util
 import java.util.Random
 import scala.collection.JavaConverters._
 
-class DimensionalLayersGenerator(original: World) extends ICubeGenerator {
+class DimensionalLayersGenerator(original: CCWorld) extends ICubeGenerator {
   val preset = DimensionalLayersPreset(original.getWorldInfo.getGeneratorOptions)
-
-  val cubicWorld = original.asInstanceOf[ICubicWorldInternal]
 
   val layerAtCubeY: Map[Int, Layer] = preset.toLayerMap(original)
 
@@ -149,7 +147,7 @@ class DimensionalLayersGenerator(original: World) extends ICubeGenerator {
 
   private def markColumnPopulated(cubeX: Int, cubeZ: Int, layer: DimensionLayer): Unit = {
     for (y <- (layer.realStartCubeY + layer.height - 1) to layer.realStartCubeY by -1) {
-      cubicWorld.getCubeFromCubeCoords(cubeX, y, cubeZ).setPopulated(true)
+      original.getCubeFromCubeCoords(cubeX, y, cubeZ).asInstanceOf[Cube].setPopulated(true)
     }
   }
 

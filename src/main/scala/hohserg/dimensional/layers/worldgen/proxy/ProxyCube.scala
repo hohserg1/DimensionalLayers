@@ -2,22 +2,25 @@ package hohserg.dimensional.layers.worldgen.proxy
 
 import hohserg.dimensional.layers.worldgen.BaseDimensionLayer
 import io.github.opencubicchunks.cubicchunks.api.util.CubePos
-import io.github.opencubicchunks.cubicchunks.api.world.{IColumn, ICube, ICubicWorld}
+import io.github.opencubicchunks.cubicchunks.api.world.ICube
 import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.Entity
 import net.minecraft.init.Blocks
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.{ClassInheritanceMultiMap, EnumFacing}
+import net.minecraft.world.EnumSkyBlock
 import net.minecraft.world.biome.Biome
 import net.minecraft.world.chunk.Chunk
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage
-import net.minecraft.world.{EnumSkyBlock, World}
 import net.minecraftforge.common.capabilities.{Capability, CapabilityDispatcher}
 
 import java.util
 
-class ProxyCube(original: ICube, layer: BaseDimensionLayer) extends ICube {
+class ProxyCube(original: ICube, layer: BaseDimensionLayer) extends BaseProxyCube {
+
+  override def proxyWorld(): ProxyWorld = layer.proxyWorld
+
   override def getBlockState(blockPos: BlockPos): IBlockState =
     original.getBlockState(layer.shift(blockPos))
 
@@ -49,12 +52,6 @@ class ProxyCube(original: ICube, layer: BaseDimensionLayer) extends ICube {
 
   override def localAddressToBlockPos(i: Int): BlockPos =
     layer.markShifted(original.localAddressToBlockPos(i))
-
-  override def getWorld[T <: World with ICubicWorld]: T =
-    layer.proxyWorld.asInstanceOf[T]
-
-  override def getColumn[T <: Chunk with IColumn]: T =
-    layer.proxyWorld.getChunk(getX, getZ).asInstanceOf[T]
 
   override def getX: Int = original.getX
 
@@ -88,23 +85,25 @@ class ProxyCube(original: ICube, layer: BaseDimensionLayer) extends ICube {
 
   override def isFullyPopulated: Boolean = original.isFullyPopulated
 
-  override def isSurfaceTracked: Boolean = ???
+  override def isSurfaceTracked: Boolean = original.isSurfaceTracked
 
-  override def isInitialLightingDone: Boolean = ???
+  override def isInitialLightingDone: Boolean = original.isInitialLightingDone
 
-  override def isCubeLoaded: Boolean = ???
+  override def isCubeLoaded: Boolean = original.isCubeLoaded
+
+  override def hasLightUpdates: Boolean = original.hasLightUpdates
 
   override def getBiome(blockPos: BlockPos): Biome = original.getBiome(layer.shift(blockPos))
 
-  override def getBiome(blockPos: BlockPos): Biome = ???
+  override def setBiome(x: Int, z: Int, biome: Biome): Unit = original.setBiome(x, z, biome)
 
-  override def setBiome(i: Int, i1: Int, biome: Biome): Unit = ???
+  override def getCapabilities: CapabilityDispatcher = original.getCapabilities
 
-  override def getCapabilities: CapabilityDispatcher = ???
+  override def getForceLoadStatus: util.EnumSet[ICube.ForcedLoadReason] = original.getForceLoadStatus
 
-  override def getForceLoadStatus: util.EnumSet[ICube.ForcedLoadReason] = ???
+  override def hasCapability(capability: Capability[_], facing: EnumFacing): Boolean = original.hasCapability(capability, facing)
 
-  override def hasCapability(capability: Capability[_], facing: EnumFacing): Boolean = ???
+  override def getCapability[T](capability: Capability[T], facing: EnumFacing): T = original.getCapability(capability, facing)
 
   override def setBiome(x: Int, y: Int, z: Int, biome: Biome): Unit = original.setBiome(x, layer.shiftBlockY(y), z, biome)
 }
