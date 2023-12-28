@@ -3,7 +3,8 @@ package hohserg.dimensional.layers.worldgen.proxy
 import hohserg.dimensional.layers.CCWorld
 import hohserg.dimensional.layers.worldgen.{BaseDimensionLayer, CubicWorldTypeLayer, DimensionLayer}
 import io.github.opencubicchunks.cubicchunks.api.util.Coords
-import io.github.opencubicchunks.cubicchunks.api.world.ICube
+import io.github.opencubicchunks.cubicchunks.api.world.{ICube, ICubeProviderServer}
+import io.github.opencubicchunks.cubicchunks.api.worldgen.ICubeGenerator
 import net.minecraft.block.Block
 import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.{Entity, EntityList, EnumCreatureType}
@@ -191,4 +192,12 @@ class ProxyWorld private(original: CCWorld, val layer: BaseDimensionLayer, actua
 
   override def getCubeFromBlockCoords(pos: BlockPos): ICube =
     proxyChunkProvider.getCube(Coords.blockToCube(pos.getX), Coords.blockToCube(pos.getY), Coords.blockToCube(pos.getZ))
+
+  override def getCubeCache: ICubeProviderServer = proxyChunkProvider
+
+  override def getCubeGenerator: ICubeGenerator =
+    layer match {
+      case layer: CubicWorldTypeLayer => layer.generator
+      case _ => null
+    }
 }

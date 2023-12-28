@@ -1,15 +1,21 @@
 package hohserg.dimensional.layers.worldgen.proxy
 
 import io.github.opencubicchunks.cubicchunks.api.util._
-import io.github.opencubicchunks.cubicchunks.api.world.{ICube, ICubicWorld}
-import io.github.opencubicchunks.cubicchunks.core.server.CubeProviderServer
+import io.github.opencubicchunks.cubicchunks.api.world.{ICube, ICubicWorldServer}
 import net.minecraft.util.math.BlockPos
+import net.minecraftforge.common.ForgeChunkManager
 
 import java.util.function.Predicate
 
-trait FakeCubicWorld extends ICubicWorld {
+trait FakeCubicWorld extends ICubicWorldServer {
 
-  override def getCubeCache: CubeProviderServer = throw new NotCubicChunksWorldException()
+  override def unloadOldCubes(): Unit = ()
+
+  override def forceChunk(ticket: ForgeChunkManager.Ticket, cubePos: CubePos): Unit = ()
+
+  override def reorderChunk(ticket: ForgeChunkManager.Ticket, cubePos: CubePos): Unit = ()
+
+  override def unforceChunk(ticket: ForgeChunkManager.Ticket, cubePos: CubePos): Unit = ()
 
   override def testForCubes(cubePos: CubePos, cubePos1: CubePos, predicate: Predicate[_ >: ICube]): Boolean = false
 

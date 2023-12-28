@@ -1,23 +1,22 @@
 package hohserg.dimensional.layers.preset
 
 import com.google.gson.JsonParseException
-import hohserg.dimensional.layers.Configuration
 import hohserg.dimensional.layers.worldgen.{CubicWorldTypeLayer, DimensionLayer, Layer, SolidLayer}
+import hohserg.dimensional.layers.{CCWorld, Configuration}
 import io.github.opencubicchunks.cubicchunks.api.util.IntRange
+import io.github.opencubicchunks.cubicchunks.api.world.ICubicWorldType
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.toasts.SystemToast
 import net.minecraft.init.Blocks
 import net.minecraft.util.text.TextComponentString
-import net.minecraft.world.World
-import net.minecraftforge.common.DimensionManager
+import net.minecraft.world.WorldType
 import net.minecraftforge.fml.common.FMLCommonHandler
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
-import scala.collection.JavaConverters.asScalaSetConverter
 import scala.util.{Failure, Success, Try}
 
 case class DimensionalLayersPreset(layers: List[LayerSpec]) {
-  def toLayerMap(original: World): Map[Int, Layer] =
+  def toLayerMap(original: CCWorld): Map[Int, Layer] =
     layers
       .foldRight(List[(IntRange, Layer)]() -> 0) {
         case (spec, (acc, lastFreeCubic)) =>

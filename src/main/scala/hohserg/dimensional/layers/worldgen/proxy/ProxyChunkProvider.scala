@@ -4,7 +4,8 @@ import com.google.common.cache.{CacheBuilder, CacheLoader, LoadingCache}
 import hohserg.dimensional.layers.CCWorld
 import hohserg.dimensional.layers.worldgen.BaseDimensionLayer
 import io.github.opencubicchunks.cubicchunks.api.util.CubePos
-import io.github.opencubicchunks.cubicchunks.api.world.{ICube, ICubeProvider}
+import io.github.opencubicchunks.cubicchunks.api.world.ICubeProviderServer.Requirement._
+import io.github.opencubicchunks.cubicchunks.api.world.{ICube, ICubeProviderServer}
 import net.minecraft.entity.EnumCreatureType
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.biome.Biome
@@ -16,7 +17,7 @@ import java.util
 
 class ProxyChunkProvider(proxy: ProxyWorld, original: CCWorld, layer: BaseDimensionLayer)
   extends ChunkProviderServer(proxy.asInstanceOf[WorldServer], proxy.getSaveHandler.getChunkLoader(proxy.provider), null)
-    with ICubeProvider {
+    with ICubeProviderServer {
 
   val proxyChunkCache: LoadingCache[Chunk, ProxyChunk] =
     CacheBuilder.newBuilder()
@@ -92,4 +93,26 @@ class ProxyChunkProvider(proxy: ProxyWorld, original: CCWorld, layer: BaseDimens
 
   override def provideColumn(cx: Int, cz: Int): Chunk =
     provideChunk(cx, cz)
+
+  override def getColumn(cx: Int, cz: Int, requirement: ICubeProviderServer.Requirement): Chunk =
+    requirement match {
+      case GET_CACHED =>
+        getLoadedColumn(cx, cz)
+      case LOAD | GENERATE | POPULATE | LIGHT =>
+        provideColumn(cx, cz)
+    }
+
+  override def getCube(cx: Int, cy: Int, cz: Int, requirement: ICubeProviderServer.Requirement): ICube =
+    requirement match {
+      case GET_CACHED =>
+        getLoadedCube(cx, cy, cz)
+      case LOAD | GENERATE | POPULATE | LIGHT =>
+        getCube(cx, cy, cz)
+    }
+
+  override def getCubeNow(cx: Int, cy: Int, cz: Int, requirement: ICubeProviderServer.Requirement): ICube =
+    getCube(cx, cy, cz, requirement)
+
+  override def isCubeGenerated(cx: Int, cy: Int, cz: Int): Boolean =
+    getLoadedCube(cx, cy, cz) != null || original.getCubeCache.isCubeGenerated(cx, cy, cz)
 }
