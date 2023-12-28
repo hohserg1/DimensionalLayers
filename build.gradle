@@ -70,14 +70,14 @@ repositories {
 dependencies {
     minecraft 'net.minecraftforge:forge:1.12.2-14.23.5.2860'
 
-    compileOnly 'abc:CubicChunks:1.12.2:dev'
+    compileOnly 'abc:CubicChunks-1.12.2:0.0.1270.0-SNAPSHOT:dev-all'
+    compileOnly 'abc:CubicWorldGen-1.12.2:0.0.180.0-SNAPSHOT:dev'
 
     implementation 'abc:DivineRPG:1.7.1'
     implementation fg.deobf('abc:aether_ii-1.12.2:0.3.0')
     implementation fg.deobf('abc:orbis-lib-1.12.2:0.2.0')
     implementation fg.deobf('abc:RTG-1.12.2:6.1.0.0')
     implementation 'abc:AbyssalCraft:1.12.2-1.10.4'
-    compileOnly 'abc:CubicWorldGen-1.12.2:0.0.178.0-SNAPSHOT:dev'
 
     implementation fg.deobf('abc:DimensionalControl-1.12.2:2.13.0')
     implementation fg.deobf('abc:BNBGamingLib-1.12.2:2.17.6')
