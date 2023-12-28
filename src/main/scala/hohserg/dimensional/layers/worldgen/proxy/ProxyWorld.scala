@@ -27,7 +27,7 @@ object ProxyWorld {
   }
 
   def apply(original: CCWorld, layer: CubicWorldTypeLayer): ProxyWorld = {
-    new ProxyWorld(original, layer, createLayerWorldInfo(original, layer.spec.seedOverride, layer.spec.cubicWorldType, layer.spec.worldTypePreset))
+    new ProxyWorld(original, layer, createLayerWorldInfo(original, layer.spec.seedOverride, layer.spec.cubicWorldType, layer.spec.worldTypePreset), true)
   }
 
   def createLayerWorldInfo(original: World, seedOverride: Option[Long], worldType: WorldType, worldTypePreset: String): WorldInfo = {
