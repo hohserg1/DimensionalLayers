@@ -2,10 +2,17 @@ package hohserg.dimensional.layers.worldgen.proxy
 
 import com.google.common.cache.{CacheBuilder, CacheLoader, LoadingCache}
 import hohserg.dimensional.layers.worldgen.BaseDimensionLayer
-import net.minecraft.world.World
-import net.minecraft.world.chunk.{Chunk, IChunkProvider}
+import net.minecraft.entity.EnumCreatureType
+import net.minecraft.util.math.BlockPos
+import net.minecraft.world.biome.Biome
+import net.minecraft.world.chunk.Chunk
+import net.minecraft.world.gen.ChunkProviderServer
+import net.minecraft.world.{World, WorldServer}
 
-class ProxyChunkProvider(proxy: ProxyWorld, original: World, layer: BaseDimensionLayer) extends IChunkProvider {
+import java.util
+
+class ProxyChunkProvider(proxy: ProxyWorld, original: World, layer: BaseDimensionLayer)
+  extends ChunkProviderServer(proxy.asInstanceOf[WorldServer], proxy.getSaveHandler.getChunkLoader(proxy.provider), null) {
 
   val proxyChunkCache: LoadingCache[Chunk, ProxyChunk] =
     CacheBuilder.newBuilder()
@@ -21,7 +28,27 @@ class ProxyChunkProvider(proxy: ProxyWorld, original: World, layer: BaseDimensio
 
   override def tick(): Boolean = false
 
-  override def makeString(): String = ""
+  override def makeString(): String = "ProxyChunkProvider"
 
   override def isChunkGeneratedAt(x: Int, z: Int): Boolean = original.getChunkProvider.isChunkGeneratedAt(x, z)
+
+  override def loadChunk(x: Int, z: Int): Chunk = ???
+
+  override def loadChunk(x: Int, z: Int, runnable: Runnable): Chunk = ???
+
+  override def saveChunks(all: Boolean): Boolean = false
+
+  override def flushToDisk(): Unit = ()
+
+  override def canSave: Boolean = false
+
+  override def getPossibleCreatures(creatureType: EnumCreatureType, pos: BlockPos): util.List[Biome.SpawnListEntry] =
+    layer.getPossibleCreatures(creatureType, pos)
+
+  override def getNearestStructurePos(worldIn: World, structureName: String, position: BlockPos, findUnexplored: Boolean): BlockPos =
+    null
+
+  override def isInsideStructure(worldIn: World, structureName: String, pos: BlockPos): Boolean =
+    false
+
 }

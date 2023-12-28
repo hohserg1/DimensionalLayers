@@ -1,6 +1,5 @@
 package hohserg.dimensional.layers.worldgen.proxy
 
-import com.google.common.collect.ImmutableList
 import hohserg.dimensional.layers.worldgen.{BaseDimensionLayer, CubicWorldTypeLayer, DimensionLayer}
 import io.github.opencubicchunks.cubicchunks.api.world.IMinMaxHeight
 import net.minecraft.block.Block
@@ -181,6 +180,5 @@ class ProxyWorld private(original: World, val layer: BaseDimensionLayer, actualW
     getPossibleCreatures(creatureType, pos).contains(spawnListEntry)
 
   private def getPossibleCreatures(creatureType: EnumCreatureType, pos: BlockPos): util.List[Biome.SpawnListEntry] =
-    Option(layer.getPossibleCreatures(creatureType, ShiftedBlockPos.unshift(pos))).getOrElse(ImmutableList.of())
-
+    layer.getPossibleCreatures(creatureType, ShiftedBlockPos.unshift(pos))
 }
