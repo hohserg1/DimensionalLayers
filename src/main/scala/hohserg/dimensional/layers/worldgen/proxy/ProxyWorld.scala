@@ -69,9 +69,9 @@ class ProxyWorld private(original: CCWorld, val layer: BaseDimensionLayer, actua
 
   override def getSeed: Long = worldInfo.getSeed
 
-  override def getMinHeight: Int = layer.realStartBlockY
+  override def getMinHeight: Int = layer.virtualStartBlockY
 
-  override def getMaxHeight: Int = layer.realEndBlockY + 1
+  override def getMaxHeight: Int = layer.virtualEndBlockY + 1
 
   override def isOutsideBuildHeight(pos: BlockPos): Boolean = {
     pos match {
