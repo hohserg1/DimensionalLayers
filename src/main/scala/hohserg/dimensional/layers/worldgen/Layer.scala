@@ -56,7 +56,10 @@ sealed trait BaseDimensionLayer extends Layer {
       default
   }
 
-  def getPossibleCreatures(creatureType: EnumCreatureType, localPos: BlockPos): util.List[Biome.SpawnListEntry]
+  def getPossibleCreatures(creatureType: EnumCreatureType, localPos: BlockPos): util.List[Biome.SpawnListEntry] =
+    Option(getPossibleCreaturesNullable(creatureType, localPos)).getOrElse(ImmutableList.of())
+
+  def getPossibleCreaturesNullable(creatureType: EnumCreatureType, localPos: BlockPos): util.List[Biome.SpawnListEntry]
 }
 
 class DimensionLayer(original: World, val spec: DimensionLayerSpec, val realStartCubeY: Int) extends BaseDimensionLayer {
@@ -85,8 +88,8 @@ class DimensionLayer(original: World, val spec: DimensionLayerSpec, val realStar
 
   override def dimensionType: DimensionType = spec.dimensionType
 
-  override def getPossibleCreatures(creatureType: EnumCreatureType, localPos: BlockPos): util.List[Biome.SpawnListEntry] =
-    Option(vanillaGenerator.getPossibleCreatures(creatureType, localPos)).getOrElse(ImmutableList.of())
+  override def getPossibleCreaturesNullable(creatureType: EnumCreatureType, localPos: BlockPos): util.List[Biome.SpawnListEntry] =
+    vanillaGenerator.getPossibleCreatures(creatureType, localPos)
 }
 
 case class SolidLayer(filler: IBlockState, biome: Biome, realStartCubeY: Int, height: Int) extends Layer
@@ -102,6 +105,6 @@ class CubicWorldTypeLayer(original: World, val spec: CubicWorldTypeLayerSpec, va
 
   override def dimensionType: DimensionType = spec.dimensionType1
 
-  override def getPossibleCreatures(creatureType: EnumCreatureType, localPos: BlockPos): util.List[Biome.SpawnListEntry] =
-
+  override def getPossibleCreaturesNullable(creatureType: EnumCreatureType, localPos: BlockPos): util.List[Biome.SpawnListEntry] =
+    generator.getPossibleCreatures(creatureType, localPos)
 }
