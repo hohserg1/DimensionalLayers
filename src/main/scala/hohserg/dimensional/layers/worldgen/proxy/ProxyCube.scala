@@ -26,7 +26,7 @@ class ProxyCube(original: ICube, layer: BaseDimensionLayer) extends ICube {
 
   override def getBlockState(x: Int, y: Int, z: Int): IBlockState =
     if (layer.isInLayer(y))
-      original.getBlockState(x, y + layer.realStartBlockY, z)
+      original.getBlockState(x, layer.shiftBlockY(y), z)
     else
       Blocks.AIR.getDefaultState
 
@@ -58,11 +58,11 @@ class ProxyCube(original: ICube, layer: BaseDimensionLayer) extends ICube {
 
   override def getX: Int = original.getX
 
-  override def getY: Int = original.getY - layer.realStartCubeY + layer.virtualStartCubeY
+  override def getY: Int = ShiftedBlockPos.unshiftCubeY(original.getY, layer)
 
   override def getZ: Int = original.getZ
 
-  override def getCoords: CubePos = ???
+  override lazy val getCoords: CubePos = new CubePos(getX, getY, getZ)
 
   override def containsBlockPos(blockPos: BlockPos): Boolean = original.containsBlockPos(layer.shift(blockPos))
 
@@ -94,7 +94,7 @@ class ProxyCube(original: ICube, layer: BaseDimensionLayer) extends ICube {
 
   override def isCubeLoaded: Boolean = ???
 
-  override def hasLightUpdates: Boolean = ???
+  override def getBiome(blockPos: BlockPos): Biome = original.getBiome(layer.shift(blockPos))
 
   override def getBiome(blockPos: BlockPos): Biome = ???
 
@@ -106,5 +106,5 @@ class ProxyCube(original: ICube, layer: BaseDimensionLayer) extends ICube {
 
   override def hasCapability(capability: Capability[_], facing: EnumFacing): Boolean = ???
 
-  override def getCapability[T](capability: Capability[T], facing: EnumFacing): T = ???
+  override def setBiome(x: Int, y: Int, z: Int, biome: Biome): Unit = original.setBiome(x, layer.shiftBlockY(y), z, biome)
 }

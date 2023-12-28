@@ -28,7 +28,7 @@ class ProxyChunk(proxy: ProxyWorld, original: Chunk, layer: BaseDimensionLayer) 
 
   override def getBlockState(x: Int, y: Int, z: Int): IBlockState =
     if (layer.isInLayer(y))
-      getBlockStateShifted(x, y + layer.realStartBlockY, z)
+      getBlockStateShifted(x, layer.shiftBlockY(y), z)
     else
       Blocks.AIR.getDefaultState
 
@@ -60,7 +60,7 @@ class ProxyChunk(proxy: ProxyWorld, original: Chunk, layer: BaseDimensionLayer) 
     executeInLayer(pos, original.getLightSubtracted(_, amount), 0)
 
   override def addEntity(entityIn: Entity): Unit = {
-    entityIn.posY = entityIn.posY + layer.realStartBlockY
+    entityIn.posY = layer.shiftBlockY(entityIn.posY)
     entityIn.prevPosY = entityIn.posY
     original.addEntity(entityIn)
   }
@@ -88,7 +88,7 @@ class ProxyChunk(proxy: ProxyWorld, original: Chunk, layer: BaseDimensionLayer) 
     proxy.getHeight(pos).up()
 
   override def isEmptyBetween(startY: Int, endY: Int): Boolean =
-    original.isEmptyBetween(startY + layer.realStartBlockY, endY + layer.realStartBlockY)
+    original.isEmptyBetween(layer.shiftBlockY(startY), layer.shiftBlockY(endY))
 
   override lazy val getBlockStorageArray: Array[ExtendedBlockStorage] =
     (for {

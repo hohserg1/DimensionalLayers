@@ -8,7 +8,7 @@ class ShiftedBlockPos(private val x: Int,
                       private val y: Int,
                       private val z: Int,
                       private val layer: BaseDimensionLayer)
-  extends BlockPos(x, y - layer.virtualStartBlockY + layer.realStartBlockY, z) {
+  extends BlockPos(x, ShiftedBlockPos.shiftBlockY(y, layer), z) {
 
   def unshift: BlockPos = new BlockPos(x, y, z)
 
@@ -84,7 +84,7 @@ object ShiftedBlockPos {
   def markShifted(pos: BlockPos, layer: BaseDimensionLayer): ShiftedBlockPos =
     pos match {
       case already: ShiftedBlockPos => already
-      case _ => new ShiftedBlockPos(pos.getX, pos.getY - layer.realStartBlockY, pos.getZ, layer)
+      case _ => new ShiftedBlockPos(pos.getX, unshiftBlockY(pos.getY, layer), pos.getZ, layer)
     }
 
   def unshift(pos: BlockPos): BlockPos =
@@ -92,4 +92,18 @@ object ShiftedBlockPos {
       case shifted: ShiftedBlockPos => shifted.unshift
       case already => already
     }
+
+  def shiftBlockY[N](y: N, layer: BaseDimensionLayer)(implicit n: Numeric[N]): N = {
+    import n._
+    y - fromInt(layer.virtualStartBlockY) + fromInt(layer.realStartBlockY)
+  }
+
+  def unshiftBlockY[N](y: N, layer: BaseDimensionLayer)(implicit n: Numeric[N]): N = {
+    import n._
+    y + fromInt(layer.virtualStartBlockY) - fromInt(layer.realStartBlockY)
+  }
+
+  def unshiftCubeY(y: Int, layer: BaseDimensionLayer): Int = {
+    y + layer.virtualStartCubeY - layer.realStartCubeY
+  }
 }
