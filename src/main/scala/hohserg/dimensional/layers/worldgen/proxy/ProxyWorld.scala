@@ -165,7 +165,7 @@ class ProxyWorld private(original: CCWorld, val layer: BaseDimensionLayer, actua
     original.getChunksLowestHorizon(x, z)
 
   override def spawnEntity(entityIn: Entity): Boolean = {
-    entityIn.posY += layer.realStartBlockY
+    entityIn.setLocationAndAngles(entityIn.posX, entityIn.posY + layer.realStartBlockY, entityIn.posZ, entityIn.rotationYaw, entityIn.rotationPitch)
     entityIn.world = original
     val newEntity = EntityList.newEntity(entityIn.getClass, original)
     newEntity.deserializeNBT(entityIn.serializeNBT())
