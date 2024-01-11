@@ -23,7 +23,7 @@ object Main {
   //-XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=./dump/oom.hprof
   //-Dlegacy.debugClassLoading=true -Dlegacy.debugClassLoadingSave=true
 
-  @SidedProxy(clientSide = "hohserg.dimensional.layers.sided.ClientProxy", serverSide = "hohserg.dimensional.layers.sided.ServerProxy")
+  @SidedProxy(clientSide = "hohserg.dimensional.layers.sided.ClientLogic", serverSide = "hohserg.dimensional.layers.sided.ServerLogic")
   var sided: CommonLogic = _
 
   @SideOnly(Side.CLIENT)
