@@ -66,8 +66,8 @@ object DimensionalLayersPreset {
 
   private def handleError(exception: Throwable): Unit = {
     (exception match {
-      case emptyString: NoSuchElementException =>
-        Some("Json is empty string, will be used mixed preset")
+      case ingore: NoSuchElementException =>
+        None
       case badJson: JsonParseException =>
         Some("Malformed json:")
       case unexpected: Throwable =>
