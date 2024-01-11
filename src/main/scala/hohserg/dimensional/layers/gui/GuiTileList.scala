@@ -4,9 +4,7 @@ import com.google.common.cache.{CacheBuilder, CacheLoader, LoadingCache}
 import hohserg.dimensional.layers.gui.GuiTileList.{GuiTileLine, SelectHandler, slotWidth}
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats
-import net.minecraft.client.renderer.{GlStateManager, Tessellator}
-import org.lwjgl.opengl.GL11
+import net.minecraft.client.renderer.Tessellator
 
 
 object GuiTileList {
@@ -47,7 +45,7 @@ object GuiTileList {
         val x = minX + horizontalIndex * slotWidth(itemWidth) + border
         val y = minY + border
         if (isHovering(x, y, x + itemWidth, y + itemWidth)) {
-          drawHighlight(x, y, 136, 146, 201)
+          drawHighlightHovering(x, y, itemWidth, itemWidth)
           r = Some(item.tooltip)
         }
         item.draw(x, y, x + itemWidth, y + itemWidth)
@@ -58,42 +56,7 @@ object GuiTileList {
     def drawSelection(horizontalIndex: Int): Unit = {
       val x = minX + horizontalIndex * slotWidth(itemWidth) + border
       val y = minY + border
-      drawHighlight(x, y)
-    }
-
-    def drawHighlight(xx: Int, yy: Int, red: Int = 255, green: Int = 255, blue: Int = 255): Unit = {
-      GlStateManager.disableTexture2D()
-      val z = -100
-      val tess = Tessellator.getInstance()
-      val buffer = tess.getBuffer
-      buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR)
-
-      buffer.pos(xx - 1, yy, z).color(red, green, blue, 255).endVertex()
-      buffer.pos(xx + itemWidth + 1, yy, z).color(red, green, blue, 255).endVertex()
-      buffer.pos(xx + itemWidth + 1, yy - 1, z).color(red, green, blue, 255).endVertex()
-      buffer.pos(xx - 1, yy - 1, z).color(red, green, blue, 255).endVertex()
-
-
-      buffer.pos(xx - 1, yy + itemWidth + 1, z).color(red, green, blue, 255).endVertex()
-      buffer.pos(xx, yy + itemWidth + 1, z).color(red, green, blue, 255).endVertex()
-      buffer.pos(xx, yy - 1, z).color(red, green, blue, 255).endVertex()
-      buffer.pos(xx - 1, yy - 1, z).color(red, green, blue, 255).endVertex()
-
-
-      buffer.pos(xx + itemWidth, yy - 1, z).color(red, green, blue, 255).endVertex()
-      buffer.pos(xx + itemWidth, yy + itemWidth + 1, z).color(red, green, blue, 255).endVertex()
-      buffer.pos(xx + itemWidth + 1, yy + itemWidth + 1, z).color(red, green, blue, 255).endVertex()
-      buffer.pos(xx + itemWidth + 1, yy - 1, z).color(red, green, blue, 255).endVertex()
-
-
-      buffer.pos(xx - 1, yy + itemWidth + 1, z).color(red, green, blue, 255).endVertex()
-      buffer.pos(xx + itemWidth + 1, yy + itemWidth + 1, z).color(red, green, blue, 255).endVertex()
-      buffer.pos(xx + itemWidth + 1, yy + itemWidth, z).color(red, green, blue, 255).endVertex()
-      buffer.pos(xx - 1, yy + itemWidth, z).color(red, green, blue, 255).endVertex()
-
-      tess.draw()
-      GlStateManager.enableTexture2D()
-
+      drawHighlight(x, y, itemWidth, itemWidth, 255, 255, 255)
     }
 
     def clicked(): Option[(Int, A)] = {
@@ -117,9 +80,13 @@ object GuiTileList {
   def slotWidth(itemWidth: Int): Int = itemWidth + border * 2
 }
 
-abstract class GuiTileList[A <: Drawable](val parent: GuiScreen with SelectHandler[A], availableWidth: Int, itemWidth: Int, linesCache: LoadingCache[Integer, Seq[GuiTileLine[A]]])
-                                         (val fitHorizontal: Int = (availableWidth - 6) / slotWidth(itemWidth))
-  extends GuiScrollingListElement(10, 10, fitHorizontal * slotWidth(itemWidth) + 6, parent.height - 20, slotWidth(itemWidth))
+class GuiTileList[A <: Drawable](val parent: GuiScreen with SelectHandler[A],
+                                 x: Int, y: Int,
+                                 availableWidth: Int, height: Int,
+                                 itemWidth: Int,
+                                 linesCache: LoadingCache[Integer, Seq[GuiTileLine[A]]])
+                                (val fitHorizontal: Int = (availableWidth - 6) / slotWidth(itemWidth))
+  extends GuiScrollingListElement(x, y, fitHorizontal * slotWidth(itemWidth) + 6, height, slotWidth(itemWidth))
     with GuiElement {
 
   val lines = linesCache.get(fitHorizontal)
