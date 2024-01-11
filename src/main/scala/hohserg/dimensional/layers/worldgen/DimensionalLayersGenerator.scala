@@ -32,7 +32,7 @@ class DimensionalLayersGenerator(original: CCWorld) extends ICubeGenerator {
       Some(generator(cubeX, cubeY, cubeZ, target, layer))
     } catch {
       case e: Throwable =>
-        Main.proxy.printError("Generation issue:", e)
+        Main.sided.printError("Generation issue:", e)
         None
     } finally {
       WorldgenHangWatchdog.endWorldGen()
@@ -124,7 +124,7 @@ class DimensionalLayersGenerator(original: CCWorld) extends ICubeGenerator {
         val stack = ex.getStackTrace
         if (stack == null || stack.length < 1 || stack(0).getClassName != classOf[Random].getName || stack(0).getMethodName != "nextInt")
           throw ex
-        Main.proxy.printWarning("Error while populating. Likely known mod issue, ignoring...", ex)
+        Main.sided.printWarning("Error while populating. Likely known mod issue, ignoring...", ex)
     }
   }
 

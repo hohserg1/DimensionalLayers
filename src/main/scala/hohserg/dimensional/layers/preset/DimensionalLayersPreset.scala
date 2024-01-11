@@ -73,7 +73,7 @@ object DimensionalLayersPreset {
       case unexpected: Throwable =>
         Some("Error while parsing json. Plz report to author")
     }).foreach { humanReadable =>
-      Main.proxy.printError(humanReadable, exception)
+      Main.sided.printError(humanReadable, exception)
     }
   }
 }

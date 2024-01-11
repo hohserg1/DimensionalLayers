@@ -66,7 +66,7 @@ class ShiftedBlockPos(private val x: Int,
 
   private def checkPosInSameLayer(shifted: ShiftedBlockPos, operationName: String): Unit = {
     if (shifted.layer != layer)
-      Main.proxy.printError(
+      Main.sided.printError(
         "wtf, attempt to " + operationName + " different layers shifted poses: " + this + ", " + shifted,
         new IllegalArgumentException("shifted pos from another layer")
       )

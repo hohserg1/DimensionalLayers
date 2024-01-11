@@ -24,7 +24,7 @@ object Main {
   //-Dlegacy.debugClassLoading=true -Dlegacy.debugClassLoadingSave=true
 
   @SidedProxy(clientSide = "hohserg.dimensional.layers.sided.ClientProxy", serverSide = "hohserg.dimensional.layers.sided.ServerProxy")
-  var proxy: CommonLogic = _
+  var sided: CommonLogic = _
 
   @SideOnly(Side.CLIENT)
   @EventHandler

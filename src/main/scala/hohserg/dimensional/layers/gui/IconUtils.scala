@@ -50,7 +50,7 @@ object IconUtils {
         missingBg
     } catch {
       case exception: FileNotFoundException =>
-        Main.proxy.printWarning("icon not found", exception)
+        Main.sided.printWarning("icon not found", exception)
         missingBg
 
       case exception: Exception =>

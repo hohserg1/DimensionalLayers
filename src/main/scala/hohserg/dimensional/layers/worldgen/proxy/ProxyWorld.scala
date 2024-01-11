@@ -148,7 +148,7 @@ class ProxyWorld private(original: CCWorld, val layer: BaseDimensionLayer, actua
   override def getBiome(pos: BlockPos): Biome = {
     val r = original.getBiome(layer.shift(pos).clamp)
     if (r == null)
-      Main.proxy.printError("bruh biome null", new NullPointerException(""))
+      Main.sided.printError("bruh biome null", new NullPointerException(""))
     r
   }
 
