@@ -23,11 +23,11 @@ import scala.collection.mutable
 
 object ProxyWorld {
   def apply(original: CCWorld, layer: DimensionLayer): ProxyWorld = {
-    new ProxyWorld(original, layer, createLayerWorldInfo(original, layer.spec.seedOverride, layer.spec.worldType, layer.spec.worldTypePreset))
+    new ProxyWorld(original, layer, createLayerWorldInfo(original, layer.spec.seedOverride, layer.spec.worldType, layer.spec.worldTypePreset), isCubicWorld = false)
   }
 
   def apply(original: CCWorld, layer: CubicWorldTypeLayer): ProxyWorld = {
-    new ProxyWorld(original, layer, createLayerWorldInfo(original, layer.spec.seedOverride, layer.spec.cubicWorldType, layer.spec.worldTypePreset), true)
+    new ProxyWorld(original, layer, createLayerWorldInfo(original, layer.spec.seedOverride, layer.spec.cubicWorldType, layer.spec.worldTypePreset), isCubicWorld = true)
   }
 
   def createLayerWorldInfo(original: World, seedOverride: Option[Long], worldType: WorldType, worldTypePreset: String): WorldInfo = {
@@ -47,7 +47,7 @@ object ProxyWorld {
 }
 
 
-class ProxyWorld private(original: CCWorld, val layer: BaseDimensionLayer, actualWorldInfo: WorldInfo, override val isCubicWorld: Boolean = false)
+class ProxyWorld private(original: CCWorld, val layer: BaseDimensionLayer, actualWorldInfo: WorldInfo, override val isCubicWorld: Boolean)
   extends BaseWorldServer(
     new FakeSaveHandler(actualWorldInfo),
     actualWorldInfo,
