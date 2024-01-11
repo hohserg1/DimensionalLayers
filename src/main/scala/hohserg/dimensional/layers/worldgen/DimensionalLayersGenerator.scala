@@ -83,7 +83,10 @@ class DimensionalLayersGenerator(original: CCWorld) extends ICubeGenerator {
       layer.optimizationHack = false
     }
 
-    val storage = chunk.getBlockStorageArray()((cubeY - layer.realStartCubeY + layer.spec.bottomOffset) & 15)
+    //took from io.github.opencubicchunks.cubicchunks.core.asm.mixin.core.common.MixinChunk_Cubes#init_getStorage
+    val index = ((cubeY - layer.realStartCubeY + layer.spec.bottomOffset) & 15) - Coords.blockToCube(layer.proxyWorld.getMinHeight())
+
+    val storage = chunk.getBlockStorageArray()(index)
     if (storage != null && !storage.isEmpty) {
       for {
         x <- 0 to 15
