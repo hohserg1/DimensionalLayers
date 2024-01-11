@@ -1,5 +1,6 @@
 package hohserg.dimensional.layers.worldgen.proxy
 
+import hohserg.dimensional.layers.Main
 import hohserg.dimensional.layers.worldgen.BaseDimensionLayer
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.{BlockPos, Vec3i}
@@ -43,8 +44,7 @@ class ShiftedBlockPos(private val x: Int,
   override def add(vec: Vec3i): BlockPos =
     vec match {
       case shifted: ShiftedBlockPos =>
-        if (shifted.layer != layer)
-          println("wtf, attempt to sum different layers shifted poses: ", this, shifted)
+        checkPosInSameLayer(shifted, "sum")
 
         new ShiftedBlockPos(x + shifted.x, y + shifted.y, z + shifted.z, layer)
 
@@ -55,14 +55,21 @@ class ShiftedBlockPos(private val x: Int,
   override def subtract(vec: Vec3i): BlockPos = {
     vec match {
       case shifted: ShiftedBlockPos =>
-        if (shifted.layer != layer)
-          println("wtf, attempt to subtract different layers shifted poses: ", this, shifted)
+        checkPosInSameLayer(shifted, "subtract")
 
         new ShiftedBlockPos(x - shifted.x, y - shifted.y, z - shifted.z, layer)
 
       case _ =>
         super.subtract(vec)
     }
+  }
+
+  private def checkPosInSameLayer(shifted: ShiftedBlockPos, operationName: String): Unit = {
+    if (shifted.layer != layer)
+      Main.proxy.printError(
+        "wtf, attempt to " + operationName + " different layers shifted poses: " + this + ", " + shifted,
+        new IllegalArgumentException("shifted pos from another layer")
+      )
   }
 
   def subtracted(from: Vec3i): BlockPos =

@@ -1,6 +1,6 @@
 package hohserg.dimensional.layers.gui
 
-import hohserg.dimensional.layers.Memoized
+import hohserg.dimensional.layers.{Main, Memoized}
 import io.github.opencubicchunks.cubicchunks.api.world.ICubicWorldType
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
@@ -50,7 +50,7 @@ object IconUtils {
         missingBg
     } catch {
       case exception: FileNotFoundException =>
-        println("FileNotFoundException: " + exception.getMessage)
+        Main.proxy.printWarning("icon not found", exception)
         missingBg
 
       case exception: Exception =>

@@ -1,7 +1,7 @@
 package hohserg.dimensional.layers.worldgen.proxy
 
-import hohserg.dimensional.layers.CCWorld
 import hohserg.dimensional.layers.worldgen.{BaseDimensionLayer, CubicWorldTypeLayer, DimensionLayer}
+import hohserg.dimensional.layers.{CCWorld, Main}
 import io.github.opencubicchunks.cubicchunks.api.util.Coords
 import io.github.opencubicchunks.cubicchunks.api.world.{ICube, ICubeProviderServer}
 import io.github.opencubicchunks.cubicchunks.api.worldgen.ICubeGenerator
@@ -148,7 +148,7 @@ class ProxyWorld private(original: CCWorld, val layer: BaseDimensionLayer, actua
   override def getBiome(pos: BlockPos): Biome = {
     val r = original.getBiome(layer.shift(pos).clamp)
     if (r == null)
-      println("bruh biome null")
+      Main.proxy.printError("bruh biome null", new NullPointerException(""))
     r
   }
 

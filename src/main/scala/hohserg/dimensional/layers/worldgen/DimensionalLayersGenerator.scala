@@ -1,13 +1,12 @@
 package hohserg.dimensional.layers.worldgen
 
 import com.google.common.collect.ImmutableList
-import hohserg.dimensional.layers.CCWorld
 import hohserg.dimensional.layers.preset.DimensionalLayersPreset
 import hohserg.dimensional.layers.worldgen.proxy.ProxyCube
+import hohserg.dimensional.layers.{CCWorld, Main}
 import io.github.opencubicchunks.cubicchunks.api.util.{Box, Coords}
 import io.github.opencubicchunks.cubicchunks.api.world.{ICube, ICubicWorld}
 import io.github.opencubicchunks.cubicchunks.api.worldgen.{CubePrimer, ICubeGenerator}
-import io.github.opencubicchunks.cubicchunks.core.CubicChunks
 import io.github.opencubicchunks.cubicchunks.core.asm.mixin.core.common.IGameRegistry
 import io.github.opencubicchunks.cubicchunks.core.world.cube.Cube
 import io.github.opencubicchunks.cubicchunks.core.worldgen.WorldgenHangWatchdog
@@ -33,7 +32,7 @@ class DimensionalLayersGenerator(original: CCWorld) extends ICubeGenerator {
       Some(generator(cubeX, cubeY, cubeZ, target, layer))
     } catch {
       case e: Throwable =>
-        CubicChunks.LOGGER.error("DimensionalLayersGenerator2#generateWithWatchdog error", e)
+        Main.proxy.printError("Generation issue:", e)
         None
     } finally {
       WorldgenHangWatchdog.endWorldGen()
@@ -122,7 +121,7 @@ class DimensionalLayersGenerator(original: CCWorld) extends ICubeGenerator {
         val stack = ex.getStackTrace
         if (stack == null || stack.length < 1 || stack(0).getClassName != classOf[Random].getName || stack(0).getMethodName != "nextInt")
           throw ex
-        CubicChunks.LOGGER.error("Error while populating. Likely known mod issue, ignoring...", ex)
+        Main.proxy.printWarning("Error while populating. Likely known mod issue, ignoring...", ex)
     }
   }
 

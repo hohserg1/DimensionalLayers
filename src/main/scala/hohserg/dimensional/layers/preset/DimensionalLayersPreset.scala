@@ -2,15 +2,10 @@ package hohserg.dimensional.layers.preset
 
 import com.google.gson.JsonParseException
 import hohserg.dimensional.layers.worldgen.{CubicWorldTypeLayer, DimensionLayer, Layer, SolidLayer}
-import hohserg.dimensional.layers.{CCWorld, Configuration}
+import hohserg.dimensional.layers.{CCWorld, Configuration, Main}
 import io.github.opencubicchunks.cubicchunks.api.util.IntRange
-import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.toasts.SystemToast
 import net.minecraft.init.Blocks
-import net.minecraft.util.text.TextComponentString
 import net.minecraftforge.common.DimensionManager
-import net.minecraftforge.fml.common.FMLCommonHandler
-import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 import scala.collection.JavaConverters._
 import scala.util.{Failure, Success, Try}
@@ -71,27 +66,14 @@ object DimensionalLayersPreset {
 
   private def handleError(exception: Throwable): Unit = {
     (exception match {
-      case ignore: NoSuchElementException =>
-        Some("Empty string, will be used mixed preset")
+      case emptyString: NoSuchElementException =>
+        Some("Json is empty string, will be used mixed preset")
       case badJson: JsonParseException =>
         Some("Malformed json:")
       case unexpected: Throwable =>
         Some("Error while parsing json. Plz report to author")
-    }).foreach { title =>
-      if (FMLCommonHandler.instance().getEffectiveSide == Side.CLIENT)
-        showErrorMsgClient(exception, title)
-
-      println("DimensionalLayersPreset json parsing error: " + title)
-      exception.printStackTrace()
+    }).foreach { humanReadable =>
+      Main.proxy.printError(humanReadable, exception)
     }
-  }
-
-  @SideOnly(Side.CLIENT)
-  private def showErrorMsgClient(exception: Throwable, title: String): Unit = {
-    Minecraft.getMinecraft.getToastGui.add(new SystemToast(
-      SystemToast.Type.NARRATOR_TOGGLE,
-      new TextComponentString(title),
-      new TextComponentString(exception.getMessage + "\nfull stacktrace in log")
-    ))
   }
 }

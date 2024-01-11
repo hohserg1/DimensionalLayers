@@ -3,23 +3,28 @@ package hohserg.dimensional.layers
 import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
 import hohserg.dimensional.layers.gui.settings.GuiFakeCreateWorld
 import hohserg.dimensional.layers.preset.{DimensionalLayersPreset, Serialization}
+import hohserg.dimensional.layers.proxy.CommonProxy
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiCreateWorld
 import net.minecraftforge.client.event.GuiOpenEvent
 import net.minecraftforge.client.event.GuiScreenEvent.ActionPerformedEvent
-import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.Mod.{EventBusSubscriber, EventHandler}
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent
 import net.minecraftforge.fml.common.eventhandler.{EventPriority, SubscribeEvent}
+import net.minecraftforge.fml.common.{Mod, SidedProxy}
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
-@Mod(modid = Main.modid, name = "DimensionalLayers", modLanguage = "scala")
+@Mod(modid = Main.modid, name = Main.name, modLanguage = "scala")
 @EventBusSubscriber
 object Main {
   final val modid = "dimensional_layers"
+  final val name = "DimensionalLayers"
 
   //-XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=./dump/oom.hprof
   //-Dlegacy.debugClassLoading=true -Dlegacy.debugClassLoadingSave=true
+
+  @SidedProxy(clientSide = "hohserg.dimensional.layers.proxy.ClientProxy", serverSide = "hohserg.dimensional.layers.proxy.ServerProxy")
+  var proxy: CommonProxy = _
 
   @SideOnly(Side.CLIENT)
   @EventHandler
