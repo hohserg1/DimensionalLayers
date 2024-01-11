@@ -1,13 +1,15 @@
 package hohserg.dimensional.layers.gui.settings.dimension
 
 import hohserg.dimensional.layers.gui.GuiBaseSettings.ValueHolder
+import hohserg.dimensional.layers.gui.IconUtils._
 import hohserg.dimensional.layers.gui.RelativeCoord.{alignLeft, alignTop}
 import hohserg.dimensional.layers.gui._
 import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
-import hohserg.dimensional.layers.gui.settings.GuiBaseSettingsLayer
 import hohserg.dimensional.layers.gui.settings.dimension.GuiSettingsLayer._
+import hohserg.dimensional.layers.gui.settings.{GuiBaseSettingsLayer, GuiFakeCreateWorld}
 import hohserg.dimensional.layers.preset.{DimensionLayerSpec, LayerSpec}
-import hohserg.dimensional.layers.{DimensionalLayersWorldType, Main, clamp}
+import hohserg.dimensional.layers.{Main, clamp}
+import io.github.opencubicchunks.cubicchunks.api.world.ICubicWorldType
 import net.minecraft.client.resources.I18n
 import net.minecraft.util.ResourceLocation
 import net.minecraft.world.WorldType
@@ -17,13 +19,13 @@ import scala.util.Try
 object GuiSettingsLayer {
   val texture = new ResourceLocation(Main.modid, "textures/gui/dimension_settings.png")
   val gridCellSize = 13
-  val gridLeft = DimensionClientUtils.width + 10 * 2 + 70
+  val gridLeft = width + 10 * 2 + 70
 
   lazy val possibleWorldTypes =
     WorldType.WORLD_TYPES
       .filter(_ != null)
       .filter(_.canBeCreated)
-      .filter(_ != DimensionalLayersWorldType)
+      .filter(!_.isInstanceOf[ICubicWorldType])
 
   class CyclicValueHolder[A](init: A, possible: Seq[A])(implicit gui: GuiBaseSettings)
     extends ValueHolder[Int](possible.indexOf(init), _ % possible.size) {
@@ -55,7 +57,6 @@ class GuiSettingsLayer(parent: GuiSetupDimensionalLayersPreset, index: Int, laye
       worldTypePresetH.get
     )
 
-  var seedOverrideField: GuiTextFieldElement[String] = _
   var topOffsetField: GuiOffsetField = _
   var bottomOffsetField: GuiOffsetField = _
   var worldTypeButton: GuiClickableButton = _
@@ -66,10 +67,10 @@ class GuiSettingsLayer(parent: GuiSetupDimensionalLayersPreset, index: Int, laye
   override def initGui(): Unit = {
     super.initGui()
 
-    seedOverrideField = addElement(new GuiTextFieldElement(width - 180, height / 2 - 20 - 20, 170, 20, seedOverrideH, identity))
+    val seedOverrideField = addElement(new GuiTextFieldElement(width - 180, height / 2 - 20 - 20, 170, 20, seedOverrideH, identity))
     addCenteredLabel("seed override:", alignLeft(seedOverrideField.x + seedOverrideField.width / 2), alignTop(seedOverrideField.y - 13), 0xffa0a0a0)
 
-    addLabel(DimensionClientUtils.getDisplayName(layer.dimensionType), 10, DimensionClientUtils.width + 10 * 2, 0xffffffff)
+    addLabel(makeDimensionTypeLabel(layer.dimensionType), 10, IconUtils.width + 10 * 2, 0xffffffff)
 
     topOffsetField = addElement(new GuiOffsetField(gridTop, topOffset, null))
     bottomOffsetField = addElement(new GuiOffsetField(gridTop, bottomOffset, topOffsetField))
@@ -88,15 +89,12 @@ class GuiSettingsLayer(parent: GuiSetupDimensionalLayersPreset, index: Int, laye
     }))
   }
 
-  def makeWorldTypeLabel(worldType: WorldType): String =
-    I18n.format("selectWorld.mapType") + " " + I18n.format(worldType.getTranslationKey)
-
   def toLongSeed(str: String): Long =
     Try(str.toLong).filter(_ != 0).getOrElse(str.hashCode.toLong)
 
   override def drawScreenPre(mouseX: Int, mouseY: Int, partialTicks: Float): Unit = {
     super.drawScreenPre(mouseX, mouseY, partialTicks)
-    DimensionClientUtils.drawLogo(layer.dimensionType, 10, 10)
+    drawLogo(layer.dimensionType, 10, 10)
     drawLayerGrid(mouseX, mouseY)
   }
 

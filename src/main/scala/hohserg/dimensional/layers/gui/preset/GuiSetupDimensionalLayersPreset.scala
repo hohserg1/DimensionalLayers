@@ -27,9 +27,11 @@ class GuiSetupDimensionalLayersPreset(parent: GuiCreateWorld) extends GuiBase(pa
 
     addButton(new GuiClickableButton(width - 80 - 10 - 80 - 10, 10, 80, 20, "Cancel")(back))
 
-    addButton(new GuiClickableButton(width - 110 - 10, 10 + 20 + 10, 110, 20, "Add dimension layer")(show(new dimension.GuiAddLayer(_))))
+    addButton(new GuiClickableButton(width - 150 - 10, 10 + 20 + 10, 150, 20, "Add dimension layer")(show(new dimension.GuiAddLayer(_))))
 
-    addButton(new GuiClickableButton(width - 110 - 10, 10 + 20 + 10 + 20 + 1, 110, 20, "Add solid layer")(show(new solid.GuiAddLayer(_))))
+    addButton(new GuiClickableButton(width - 150 - 10, 10 + 20 + 10 + 20 + 1, 150, 20, "Add solid layer")(show(new solid.GuiAddLayer(_))))
+
+    addButton(new GuiClickableButton(width - 150 - 10, 10 + 20 + 10 + 20 + 1 + 20 + 1, 150, 20, "Add cubic world type layer")(show(new cubic.worldtype.GuiAddLayer(_))))
 
     addButton(new GuiClickableButton(width - 110 - 10, height - 30, 110, 20, "Import preset")(show(new GuiImportPreset(_))))
     exportButton = addButton(new GuiClickableButton(width - 110 - 10, height - 30 - 20 - 1, 110, 20, "Export preset")(GuiImportPreset.export(this)))

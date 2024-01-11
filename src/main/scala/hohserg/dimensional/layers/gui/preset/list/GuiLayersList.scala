@@ -12,10 +12,7 @@ class GuiLayersList(val parent: GuiSetupDimensionalLayersPreset, settings: Strin
 
   val entries: mutable.Buffer[GuiLayerEntry] =
     DimensionalLayersPreset(settings).layers
-      .map {
-        case layer: DimensionLayerSpec => new GuiDimensionLayerEntry(this, layer)
-        case layer: SolidLayerSpec => new GuiSolidLayerEntry(this, layer)
-      }
+      .map(GuiLayerEntry(this, _))
       .toBuffer
 
   setScrollDistanceWithLimits(scrollDistance)

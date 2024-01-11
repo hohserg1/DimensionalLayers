@@ -1,6 +1,6 @@
 package hohserg.dimensional.layers
 
-import hohserg.dimensional.layers.gui.settings.dimension.GuiFakeCreateWorld
+import hohserg.dimensional.layers.gui.settings.GuiFakeCreateWorld
 import hohserg.dimensional.layers.preset.{DimensionalLayersPreset, Serialization}
 import net.minecraft.client.gui.GuiCreateWorld
 import net.minecraftforge.client.event.GuiOpenEvent

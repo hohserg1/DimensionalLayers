@@ -1,13 +1,15 @@
 package hohserg.dimensional.layers.preset
 
-import hohserg.dimensional.layers.worldgen.proxy.{BaseWorldServer, ProxyWorld}
+import hohserg.dimensional.layers.preset.CubicWorldTypeLayerSpec.dummyWorld
+import hohserg.dimensional.layers.worldgen.proxy.BaseWorldServer
 import io.github.opencubicchunks.cubicchunks.api.util.Coords
 import io.github.opencubicchunks.cubicchunks.api.world.ICubicWorldType
 import net.minecraft.block.state.IBlockState
 import net.minecraft.init.Biomes
+import net.minecraft.world._
 import net.minecraft.world.biome.Biome
 import net.minecraft.world.chunk.IChunkProvider
-import net.minecraft.world.{DimensionType, World, WorldServer, WorldType}
+import net.minecraft.world.storage.WorldInfo
 
 sealed trait LayerSpec {
 }
@@ -29,17 +31,33 @@ case class CubicWorldTypeLayerSpec(cubicWorldType: WorldType with ICubicWorldTyp
 
   def rangeCube(original: World): (Int, Int) = {
     val range1 = cubicWorldType.calculateGenerationHeightRange(
-      new BaseWorldServer(
-        null,
-        ProxyWorld.createLayerWorldInfo(original, seedOverride, cubicWorldType, worldTypePreset),
-        dimensionType1.createDimension(),
-        null
-      ) {
-        override def createChunkProvider(): IChunkProvider = ???
-
-        override def isChunkLoaded(x: Int, z: Int, allowEmpty: Boolean): Boolean = ???
-      }.asInstanceOf[WorldServer]
+      dummyWorld(this, original.worldInfo.getGameType, original.getWorldInfo.isMapFeaturesEnabled)
     )
     Coords.blockToCube(range1.getMin) -> Coords.blockToCube(range1.getMax)
+  }
+}
+
+object CubicWorldTypeLayerSpec {
+
+  def dummyWorld(spec: CubicWorldTypeLayerSpec, gameType: GameType = GameType.SURVIVAL, isMapFeaturesEnabled: Boolean = true): WorldServer = {
+    new BaseWorldServer(
+      null,
+      new WorldInfo(
+        new WorldSettings(
+          spec.seedOverride.getOrElse(0),
+          gameType,
+          isMapFeaturesEnabled,
+          false,
+          spec.cubicWorldType
+        ).setGeneratorOptions(spec.worldTypePreset),
+        "New World---"
+      ),
+      spec.dimensionType1.createDimension(),
+      null
+    ) {
+      override def createChunkProvider(): IChunkProvider = ???
+
+      override def isChunkLoaded(x: Int, z: Int, allowEmpty: Boolean): Boolean = ???
+    }.asInstanceOf[WorldServer]
   }
 }
