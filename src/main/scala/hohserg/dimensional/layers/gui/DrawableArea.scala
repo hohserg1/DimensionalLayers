@@ -15,14 +15,22 @@ case class DrawableArea(minX: RelativeCoord, minY: RelativeCoord, maxX: Relative
     )
   }
 
+  def x(implicit container: Container): Int = minX.absoluteCoord(container.minX, container.minY, container.maxX, container.maxY)
+
+  def y(implicit container: Container): Int = minY.absoluteCoord(container.minX, container.minY, container.maxX, container.maxY)
+
+  def x2(implicit container: Container): Int = maxX.absoluteCoord(container.minX, container.minY, container.maxX, container.maxY)
+
+  def y2(implicit container: Container): Int = maxY.absoluteCoord(container.minX, container.minY, container.maxX, container.maxY)
+
+  def w(implicit container: Container): Int = x2 - x
+
+  def h(implicit container: Container): Int = y2 - y
+
   def draw(buffer: BufferBuilder)(implicit container: Container): Unit = {
-    val areaMinX = minX.absoluteCoord(container.minX, container.minY, container.maxX, container.maxY)
-    val areaMinY = minY.absoluteCoord(container.minX, container.minY, container.maxX, container.maxY)
-    val areaMaxX = maxX.absoluteCoord(container.minX, container.minY, container.maxX, container.maxY)
-    val areaMaxY = maxY.absoluteCoord(container.minX, container.minY, container.maxX, container.maxY)
     DrawableArea.drawRect(
       buffer,
-      areaMinX, areaMinY, areaMaxX, areaMaxY,
+      x, y, x2, y2,
       if (isHovering) hoveringUV else uv
     )
   }
