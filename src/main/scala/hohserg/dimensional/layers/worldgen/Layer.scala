@@ -104,7 +104,7 @@ class CubicWorldTypeLayer(original: CCWorld, val spec: CubicWorldTypeLayerSpec, 
 
   val proxyWorld = ProxyWorld(original, this)
 
-  lazy val generator = spec.cubicWorldType.createCubeGenerator(proxyWorld)
+  val generator = spec.cubicWorldType.createCubeGenerator(proxyWorld)
 
   override def dimensionType: DimensionType = spec.dimensionType1
 
