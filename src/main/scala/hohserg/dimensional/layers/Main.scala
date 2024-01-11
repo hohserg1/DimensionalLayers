@@ -1,13 +1,15 @@
 package hohserg.dimensional.layers
 
+import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
 import hohserg.dimensional.layers.gui.settings.GuiFakeCreateWorld
 import hohserg.dimensional.layers.preset.{DimensionalLayersPreset, Serialization}
+import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiCreateWorld
 import net.minecraftforge.client.event.GuiOpenEvent
 import net.minecraftforge.client.event.GuiScreenEvent.ActionPerformedEvent
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.Mod.{EventBusSubscriber, EventHandler}
-import net.minecraftforge.fml.common.event.{FMLPostInitializationEvent, FMLPreInitializationEvent}
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent
 import net.minecraftforge.fml.common.eventhandler.{EventPriority, SubscribeEvent}
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
@@ -19,15 +21,14 @@ object Main {
   //-XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=./dump/oom.hprof
   //-Dlegacy.debugClassLoading=true -Dlegacy.debugClassLoadingSave=true
 
+  @SideOnly(Side.CLIENT)
   @EventHandler
-  def preInit(e: FMLPreInitializationEvent): Unit = {
+  def fixClientLagByEarlyInit(e: FMLPostInitializationEvent): Unit = {
     DimensionalLayersWorldType.getName
-  }
-
-  @EventHandler
-  def postInit(e: FMLPostInitializationEvent): Unit = {
-    DimensionalLayersPreset("")
+    DimensionalLayersPreset.mixedPresetTop
     println(Serialization.gson)
+    new GuiSetupDimensionalLayersPreset(new GuiFakeCreateWorld(null, ""))
+      .setWorldAndResolution(Minecraft.getMinecraft, Minecraft.getMinecraft.displayWidth, Minecraft.getMinecraft.displayHeight)
   }
 
 
