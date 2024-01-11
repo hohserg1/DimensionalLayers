@@ -3,7 +3,7 @@ package hohserg.dimensional.layers
 import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
 import hohserg.dimensional.layers.gui.settings.GuiFakeCreateWorld
 import hohserg.dimensional.layers.preset.{DimensionalLayersPreset, Serialization}
-import hohserg.dimensional.layers.proxy.CommonProxy
+import hohserg.dimensional.layers.sided.CommonLogic
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiCreateWorld
 import net.minecraftforge.client.event.GuiOpenEvent
@@ -23,15 +23,17 @@ object Main {
   //-XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=./dump/oom.hprof
   //-Dlegacy.debugClassLoading=true -Dlegacy.debugClassLoadingSave=true
 
-  @SidedProxy(clientSide = "hohserg.dimensional.layers.proxy.ClientProxy", serverSide = "hohserg.dimensional.layers.proxy.ServerProxy")
-  var proxy: CommonProxy = _
+  @SidedProxy(clientSide = "hohserg.dimensional.layers.sided.ClientProxy", serverSide = "hohserg.dimensional.layers.sided.ServerProxy")
+  var proxy: CommonLogic = _
 
   @SideOnly(Side.CLIENT)
   @EventHandler
   def fixClientLagByEarlyInit(e: FMLPostInitializationEvent): Unit = {
-    DimensionalLayersWorldType.getName
-    DimensionalLayersPreset.mixedPresetTop
-    println(Serialization.gson)
+    println(
+      DimensionalLayersWorldType.getName,
+      DimensionalLayersPreset.mixedPresetTop,
+      Serialization.gson
+    )
     new GuiSetupDimensionalLayersPreset(new GuiFakeCreateWorld(null, ""))
       .setWorldAndResolution(Minecraft.getMinecraft, Minecraft.getMinecraft.displayWidth, Minecraft.getMinecraft.displayHeight)
   }

@@ -1,8 +1,8 @@
-package hohserg.dimensional.layers.proxy
+package hohserg.dimensional.layers.sided
 
 import hohserg.dimensional.layers.Main
 
-class CommonProxy {
+class CommonLogic {
 
   def printInfo(msg: String): Unit = {
     print("INFO", msg)

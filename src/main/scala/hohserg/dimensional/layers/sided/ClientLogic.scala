@@ -1,10 +1,10 @@
-package hohserg.dimensional.layers.proxy
+package hohserg.dimensional.layers.sided
 
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.toasts.SystemToast
 import net.minecraft.util.text.TextComponentString
 
-class ClientProxy extends CommonProxy {
+class ClientLogic extends CommonLogic {
 
   override def printError(msg: String, e: Throwable): Unit = {
     super.printError(msg, e)
