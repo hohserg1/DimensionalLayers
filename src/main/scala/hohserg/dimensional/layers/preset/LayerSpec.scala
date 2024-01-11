@@ -31,7 +31,7 @@ case class CubicWorldTypeLayerSpec(cubicWorldType: WorldType with ICubicWorldTyp
 
   def rangeCube(original: World): (Int, Int) = {
     val range1 = cubicWorldType.calculateGenerationHeightRange(
-      dummyWorld(this, original.worldInfo.getGameType, original.getWorldInfo.isMapFeaturesEnabled)
+      dummyWorld(this, original.getWorldInfo.getGameType, original.getWorldInfo.isMapFeaturesEnabled)
     )
     Coords.blockToCube(range1.getMin) -> Coords.blockToCube(range1.getMax)
   }
