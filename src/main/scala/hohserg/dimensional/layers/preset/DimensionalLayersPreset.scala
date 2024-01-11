@@ -4,15 +4,15 @@ import com.google.gson.JsonParseException
 import hohserg.dimensional.layers.worldgen.{CubicWorldTypeLayer, DimensionLayer, Layer, SolidLayer}
 import hohserg.dimensional.layers.{CCWorld, Configuration}
 import io.github.opencubicchunks.cubicchunks.api.util.IntRange
-import io.github.opencubicchunks.cubicchunks.api.world.ICubicWorldType
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.toasts.SystemToast
 import net.minecraft.init.Blocks
 import net.minecraft.util.text.TextComponentString
-import net.minecraft.world.WorldType
+import net.minecraftforge.common.DimensionManager
 import net.minecraftforge.fml.common.FMLCommonHandler
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
+import scala.collection.JavaConverters._
 import scala.util.{Failure, Success, Try}
 
 case class DimensionalLayersPreset(layers: List[LayerSpec]) {
@@ -60,14 +60,16 @@ object DimensionalLayersPreset {
         value
     }
 
-  private def mixedPreset =
+  lazy val mixedPresetTop: List[DimensionLayerSpec] =
+    DimensionManager.getRegisteredDimensions.keySet().asScala.map(DimensionLayerSpec(_)).toList
+
+  def mixedPreset =
     DimensionalLayersPreset(
-      DimensionManager.getRegisteredDimensions.keySet().asScala.map(DimensionLayerSpec(_)).toList
+      scala.util.Random.shuffle(mixedPresetTop)
         :+ SolidLayerSpec(Blocks.BEDROCK.getDefaultState, 1)
     )
 
   private def handleError(exception: Throwable): Unit = {
-
     (exception match {
       case ignore: NoSuchElementException =>
         Some("Empty string, will be used mixed preset")
