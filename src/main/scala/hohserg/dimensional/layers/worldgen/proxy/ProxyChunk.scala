@@ -44,7 +44,7 @@ class ProxyChunk(proxy: ProxyWorld, original: Chunk, layer: BaseDimensionLayer) 
     for (i <- layer.realEndCubeY to layer.realStartCubeY by -1) {
       val cube = original.asInstanceOf[IColumn].getCube(i)
       if (!cube.isEmpty) {
-        return Coords.cubeToMinBlock(i)
+        return Coords.cubeToMinBlock(i + layer.virtualStartCubeY)
       }
     }
     0
