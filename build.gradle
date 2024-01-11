@@ -72,6 +72,7 @@ dependencies {
 
     compileOnly 'abc:CubicChunks-1.12.2:0.0.1270.0-SNAPSHOT:dev-all'
     compileOnly 'abc:CubicWorldGen-1.12.2:0.0.180.0-SNAPSHOT:dev'
+    compileOnly fg.deobf('abc:malisiscore-1.12.2:6.5.1')
 
     implementation 'abc:DivineRPG:1.7.1'
     implementation fg.deobf('abc:aether_ii-1.12.2:0.3.0')
