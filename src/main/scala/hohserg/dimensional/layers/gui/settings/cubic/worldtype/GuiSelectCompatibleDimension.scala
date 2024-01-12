@@ -2,16 +2,16 @@ package hohserg.dimensional.layers.gui.settings.cubic.worldtype
 
 import com.google.common.cache.{CacheBuilder, CacheLoader, LoadingCache}
 import hohserg.dimensional.layers.Main
-import hohserg.dimensional.layers.accessors.AccessorDimensionManager
 import hohserg.dimensional.layers.gui.GuiSelectDimension.{DrawableDim, allDimensions, itemWidth}
 import hohserg.dimensional.layers.gui.settings.cubic.worldtype.GuiSelectCompatibleDimension.dimLinesByLenByCubicWorldType
 import hohserg.dimensional.layers.gui.{GuiSelectDimension, GuiTileList}
 import hohserg.dimensional.layers.preset.CubicWorldTypeLayerSpec
 import hohserg.dimensional.layers.preset.CubicWorldTypeLayerSpec._
 import io.github.opencubicchunks.cubicchunks.api.world.ICubicWorldType
-import it.unimi.dsi.fastutil.ints.{Int2ObjectLinkedOpenHashMap, IntSortedSet}
+import it.unimi.dsi.fastutil.ints.{Int2ObjectLinkedOpenHashMap, Int2ObjectMap, IntSortedSet}
 import net.minecraft.world.{DimensionType, WorldServer, WorldType}
 import net.minecraftforge.common.DimensionManager
+import net.minecraftforge.common.util.EnumHelper
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
@@ -60,6 +60,20 @@ object GuiSelectCompatibleDimension {
 
     } finally {
       AccessorDimensionManager.setWorlds(original)
+    }
+  }
+
+  object AccessorDimensionManager {
+    def getWorlds: Int2ObjectMap[WorldServer] =
+      field.get(null).asInstanceOf[Int2ObjectMap[WorldServer]]
+
+    def setWorlds(v: Int2ObjectMap[WorldServer]): Unit =
+      EnumHelper.setFailsafeFieldValue(field, null, v)
+
+    private lazy val field = {
+      val r = classOf[DimensionManager].getDeclaredField("worlds")
+      r.setAccessible(true)
+      r
     }
   }
 }
