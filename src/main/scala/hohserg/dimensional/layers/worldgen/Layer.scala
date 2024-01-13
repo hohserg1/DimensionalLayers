@@ -34,11 +34,11 @@ sealed trait BaseDimensionLayer extends Layer {
 
   def virtualStartCubeY: Int
 
-  def virtualEndCubeT: Int
+  def virtualEndCubeY: Int
 
   def virtualStartBlockY: Int = Coords.cubeToMinBlock(virtualStartCubeY)
 
-  def virtualEndBlockY: Int = Coords.cubeToMaxBlock(virtualEndCubeT)
+  def virtualEndBlockY: Int = Coords.cubeToMaxBlock(virtualEndCubeY)
 
   def dimensionType: DimensionType
 
@@ -67,7 +67,7 @@ sealed trait BaseDimensionLayer extends Layer {
 
 class DimensionLayer(original: CCWorld, val spec: DimensionLayerSpec, val realStartCubeY: Int) extends BaseDimensionLayer {
   val virtualStartCubeY: Int = spec.bottomOffset
-  val virtualEndCubeT: Int = 16 - spec.topOffset - 1
+  val virtualEndCubeY: Int = 16 - spec.topOffset - 1
 
   val proxyWorld = ProxyWorld(original, this)
   private val provider: WorldProvider = proxyWorld.provider
@@ -98,9 +98,9 @@ class DimensionLayer(original: CCWorld, val spec: DimensionLayerSpec, val realSt
 case class SolidLayer(filler: IBlockState, biome: Biome, realStartCubeY: Int, height: Int) extends Layer
 
 class CubicWorldTypeLayer(original: CCWorld, val spec: CubicWorldTypeLayerSpec, val realStartCubeY: Int) extends BaseDimensionLayer {
-  val (virtualStartCubeY, virtualEndCubeT) = spec.rangeCube(original)
+  val (virtualStartCubeY, virtualEndCubeY) = spec.rangeCube(original)
 
-  val height: Int = virtualEndCubeT - virtualStartCubeY + 1
+  val height: Int = virtualEndCubeY - virtualStartCubeY + 1
 
   val proxyWorld = ProxyWorld(original, this)
 
