@@ -1,21 +1,18 @@
 package hohserg.dimensional.layers.gui.preset.list
 
 import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
-import hohserg.dimensional.layers.gui.{DimensionClientUtils, GuiScrollingListElement}
+import hohserg.dimensional.layers.gui.{GuiScrollingListElement, IconUtils}
 import hohserg.dimensional.layers.preset._
 import net.minecraft.client.renderer.Tessellator
 
 import scala.collection.mutable
 
 class GuiLayersList(val parent: GuiSetupDimensionalLayersPreset, settings: String, scrollDistance: Float)
-  extends GuiScrollingListElement(10, 10, parent.width - 200, parent.height - 20, DimensionClientUtils.width + 4) {
+  extends GuiScrollingListElement(10, 10, parent.width - 200, parent.height - 20, IconUtils.width + 4) {
 
   val entries: mutable.Buffer[GuiLayerEntry] =
     DimensionalLayersPreset(settings).layers
-      .map {
-        case layer: DimensionLayerSpec => new GuiDimensionLayerEntry(this, layer)
-        case layer: SolidLayerSpec => new GuiSolidLayerEntry(this, layer)
-      }
+      .map(GuiLayerEntry(this, _))
       .toBuffer
 
   setScrollDistanceWithLimits(scrollDistance)

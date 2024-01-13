@@ -21,7 +21,7 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
-version = '3.12'
+version = '3.14'
 group = 'hohserg.dimensional.layers' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'DimensionalLayers'
 
@@ -70,18 +70,20 @@ repositories {
 dependencies {
     minecraft 'net.minecraftforge:forge:1.12.2-14.23.5.2860'
 
-    compileOnly 'abc:CubicChunks:1.12.2:dev'
+    compileOnly 'abc:CubicChunks-1.12.2:0.0.1270.0-SNAPSHOT:dev-all'
+    compileOnly 'abc:CubicWorldGen-1.12.2:0.0.180.0-SNAPSHOT:dev'
+    compileOnly fg.deobf('abc:malisiscore-1.12.2:6.5.1')
 
-    implementation 'abc:DivineRPG:1.7.1'
-    implementation fg.deobf('abc:aether_ii-1.12.2:0.3.0')
-    implementation fg.deobf('abc:orbis-lib-1.12.2:0.2.0')
-    implementation fg.deobf('abc:RTG-1.12.2:6.1.0.0')
-    implementation 'abc:AbyssalCraft:1.12.2-1.10.4'
-    compileOnly 'abc:CubicWorldGen-1.12.2:0.0.178.0-SNAPSHOT:dev'
+    //implementation 'abc:DivineRPG:1.7.1'
+    //implementation fg.deobf('abc:aether_ii-1.12.2:0.3.0')
+    //implementation fg.deobf('abc:orbis-lib-1.12.2:0.2.0')
+    //implementation fg.deobf('abc:RTG-1.12.2:6.1.0.0')
+    //implementation 'abc:AbyssalCraft:1.12.2-1.10.4'
+    implementation fg.deobf('abc:backrooms-ultimate-edition-1.12.1-1.12.2:0.1.7:hotfix')
 
-    implementation fg.deobf('abc:DimensionalControl-1.12.2:2.13.0')
-    implementation fg.deobf('abc:BNBGamingLib-1.12.2:2.17.6')
-    implementation fg.deobf('abc:BNBGamingCore-1.12.2:0.12.0')
+    //implementation fg.deobf('abc:DimensionalControl-1.12.2:2.13.0')
+    //implementation fg.deobf('abc:BNBGamingLib-1.12.2:2.17.6')
+    //implementation fg.deobf('abc:BNBGamingCore-1.12.2:0.12.0')
 
 }
 

@@ -1,31 +1,40 @@
 package hohserg.dimensional.layers.preset
 
 import com.google.gson.JsonParseException
-import hohserg.dimensional.layers.Configuration
-import hohserg.dimensional.layers.worldgen.{DimensionLayer, Layer, SolidLayer}
+import hohserg.dimensional.layers.worldgen.{CubicWorldTypeLayer, DimensionLayer, Layer, SolidLayer}
+import hohserg.dimensional.layers.{CCWorld, Configuration, Main}
 import io.github.opencubicchunks.cubicchunks.api.util.IntRange
-import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.toasts.SystemToast
 import net.minecraft.init.Blocks
-import net.minecraft.util.text.TextComponentString
-import net.minecraft.world.World
 import net.minecraftforge.common.DimensionManager
-import net.minecraftforge.fml.common.FMLCommonHandler
-import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
-import scala.collection.JavaConverters.asScalaSetConverter
+import scala.collection.JavaConverters._
 import scala.util.{Failure, Success, Try}
 
 case class DimensionalLayersPreset(layers: List[LayerSpec]) {
-  def toLayerMap: Map[IntRange, World => Layer] =
+  def toLayerMap(original: CCWorld): Map[Int, Layer] =
     layers
-      .foldRight(List[(IntRange, World => Layer)]() -> 0) {
-        case (spec: DimensionLayerSpec, (acc, lastFreeCubic)) =>
-          (range(lastFreeCubic, spec.height) -> (new DimensionLayer(_: World, spec, lastFreeCubic)) :: acc) -> (lastFreeCubic + spec.height)
+      .foldRight(List[(IntRange, Layer)]() -> 0) {
+        case (spec, (acc, lastFreeCubic)) =>
 
-        case (SolidLayerSpec(filler, height, biome), (acc, lastFreeCubic)) =>
-          (range(lastFreeCubic, height) -> { _: World => SolidLayer(filler, biome, lastFreeCubic, height) } :: acc) -> (lastFreeCubic + height)
-      }._1.toMap
+          val layer = spec match {
+            case spec: DimensionLayerSpec =>
+              new DimensionLayer(original, spec, lastFreeCubic)
+
+            case SolidLayerSpec(filler, height, biome) =>
+              SolidLayer(filler, biome, lastFreeCubic, height)
+
+            case spec: CubicWorldTypeLayerSpec =>
+              new CubicWorldTypeLayer(original, spec, lastFreeCubic)
+          }
+
+          (range(lastFreeCubic, layer.height) -> layer :: acc) -> (lastFreeCubic + layer.height)
+      }
+      ._1
+      .toMap
+      .flatMap { case (range, layer) =>
+        for (i <- range.getMin to range.getMax)
+          yield i -> layer
+      }
 
   private def range(lastFreeCubic: Int, height: Int) = IntRange.of(lastFreeCubic, lastFreeCubic + height - 1)
 
@@ -46,36 +55,25 @@ object DimensionalLayersPreset {
         value
     }
 
-  private def mixedPreset =
+  lazy val mixedPresetTop: List[DimensionLayerSpec] =
+    DimensionManager.getRegisteredDimensions.keySet().asScala.map(DimensionLayerSpec(_)).toList
+
+  def mixedPreset =
     DimensionalLayersPreset(
-      DimensionManager.getRegisteredDimensions.keySet().asScala.map(DimensionLayerSpec(_)).toList
+      scala.util.Random.shuffle(mixedPresetTop)
         :+ SolidLayerSpec(Blocks.BEDROCK.getDefaultState, 1)
     )
 
   private def handleError(exception: Throwable): Unit = {
-
     (exception match {
-      case ignore: NoSuchElementException =>
-        Some("Empty string, will be used mixed preset")
+      case ingore: NoSuchElementException =>
+        None
       case badJson: JsonParseException =>
         Some("Malformed json:")
       case unexpected: Throwable =>
         Some("Error while parsing json. Plz report to author")
-    }).foreach { title =>
-      if (FMLCommonHandler.instance().getEffectiveSide == Side.CLIENT)
-        showErrorMsgClient(exception, title)
-
-      println("DimensionalLayersPreset json parsing error: " + title)
-      exception.printStackTrace()
+    }).foreach { humanReadable =>
+      Main.sided.printError(humanReadable, exception)
     }
-  }
-
-  @SideOnly(Side.CLIENT)
-  private def showErrorMsgClient(exception: Throwable, title: String): Unit = {
-    Minecraft.getMinecraft.getToastGui.add(new SystemToast(
-      SystemToast.Type.NARRATOR_TOGGLE,
-      new TextComponentString(title),
-      new TextComponentString(exception.getMessage + "\nfull stacktrace in log")
-    ))
   }
 }

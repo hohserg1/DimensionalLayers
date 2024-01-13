@@ -17,14 +17,14 @@ object DimensionalLayersWorldType extends WorldType("dimlayers") with ICubicWorl
   }
 
   override def createCubeGenerator(world: World): ICubeGenerator = {
-    new DimensionalLayersGenerator(world)
+    new DimensionalLayersGenerator(world.asInstanceOf[CCWorld])
   }
 
   override def calculateGenerationHeightRange(worldServer: WorldServer): IntRange = {
-    val layers = DimensionalLayersPreset(worldServer.getWorldInfo.getGeneratorOptions).toLayerMap
+    val layers = DimensionalLayersPreset(worldServer.getWorldInfo.getGeneratorOptions).toLayerMap(worldServer.asInstanceOf[CCWorld])
     IntRange.of(
-      layers.keys.minBy(_.getMin).getMin * 16,
-      layers.keys.maxBy(_.getMax).getMax * 16 + 16
+      layers.keys.min * 16,
+      layers.keys.max * 16 + 16
     )
   }
 

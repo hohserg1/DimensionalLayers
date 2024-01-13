@@ -1,11 +1,17 @@
 package hohserg.dimensional.layers.worldgen.proxy
 
-import hohserg.dimensional.layers.worldgen.DimensionLayer
+import hohserg.dimensional.layers.Main
+import hohserg.dimensional.layers.worldgen.BaseDimensionLayer
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.{BlockPos, Vec3i}
 
-class ShiftedBlockPos(private val x: Int, private val y: Int, private val z: Int, private val layer: DimensionLayer)
-  extends BlockPos(x, y - layer.virtualStartBlockY + layer.startBlockY, z) {
+class ShiftedBlockPos(private val x: Int,
+                      private val y: Int,
+                      private val z: Int,
+                      private val layer: BaseDimensionLayer)
+  extends BlockPos(x, ShiftedBlockPos.shiftBlockY(y, layer), z) {
+
+  def unshift: BlockPos = new BlockPos(x, y, z)
 
   def isInLayer: Boolean = layer.virtualStartBlockY <= y && y <= layer.virtualEndBlockY
 
@@ -38,8 +44,7 @@ class ShiftedBlockPos(private val x: Int, private val y: Int, private val z: Int
   override def add(vec: Vec3i): BlockPos =
     vec match {
       case shifted: ShiftedBlockPos =>
-        if (shifted.layer != layer)
-          println("wtf, attempt to sum different layers shifted poses: ", this, shifted)
+        checkPosInSameLayer(shifted, "sum")
 
         new ShiftedBlockPos(x + shifted.x, y + shifted.y, z + shifted.z, layer)
 
@@ -50,14 +55,21 @@ class ShiftedBlockPos(private val x: Int, private val y: Int, private val z: Int
   override def subtract(vec: Vec3i): BlockPos = {
     vec match {
       case shifted: ShiftedBlockPos =>
-        if (shifted.layer != layer)
-          println("wtf, attempt to subtract different layers shifted poses: ", this, shifted)
+        checkPosInSameLayer(shifted, "subtract")
 
         new ShiftedBlockPos(x - shifted.x, y - shifted.y, z - shifted.z, layer)
 
       case _ =>
         super.subtract(vec)
     }
+  }
+
+  private def checkPosInSameLayer(shifted: ShiftedBlockPos, operationName: String): Unit = {
+    if (shifted.layer != layer)
+      Main.sided.printError(
+        "wtf, attempt to " + operationName + " different layers shifted poses: " + this + ", " + shifted,
+        new IllegalArgumentException("shifted pos from another layer")
+      )
   }
 
   def subtracted(from: Vec3i): BlockPos =
@@ -70,15 +82,35 @@ class ShiftedBlockPos(private val x: Int, private val y: Int, private val z: Int
 }
 
 object ShiftedBlockPos {
-  def apply(pos: BlockPos, layer: DimensionLayer): ShiftedBlockPos =
+  def apply(pos: BlockPos, layer: BaseDimensionLayer): ShiftedBlockPos =
     pos match {
       case already: ShiftedBlockPos => already
       case _ => new ShiftedBlockPos(pos.getX, pos.getY, pos.getZ, layer)
     }
 
-  def markShifted(pos: BlockPos, layer: DimensionLayer): ShiftedBlockPos =
+  def markShifted(pos: BlockPos, layer: BaseDimensionLayer): ShiftedBlockPos =
     pos match {
       case already: ShiftedBlockPos => already
-      case _ => new ShiftedBlockPos(pos.getX, pos.getY - layer.startBlockY, pos.getZ, layer)
+      case _ => new ShiftedBlockPos(pos.getX, unshiftBlockY(pos.getY, layer), pos.getZ, layer)
     }
+
+  def unshift(pos: BlockPos): BlockPos =
+    pos match {
+      case shifted: ShiftedBlockPos => shifted.unshift
+      case already => already
+    }
+
+  def shiftBlockY[N](y: N, layer: BaseDimensionLayer)(implicit n: Numeric[N]): N = {
+    import n._
+    y - fromInt(layer.virtualStartBlockY) + fromInt(layer.realStartBlockY)
+  }
+
+  def unshiftBlockY[N](y: N, layer: BaseDimensionLayer)(implicit n: Numeric[N]): N = {
+    import n._
+    y + fromInt(layer.virtualStartBlockY) - fromInt(layer.realStartBlockY)
+  }
+
+  def unshiftCubeY(y: Int, layer: BaseDimensionLayer): Int = {
+    y + layer.virtualStartCubeY - layer.realStartCubeY
+  }
 }
