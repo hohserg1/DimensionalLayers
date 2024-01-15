@@ -12,6 +12,18 @@ import scala.util.{Failure, Success, Try}
 
 case class DimensionalLayersPreset(layers: List[LayerSpec]) {
   def toLayerMap(original: CCWorld): Map[Int, Layer] =
+    toLayerMap(toLayerSeq(original))
+
+  def toLayerMap(seq: Seq[(IntRange, Layer)]): Map[Int, Layer] =
+    seq
+      .toMap
+      .flatMap { case (range, layer) =>
+        for (i <- range.getMin to range.getMax)
+          yield i -> layer
+      }
+
+
+  def toLayerSeq(original: CCWorld): Seq[(IntRange, Layer)] = {
     layers
       .foldRight(List[(IntRange, Layer)]() -> 0) {
         case (spec, (acc, lastFreeCubic)) =>
@@ -30,11 +42,7 @@ case class DimensionalLayersPreset(layers: List[LayerSpec]) {
           (range(lastFreeCubic, layer.height) -> layer :: acc) -> (lastFreeCubic + layer.height)
       }
       ._1
-      .toMap
-      .flatMap { case (range, layer) =>
-        for (i <- range.getMin to range.getMax)
-          yield i -> layer
-      }
+  }
 
   private def range(lastFreeCubic: Int, height: Int) = IntRange.of(lastFreeCubic, lastFreeCubic + height - 1)
 

@@ -3,6 +3,7 @@ package hohserg.dimensional.layers
 import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
 import hohserg.dimensional.layers.preset.DimensionalLayersPreset
 import hohserg.dimensional.layers.worldgen.DimensionalLayersGenerator
+import hohserg.dimensional.layers.worldgen.proxy.BaseWorldServer
 import io.github.opencubicchunks.cubicchunks.api.util.IntRange
 import io.github.opencubicchunks.cubicchunks.api.world.ICubicWorldType
 import io.github.opencubicchunks.cubicchunks.api.worldgen.ICubeGenerator
@@ -21,6 +22,7 @@ object DimensionalLayersWorldType extends WorldType("dimlayers") with ICubicWorl
   }
 
   override def calculateGenerationHeightRange(worldServer: WorldServer): IntRange = {
+    println("calculateGenerationHeightRange", CapabilityWorld(worldServer))
     val layers = DimensionalLayersPreset(worldServer.getWorldInfo.getGeneratorOptions).toLayerMap(worldServer.asInstanceOf[CCWorld])
     IntRange.of(
       layers.keys.min * 16,
@@ -29,7 +31,7 @@ object DimensionalLayersWorldType extends WorldType("dimlayers") with ICubicWorl
   }
 
   override def hasCubicGeneratorForWorld(world: World): Boolean = {
-    world.provider.getDimension == 0
+    world.provider.getDimension == 0 && !world.isInstanceOf[BaseWorldServer]
   }
 
   override def isCustomizable: Boolean = true
