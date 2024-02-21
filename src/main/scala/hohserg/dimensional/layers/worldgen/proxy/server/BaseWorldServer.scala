@@ -1,4 +1,4 @@
-package hohserg.dimensional.layers.worldgen.proxy
+package hohserg.dimensional.layers.worldgen.proxy.server
 
 import com.google.common.util.concurrent.ListenableFuture
 import com.sun.istack.internal.Nullable

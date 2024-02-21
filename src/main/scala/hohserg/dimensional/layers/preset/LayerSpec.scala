@@ -1,7 +1,7 @@
 package hohserg.dimensional.layers.preset
 
 import hohserg.dimensional.layers.preset.CubicWorldTypeLayerSpec.dummyWorld
-import hohserg.dimensional.layers.worldgen.proxy.BaseWorldServer
+import hohserg.dimensional.layers.worldgen.proxy.server.BaseWorldServer
 import io.github.opencubicchunks.cubicchunks.api.util.Coords
 import io.github.opencubicchunks.cubicchunks.api.world.ICubicWorldType
 import net.minecraft.block.state.IBlockState

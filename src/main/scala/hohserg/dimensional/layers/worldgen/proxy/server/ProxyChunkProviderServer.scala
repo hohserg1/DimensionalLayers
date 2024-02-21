@@ -1,8 +1,9 @@
-package hohserg.dimensional.layers.worldgen.proxy
+package hohserg.dimensional.layers.worldgen.proxy.server
 
 import com.google.common.cache.{CacheBuilder, CacheLoader, LoadingCache}
 import hohserg.dimensional.layers.CCWorld
 import hohserg.dimensional.layers.worldgen.BaseDimensionLayer
+import hohserg.dimensional.layers.worldgen.proxy.{ProxyChunk, ProxyCube}
 import io.github.opencubicchunks.cubicchunks.api.util.CubePos
 import io.github.opencubicchunks.cubicchunks.api.world.ICubeProviderServer.Requirement._
 import io.github.opencubicchunks.cubicchunks.api.world.{ICube, ICubeProviderServer}
@@ -15,7 +16,7 @@ import net.minecraft.world.{World, WorldServer}
 
 import java.util
 
-class ProxyChunkProvider(proxy: ProxyWorld, original: CCWorld, layer: BaseDimensionLayer)
+class ProxyChunkProviderServer(proxy: ProxyWorldServer, original: CCWorld, layer: BaseDimensionLayer)
   extends ChunkProviderServer(proxy.asInstanceOf[WorldServer], proxy.getSaveHandler.getChunkLoader(proxy.provider), null)
     with ICubeProviderServer {
 

@@ -1,5 +1,6 @@
 package hohserg.dimensional.layers.worldgen.proxy;
 
+import hohserg.dimensional.layers.worldgen.proxy.server.ProxyWorldServer;
 import io.github.opencubicchunks.cubicchunks.api.world.IColumn;
 import io.github.opencubicchunks.cubicchunks.api.world.ICube;
 import io.github.opencubicchunks.cubicchunks.api.world.ICubicWorld;
@@ -8,7 +9,7 @@ import net.minecraft.world.chunk.Chunk;
 
 public interface BaseProxyCube extends ICube {
 
-    ProxyWorld proxyWorld();
+    ProxyWorldServer proxyWorld();
 
     @Override
     default <T extends World & ICubicWorld> T getWorld() {

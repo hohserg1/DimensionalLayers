@@ -1,6 +1,7 @@
 package hohserg.dimensional.layers.worldgen.proxy
 
 import hohserg.dimensional.layers.worldgen.BaseDimensionLayer
+import hohserg.dimensional.layers.worldgen.proxy.server.ProxyWorldServer
 import io.github.opencubicchunks.cubicchunks.api.util.CubePos
 import io.github.opencubicchunks.cubicchunks.api.world.ICube
 import net.minecraft.block.state.IBlockState
@@ -19,7 +20,7 @@ import java.util
 
 class ProxyCube(original: ICube, layer: BaseDimensionLayer) extends BaseProxyCube {
 
-  override def proxyWorld(): ProxyWorld = layer.proxyWorld
+  override def proxyWorld(): ProxyWorldServer = layer.proxyWorld
 
   override def getBlockState(blockPos: BlockPos): IBlockState =
     original.getBlockState(layer.shift(blockPos))

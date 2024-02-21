@@ -1,19 +1,19 @@
 package hohserg.dimensional.layers
 
+import hohserg.dimensional.layers.compatibility.event.CompatEventsHandler
 import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
 import hohserg.dimensional.layers.gui.settings.GuiFakeCreateWorld
 import hohserg.dimensional.layers.preset.{CubicWorldTypeLayerSpec, DimensionLayerSpec, DimensionalLayersPreset, Serialization}
 import hohserg.dimensional.layers.sided.CommonLogic
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiCreateWorld
-import net.minecraft.util.ResourceLocation
-import net.minecraft.world.{DimensionType, World}
+import net.minecraft.world.{DimensionType, World, WorldServer}
 import net.minecraftforge.client.event.GuiOpenEvent
 import net.minecraftforge.client.event.GuiScreenEvent.ActionPerformedEvent
 import net.minecraftforge.event.AttachCapabilitiesEvent
 import net.minecraftforge.event.entity.EntityTravelToDimensionEvent
 import net.minecraftforge.fml.common.Mod.{EventBusSubscriber, EventHandler}
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent
+import net.minecraftforge.fml.common.event.{FMLPostInitializationEvent, FMLPreInitializationEvent, FMLServerStoppedEvent}
 import net.minecraftforge.fml.common.eventhandler.{EventPriority, SubscribeEvent}
 import net.minecraftforge.fml.common.{Mod, SidedProxy}
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
@@ -29,6 +29,11 @@ object Main {
 
   @SidedProxy(clientSide = "hohserg.dimensional.layers.sided.ClientLogic", serverSide = "hohserg.dimensional.layers.sided.ServerLogic")
   var sided: CommonLogic = _
+
+  @EventHandler
+  def init(e: FMLPreInitializationEvent): Unit = {
+    CompatEventsHandler.init()
+  }
 
   @SideOnly(Side.CLIENT)
   @EventHandler
@@ -65,8 +70,16 @@ object Main {
 
   @SubscribeEvent(priority = EventPriority.HIGHEST)
   def attachCapa(e: AttachCapabilitiesEvent[World]): Unit = {
-    if (DimensionalLayersWorldType.hasCubicGeneratorForWorld(e.getObject))
-      e.addCapability(new ResourceLocation(modid, "capa"), new CapabilityWorld(e.getObject.asInstanceOf[CCWorld]))
+    e.getObject match {
+      case serverWorld: WorldServer =>
+        DimensionalLayersManager.initRealDimension(serverWorld.asInstanceOf[CCWorld])
+      case _ =>
+    }
+  }
+
+  @EventHandler
+  def serverStopped(e: FMLServerStoppedEvent): Unit = {
+    println("serverStopped")
   }
 
   @SubscribeEvent
@@ -78,11 +91,6 @@ object Main {
     val current = entity.dimension
     val target = e.getDimension
     val targetDimType = DimensionType.getById(target)
-
-    val capa = CapabilityWorld(entity.world)
-    if (capa != null) {
-
-    }
 
     if (DimensionalLayersWorldType.hasCubicGeneratorForWorld(entity.world)) {
       val preset = DimensionalLayersPreset(entity.world.getWorldInfo.getGeneratorOptions)

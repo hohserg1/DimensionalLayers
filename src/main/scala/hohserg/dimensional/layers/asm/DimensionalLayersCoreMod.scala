@@ -12,6 +12,7 @@ class DimensionalLayersCoreMod extends IFMLLoadingPlugin {
   override def getASMTransformerClass: Array[String] = {
     Mixins.addConfiguration("dimensional_layers.mixins.proxy.json")
     Mixins.addConfiguration("dimensional_layers.mixins.gui.json")
+    Mixins.addConfiguration("dimensional_layers.mixins.compat_events.json")
 
     Array("hohserg.dimensional.layers.asm.BaseWorldServerTransformer")
   }

@@ -4,7 +4,8 @@ import com.google.common.cache.{CacheBuilder, CacheLoader, LoadingCache}
 import com.google.common.collect.ImmutableList
 import hohserg.dimensional.layers.CCWorld
 import hohserg.dimensional.layers.preset.{CubicWorldTypeLayerSpec, DimensionLayerSpec}
-import hohserg.dimensional.layers.worldgen.proxy.{ProxyWorld, ShiftedBlockPos}
+import hohserg.dimensional.layers.worldgen.proxy.ShiftedBlockPos
+import hohserg.dimensional.layers.worldgen.proxy.server.ProxyWorldServer
 import io.github.opencubicchunks.cubicchunks.api.util.Coords
 import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.EnumCreatureType
@@ -24,7 +25,7 @@ sealed trait Layer {
 }
 
 sealed trait BaseDimensionLayer extends Layer {
-  def proxyWorld: ProxyWorld
+  def proxyWorld: ProxyWorldServer
 
   def realEndCubeY: Int = realStartCubeY + height - 1
 
@@ -69,7 +70,7 @@ class DimensionLayer(original: CCWorld, val spec: DimensionLayerSpec, val realSt
   val virtualStartCubeY: Int = spec.bottomOffset
   val virtualEndCubeY: Int = 16 - spec.topOffset - 1
 
-  val proxyWorld = ProxyWorld(original, this)
+  val proxyWorld = ProxyWorldServer(original, this)
   private val provider: WorldProvider = proxyWorld.provider
   val vanillaGenerator: IChunkGenerator = provider.createChunkGenerator()
   var optimizationHack: Boolean = false
@@ -102,7 +103,7 @@ class CubicWorldTypeLayer(original: CCWorld, val spec: CubicWorldTypeLayerSpec, 
 
   val height: Int = virtualEndCubeY - virtualStartCubeY + 1
 
-  val proxyWorld = ProxyWorld(original, this)
+  val proxyWorld = ProxyWorldServer(original, this)
 
   val generator = spec.cubicWorldType.createCubeGenerator(proxyWorld)
 

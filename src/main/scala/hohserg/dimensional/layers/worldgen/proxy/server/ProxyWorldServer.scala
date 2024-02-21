@@ -1,5 +1,6 @@
-package hohserg.dimensional.layers.worldgen.proxy
+package hohserg.dimensional.layers.worldgen.proxy.server
 
+import hohserg.dimensional.layers.worldgen.proxy.ShiftedBlockPos
 import hohserg.dimensional.layers.worldgen.{BaseDimensionLayer, CubicWorldTypeLayer, DimensionLayer}
 import hohserg.dimensional.layers.{CCWorld, Main}
 import io.github.opencubicchunks.cubicchunks.api.util.Coords
@@ -21,13 +22,13 @@ import net.minecraft.world.{World, WorldLens, WorldSettings, WorldType}
 import java.util
 import scala.collection.mutable
 
-object ProxyWorld {
-  def apply(original: CCWorld, layer: DimensionLayer): ProxyWorld = {
-    new ProxyWorld(original, layer, createLayerWorldInfo(original, layer.spec.seedOverride, layer.spec.worldType, layer.spec.worldTypePreset), isCubicWorld = false)
+object ProxyWorldServer {
+  def apply(original: CCWorld, layer: DimensionLayer): ProxyWorldServer = {
+    new ProxyWorldServer(original, layer, createLayerWorldInfo(original, layer.spec.seedOverride, layer.spec.worldType, layer.spec.worldTypePreset), isCubicWorld = false)
   }
 
-  def apply(original: CCWorld, layer: CubicWorldTypeLayer): ProxyWorld = {
-    new ProxyWorld(original, layer, createLayerWorldInfo(original, layer.spec.seedOverride, layer.spec.cubicWorldType, layer.spec.worldTypePreset), isCubicWorld = true)
+  def apply(original: CCWorld, layer: CubicWorldTypeLayer): ProxyWorldServer = {
+    new ProxyWorldServer(original, layer, createLayerWorldInfo(original, layer.spec.seedOverride, layer.spec.cubicWorldType, layer.spec.worldTypePreset), isCubicWorld = true)
   }
 
   def createLayerWorldInfo(original: World, seedOverride: Option[Long], worldType: WorldType, worldTypePreset: String): WorldInfo = {
@@ -47,19 +48,20 @@ object ProxyWorld {
 }
 
 
-class ProxyWorld private(original: CCWorld, val layer: BaseDimensionLayer, actualWorldInfo: WorldInfo, override val isCubicWorld: Boolean)
+class ProxyWorldServer private(original: CCWorld, val layer: BaseDimensionLayer, actualWorldInfo: WorldInfo, override val isCubicWorld: Boolean)
   extends BaseWorldServer(
     new FakeSaveHandler(actualWorldInfo),
     actualWorldInfo,
     layer.dimensionType.createDimension(),
     new Profiler
-  ) with FakeCubicWorld {
+  ) with FakeCubicWorldServer {
 
   provider.setWorld(this)
+  provider.setDimension(layer.dimensionType.getId)
 
-  override def createChunkProvider(): ProxyChunkProvider = new ProxyChunkProvider(this, original, layer)
+  override def createChunkProvider(): ProxyChunkProviderServer = new ProxyChunkProviderServer(this, original, layer)
 
-  val proxyChunkProvider: ProxyChunkProvider = createChunkProvider()
+  val proxyChunkProvider: ProxyChunkProviderServer = createChunkProvider()
 
   chunkProvider = proxyChunkProvider
 
@@ -200,4 +202,6 @@ class ProxyWorld private(original: CCWorld, val layer: BaseDimensionLayer, actua
       case layer: CubicWorldTypeLayer => layer.generator
       case _ => null
     }
+
+  override def setEntityState(entityIn: Entity, state: Byte): Unit = original.setEntityState(entityIn, state)
 }

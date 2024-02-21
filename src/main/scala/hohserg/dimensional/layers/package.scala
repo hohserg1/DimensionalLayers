@@ -1,6 +1,7 @@
 package hohserg.dimensional
 
-import io.github.opencubicchunks.cubicchunks.api.world.ICubicWorldServer
+import io.github.opencubicchunks.cubicchunks.api.world.{ICubicWorld, ICubicWorldServer}
+import net.minecraft.client.multiplayer.WorldClient
 import net.minecraft.world.World
 
 import java.util.function.{BiFunction, Consumer}
@@ -9,6 +10,8 @@ import scala.language.implicitConversions
 package object layers {
 
   type CCWorld = World with ICubicWorldServer
+
+  type CCWorldClient = WorldClient with ICubicWorld
 
   implicit def toJava[A, B, C](f: (A, B) => C): BiFunction[A, B, C] =
     new BiFunction[A, B, C] {

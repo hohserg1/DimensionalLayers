@@ -1,6 +1,7 @@
 package hohserg.dimensional.layers.worldgen.proxy
 
 import hohserg.dimensional.layers.worldgen.BaseDimensionLayer
+import hohserg.dimensional.layers.worldgen.proxy.server.ProxyWorldServer
 import io.github.opencubicchunks.cubicchunks.api.util.Coords
 import io.github.opencubicchunks.cubicchunks.api.world.IColumn
 import net.minecraft.block.state.IBlockState
@@ -12,7 +13,7 @@ import net.minecraft.world.EnumSkyBlock
 import net.minecraft.world.chunk.Chunk
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage
 
-class ProxyChunk(proxy: ProxyWorld, original: Chunk, layer: BaseDimensionLayer) extends Chunk(original.getWorld, original.x, original.z) {
+class ProxyChunk(proxy: ProxyWorldServer, original: Chunk, layer: BaseDimensionLayer) extends Chunk(original.getWorld, original.x, original.z) {
   val column = original.asInstanceOf[IColumn]
 
   override def getBlockState(pos: BlockPos): IBlockState =
@@ -38,7 +39,7 @@ class ProxyChunk(proxy: ProxyWorld, original: Chunk, layer: BaseDimensionLayer) 
   override def setBlockState(pos: BlockPos, state: IBlockState): IBlockState =
     executeInLayer(pos, original.setBlockState(_, state), null)
 
-  override def getHeightValue(x: Int, z: Int): Int = original.getHeightValue(x, z)
+  override def getHeightValue(x: Int, z: Int): Int = proxy.getHeight(x, z)
 
   override def getTopFilledSegment: Int = {
     for (i <- layer.realEndCubeY to layer.realStartCubeY by -1) {

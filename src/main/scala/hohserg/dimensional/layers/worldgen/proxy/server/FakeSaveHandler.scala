@@ -1,4 +1,4 @@
-package hohserg.dimensional.layers.worldgen.proxy
+package hohserg.dimensional.layers.worldgen.proxy.server
 
 import hohserg.dimensional.layers.Main
 import net.minecraft.nbt.NBTTagCompound

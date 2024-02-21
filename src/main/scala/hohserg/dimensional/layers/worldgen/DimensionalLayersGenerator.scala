@@ -2,7 +2,7 @@ package hohserg.dimensional.layers.worldgen
 
 import com.google.common.collect.ImmutableList
 import hohserg.dimensional.layers.worldgen.proxy.ProxyCube
-import hohserg.dimensional.layers.{CCWorld, CapabilityWorld, Main}
+import hohserg.dimensional.layers.{CCWorld, DimensionalLayersManager, Main}
 import io.github.opencubicchunks.cubicchunks.api.util.{Box, Coords}
 import io.github.opencubicchunks.cubicchunks.api.world.{ICube, ICubicWorld}
 import io.github.opencubicchunks.cubicchunks.api.worldgen.{CubePrimer, ICubeGenerator}
@@ -19,9 +19,9 @@ import java.util.Random
 import scala.collection.JavaConverters._
 
 class DimensionalLayersGenerator(original: CCWorld) extends ICubeGenerator {
-  val capa = CapabilityWorld(original)
-  val preset = capa.preset
-  val layerAtCubeY: Map[Int, Layer] = capa.layerAtCubeY
+  val worldData = DimensionalLayersManager.getWorldData(original).getOrElse(throw new IllegalArgumentException("not a layered world: " + original))
+  val preset = worldData.preset
+  val layerAtCubeY: Map[Int, Layer] = worldData.layerAtCubeY
 
   private def generateWithWatchdog[BlockStateAcceptor, Result, Layer <: BaseDimensionLayer](generator: (Int, Int, Int, BlockStateAcceptor, Layer) => Result,
                                                                                             cubeX: Int, cubeY: Int, cubeZ: Int,
