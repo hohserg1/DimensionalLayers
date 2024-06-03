@@ -1,20 +1,24 @@
-package hohserg.dimensional.layers
+package hohserg.dimensional.layers.data
 
+import hohserg.dimensional.layers.data.layer.base.Layer
 import hohserg.dimensional.layers.preset.DimensionalLayersPreset
-import hohserg.dimensional.layers.worldgen.Layer
-import hohserg.dimensional.layers.worldgen.proxy.client.ProxyWorldClient
+import hohserg.dimensional.layers.{CCWorld, DimensionalLayersWorldType}
 import io.github.opencubicchunks.cubicchunks.api.util.Coords
 import net.minecraft.entity.Entity
 
 import scala.collection.mutable
 
-object DimensionalLayersManager {
-  class WorldData(val world: CCWorld) {
-    val preset = DimensionalLayersPreset(world.getWorldInfo.getGeneratorOptions)
-    val layerAtCubeY: Map[Int, Layer] = preset.toLayerMap(preset.toLayerSeq(world))
+object LayerManager {
+
+  class WorldData(val original: CCWorld) {
+    val preset = DimensionalLayersPreset(original.getWorldInfo.getGeneratorOptions)
+
+    private val seq = preset.toLayerSeq(original)
+
+    val layerAtCubeY: Map[Int, Layer] = preset.toLayerMap(seq, identity)
 
     def getLayerOf(entity: Entity): Option[Layer] = {
-      val y = Coords.blockToCube((entity.posY + 0.5D).toInt)
+      val y = Coords.blockToCube((entity.posY + 0.5).toInt)
       layerAtCubeY.get(y)
     }
   }
@@ -35,6 +39,4 @@ object DimensionalLayersManager {
       worldDataForRealDimension.get(world.provider.getDimension)
     else
       None
-
-  def getClientWorld: ProxyWorldClient = ???
 }

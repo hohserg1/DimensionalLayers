@@ -1,12 +1,12 @@
 package hohserg.dimensional.layers.worldgen
 
 import com.google.common.collect.ImmutableList
-import hohserg.dimensional.layers.worldgen.proxy.ProxyCube
-import hohserg.dimensional.layers.{CCWorld, DimensionalLayersManager, Main}
+import hohserg.dimensional.layers.data.LayerManager
+import hohserg.dimensional.layers.data.layer.base.Layer
+import hohserg.dimensional.layers.{CCWorldServer, Main}
 import io.github.opencubicchunks.cubicchunks.api.util.{Box, Coords}
 import io.github.opencubicchunks.cubicchunks.api.world.{ICube, ICubicWorld}
 import io.github.opencubicchunks.cubicchunks.api.worldgen.{CubePrimer, ICubeGenerator}
-import io.github.opencubicchunks.cubicchunks.core.asm.mixin.core.common.IGameRegistry
 import io.github.opencubicchunks.cubicchunks.core.world.cube.Cube
 import io.github.opencubicchunks.cubicchunks.core.worldgen.WorldgenHangWatchdog
 import net.minecraft.entity.EnumCreatureType
@@ -14,21 +14,23 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.world.biome.Biome
 import net.minecraft.world.chunk.Chunk
 
-import java.util
-import java.util.Random
+import java.{util => ju}
 import scala.collection.JavaConverters._
+import scala.collection.mutable
 
-class DimensionalLayersGenerator(original: CCWorld) extends ICubeGenerator {
-  val worldData = DimensionalLayersManager.getWorldData(original).getOrElse(throw new IllegalArgumentException("not a layered world: " + original))
+class DimensionalLayersGenerator(original: CCWorldServer) extends ICubeGenerator {
+  val worldData = LayerManager.getWorldData(original).getOrElse(throw new IllegalArgumentException("not a layered world: " + original))
   val preset = worldData.preset
   val layerAtCubeY: Map[Int, Layer] = worldData.layerAtCubeY
 
-  private def generateWithWatchdog[BlockStateAcceptor, Result, Layer <: BaseDimensionLayer](generator: (Int, Int, Int, BlockStateAcceptor, Layer) => Result,
-                                                                                            cubeX: Int, cubeY: Int, cubeZ: Int,
-                                                                                            target: BlockStateAcceptor, layer: Layer): Option[Result] = {
+  val optimizationHack: mutable.Map[Layer, Boolean] = new ju.IdentityHashMap[Layer, Boolean]().asScala.withDefaultValue(false)
+
+  private def generateWithWatchdog[BlockStateAcceptor, Result](generator: (Int, Int, Int, BlockStateAcceptor) => Result,
+                                                               cubeX: Int, cubeY: Int, cubeZ: Int,
+                                                               target: BlockStateAcceptor): Option[Result] = {
     try {
       WorldgenHangWatchdog.startWorldGen()
-      Some(generator(cubeX, cubeY, cubeZ, target, layer))
+      Some(generator(cubeX, cubeY, cubeZ, target))
     } catch {
       case e: Throwable =>
         Main.sided.printError("Generation issue:", e)
@@ -39,141 +41,55 @@ class DimensionalLayersGenerator(original: CCWorld) extends ICubeGenerator {
   }
 
   override def generateCube(cubeX: Int, cubeY: Int, cubeZ: Int, primer: CubePrimer): CubePrimer = {
-    layerAtCubeY.get(cubeY).flatMap {
-      case layer: DimensionLayer =>
-        generateWithWatchdog(generateDimensionLayerTerrain, cubeX, cubeY, cubeZ, primer, layer)
-        layer.biomes = layer.proxyWorld.getBiomeProvider.getBiomes(layer.biomes, Coords.cubeToMinBlock(cubeX), Coords.cubeToMinBlock(cubeZ), 16, 16)
-        generateBiomes(primer, (localBiomeX, _, localBiomeZ) => layer.biomes((localBiomeX << 2) & 15 | ((localBiomeZ << 2) & 15) << 4))
-        Some(primer)
+    layerAtCubeY.get(cubeY).flatMap { layer =>
+      if (layer.generator.needGenerateTotalColumn)
+        if (!optimizationHack(layer)) {
+          optimizationHack(layer) = true
+          recursiveGeneration(cubeX, cubeY, cubeZ, layer)
+          optimizationHack(layer) = false
+        }
 
-      case layer: SolidLayer =>
-        for {
-          x <- 0 to 15
-          y <- 0 to 15
-          z <- 0 to 15
-        } primer.setBlockState(x, y, z, layer.filler)
-        generateBiomes(primer, (_, _, _) => layer.biome)
-        Some(primer)
-
-      case layer: CubicWorldTypeLayer =>
-        generateWithWatchdog(generateCubicWorldTypeLayerTerrain, cubeX, cubeY - layer.realStartCubeY + layer.virtualStartCubeY, cubeZ, primer, layer)
+      generateWithWatchdog(layer.generator.generateCube, cubeX, cubeY, cubeZ, primer)
 
     }.getOrElse(primer)
   }
 
-  private def generateCubicWorldTypeLayerTerrain(cubeX: Int, cubeY: Int, cubeZ: Int, primer: CubePrimer, layer: CubicWorldTypeLayer): CubePrimer = {
-    layer.generator.generateCube(cubeX, cubeY, cubeZ, primer)
-  }
-
-  private def generateBiomes(primer: CubePrimer, calcBiome: (Int, Int, Int) => Biome): Unit = {
-    for {
-      localBiomeX <- 0 to 3
-      localBiomeY <- 0 to 3
-      localBiomeZ <- 0 to 3
-    } primer.setBiome(localBiomeX, localBiomeY, localBiomeZ, calcBiome(localBiomeX, localBiomeY, localBiomeZ))
-  }
-
-  private def generateDimensionLayerTerrain(cubeX: Int, cubeY: Int, cubeZ: Int, primer: CubePrimer, layer: DimensionLayer): Unit = {
-    val chunk = layer.lastChunks.get(cubeX -> cubeZ)
-
-    if (!layer.optimizationHack) {
-      layer.optimizationHack = true
-      recursiveGeneration(cubeX, cubeY, cubeZ, layer)
-      layer.optimizationHack = false
-    }
-
-    //took from io.github.opencubicchunks.cubicchunks.core.asm.mixin.core.common.MixinChunk_Cubes#init_getStorage
-    val index = ((cubeY - layer.realStartCubeY + layer.spec.bottomOffset) & 15) - Coords.blockToCube(layer.proxyWorld.getMinHeight())
-
-    val storage = chunk.getBlockStorageArray()(index)
-    if (storage != null && !storage.isEmpty) {
-      for {
-        x <- 0 to 15
-        y <- 0 to 15
-        z <- 0 to 15
-        block = storage.get(x, y, z)
-      } primer.setBlockState(x, y, z, block)
-    }
-  }
-
-  private def recursiveGeneration(cubeX: Int, cubeY: Int, cubeZ: Int, layer: DimensionLayer): Unit = {
-    for (y <- (layer.realStartCubeY + layer.height - 1) to layer.realStartCubeY by -1)
+  private def recursiveGeneration(cubeX: Int, cubeY: Int, cubeZ: Int, layer: Layer): Unit = {
+    for (y <- (layer.bounds.realStartCubeY + layer.bounds.cubeHeight - 1) to layer.bounds.realStartCubeY by -1)
       if (y != cubeY)
         original.asInstanceOf[ICubicWorld].getCubeFromCubeCoords(cubeX, y, cubeZ)
   }
 
   override def populate(cube: ICube): Unit = {
     layerAtCubeY.get(cube.getY).foreach {
-      case layer: DimensionLayer =>
-        generateWithWatchdog(generateLayerFeatures, cube.getX, cube.getY, cube.getZ, cube, layer)
-      case layer: CubicWorldTypeLayer =>
-        layer.generator.populate(new ProxyCube(cube, layer))
-      case _ =>
+      layer =>
+        if (layer.generator.needGenerateTotalColumn)
+          markColumnPopulated(cube.getX, cube.getZ, layer)
+
+        generateWithWatchdog[ICube, Unit]((_, _, _, c) => layer.generator.populateCube(c), cube.getX, cube.getY, cube.getZ, cube)
     }
   }
 
-  private def generateLayerFeatures(cubeX: Int, cubeY: Int, cubeZ: Int, cube: ICube, layer: DimensionLayer): Unit = {
-    markColumnPopulated(cubeX, cubeZ, layer)
-
-    try {
-      layer.vanillaGenerator.populate(cubeX, cubeZ)
-      applyModGenerators(cubeX, cubeZ, layer)
-    } catch {
-      case ex: IllegalArgumentException =>
-        val stack = ex.getStackTrace
-        if (stack == null || stack.length < 1 || stack(0).getClassName != classOf[Random].getName || stack(0).getMethodName != "nextInt")
-          throw ex
-        Main.sided.printWarning("Error while populating. Likely known mod issue, ignoring...", ex)
-    }
-  }
-
-  def applyModGenerators(x: Int, z: Int, layer: DimensionLayer): Unit = {
-    if (IGameRegistry.getSortedGeneratorList == null)
-      IGameRegistry.computeGenerators()
-
-    val generators = IGameRegistry.getSortedGeneratorList.asScala
-
-    val worldSeed = original.getSeed
-    val fmlRandom = new Random(worldSeed)
-    val xSeed = fmlRandom.nextLong() >> 3L
-    val zSeed = fmlRandom.nextLong() >> 3L
-    val chunkSeed = xSeed * x + zSeed * z ^ worldSeed
-
-
-    for (generator <- generators) {
-      fmlRandom.setSeed(chunkSeed)
-      generator.generate(fmlRandom, x, z, layer.proxyWorld, layer.vanillaGenerator, layer.proxyWorld.getChunkProvider)
-    }
-  }
-
-  private def markColumnPopulated(cubeX: Int, cubeZ: Int, layer: DimensionLayer): Unit = {
-    for (y <- (layer.realStartCubeY + layer.height - 1) to layer.realStartCubeY by -1) {
+  private def markColumnPopulated(cubeX: Int, cubeZ: Int, layer: Layer): Unit = {
+    for (y <- (layer.bounds.realStartCubeY + layer.bounds.cubeHeight - 1) to layer.bounds.realStartCubeY by -1) {
       original.getCubeFromCubeCoords(cubeX, y, cubeZ).asInstanceOf[Cube].setPopulated(true)
     }
   }
 
-  val layeredFullPopulatorRequirement: IndexedSeq[Box] =
-    for {
-      y <- 0 to -15 by -1
-    } yield
-      new Box(-1, y, -1, 0, 0, 0)
-
 
   override def getFullPopulationRequirements(cube: ICube): Box = {
     layerAtCubeY.get(cube.getY).collect {
-      case layer: DimensionLayer =>
-        val i = cube.getY - layer.realStartCubeY
-        new Box(-1, -i, -1, 0, layer.height - i - 1, 0)
+      case layer if layer.generator.needGenerateTotalColumn =>
+        val i = cube.getY - layer.bounds.realStartCubeY
+        new Box(-1, -i, -1, 0, layer.bounds.cubeHeight - i - 1, 0)
     }.getOrElse(ICubeGenerator.NO_REQUIREMENT)
   }
 
-  val LayeredGeneratePopulatorRequirement = new Box(1, 15, 1, 0, 0, 0)
-
   override def getPopulationPregenerationRequirements(cube: ICube): Box = {
     layerAtCubeY.get(cube.getY).collect {
-      case layer: DimensionLayer =>
-        val i = cube.getY - layer.realStartCubeY
-        new Box(0, -i, 0, 1, layer.height - i - 1, 1)
+      case layer if layer.generator.needGenerateTotalColumn =>
+        val i = cube.getY - layer.bounds.realStartCubeY
+        new Box(0, -i, 0, 1, layer.bounds.cubeHeight - i - 1, 1)
     }.getOrElse(ICubeGenerator.NO_REQUIREMENT)
   }
 
@@ -181,26 +97,21 @@ class DimensionalLayersGenerator(original: CCWorld) extends ICubeGenerator {
 
   override def recreateStructures(cube: ICube): Unit =
     layerAtCubeY.get(cube.getY).foreach {
-      case layer: DimensionLayer =>
-        layer.vanillaGenerator.recreateStructures(layer.proxyWorld.getChunk(cube.getX, cube.getZ), cube.getX, cube.getZ)
-      case _ =>
+      layer =>
+        layer.generator.recreateStructures(cube)
     }
-
 
   override def recreateStructures(chunk: Chunk): Unit = ()
 
-
-  override def getPossibleCreatures(enumCreatureType: EnumCreatureType, blockPos: BlockPos): util.List[Biome.SpawnListEntry] =
-    layerAtCubeY.get(Coords.blockToCube(blockPos.getY)).collect {
-      case layer: DimensionLayer =>
-        layer.vanillaGenerator.getPossibleCreatures(enumCreatureType, blockPos.down(layer.realStartBlockY))
-    }.getOrElse(ImmutableList.of())
+  override def getPossibleCreatures(enumCreatureType: EnumCreatureType, blockPos: BlockPos): ju.List[Biome.SpawnListEntry] =
+    layerAtCubeY.get(Coords.blockToCube(blockPos.getY))
+      .map(layer => layer.generator.getPossibleCreatures(enumCreatureType, blockPos))
+      .getOrElse(ImmutableList.of())
 
   override def getClosestStructure(name: String, blockPos: BlockPos, findUnexplored: Boolean): BlockPos =
-    layerAtCubeY.get(Coords.blockToCube(blockPos.getY)).collect {
-      case layer: DimensionLayer =>
-        layer.vanillaGenerator.getNearestStructurePos(this.original, name, blockPos, findUnexplored)
-    }.orNull
+    layerAtCubeY.get(Coords.blockToCube(blockPos.getY))
+      .flatMap(layer => layer.generator.getNearestStructurePos(name, blockPos, findUnexplored))
+      .orNull
 
   override def generateCube(cubeX: Int, cubeY: Int, cubeZ: Int): CubePrimer = generateCube(cubeX, cubeY, cubeZ, new CubePrimer())
 }

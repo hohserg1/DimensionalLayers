@@ -7,8 +7,7 @@ trait ProxyWorldCommon {
 
   def initWorld(): Unit = {
     provider.setWorld(this)
-    provider.setDimension(layer.dimensionType.getId)
-
+    //provider.setDimension(layer.dimensionType.getId)
   }
 
 }

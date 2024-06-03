@@ -29,6 +29,6 @@ public class TemplateMixin {
                           CallbackInfo ci,
                           Block block, StructureBoundingBox structureboundingbox, Iterator var8, Template.BlockInfo template$blockinfo, BlockPos blockpos, Template.BlockInfo template$blockinfo1, Block block1, IBlockState iblockstate, IBlockState iblockstate1, TileEntity tileentity2) {
         if (worldIn instanceof ProxyWorldServer)
-            tileentity2.setPos(((ProxyWorldServer) worldIn).layer().shift(tileentity2.getPos()));
+            tileentity2.setPos(((ProxyWorldServer) worldIn).bounds().shift(tileentity2.getPos()));
     }
 }

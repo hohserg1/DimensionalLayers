@@ -113,7 +113,7 @@ jar {
                 'FMLAT'                      : 'dimensional_layers_at.cfg'
         ])
     }
-    destinationDir = file("$rootDir/production")
+    destinationDirectory = file("$rootDir/production")
 }
 
 jar.finalizedBy('reobfJar')

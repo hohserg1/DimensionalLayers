@@ -1,8 +1,8 @@
 package hohserg.dimensional.layers.worldgen.proxy.server
 
 import com.google.common.cache.{CacheBuilder, CacheLoader, LoadingCache}
-import hohserg.dimensional.layers.CCWorld
-import hohserg.dimensional.layers.worldgen.BaseDimensionLayer
+import hohserg.dimensional.layers.CCWorldServer
+import hohserg.dimensional.layers.data.layer.base.DimensionalLayer
 import hohserg.dimensional.layers.worldgen.proxy.{ProxyChunk, ProxyCube}
 import io.github.opencubicchunks.cubicchunks.api.util.CubePos
 import io.github.opencubicchunks.cubicchunks.api.world.ICubeProviderServer.Requirement._
@@ -16,7 +16,7 @@ import net.minecraft.world.{World, WorldServer}
 
 import java.util
 
-class ProxyChunkProviderServer(proxy: ProxyWorldServer, original: CCWorld, layer: BaseDimensionLayer)
+class ProxyChunkProviderServer(proxy: ProxyWorldServer, original: CCWorldServer, layer: DimensionalLayer)
   extends ChunkProviderServer(proxy.asInstanceOf[WorldServer], proxy.getSaveHandler.getChunkLoader(proxy.provider), null)
     with ICubeProviderServer {
 
@@ -25,7 +25,7 @@ class ProxyChunkProviderServer(proxy: ProxyWorldServer, original: CCWorld, layer
       .weakKeys()
       .maximumSize(128 * 128)
       .build(new CacheLoader[Chunk, ProxyChunk] {
-        override def load(key: Chunk): ProxyChunk = new ProxyChunk(proxy, key, layer)
+        override def load(key: Chunk): ProxyChunk = new ProxyChunk(proxy, key, layer.bounds)
       })
 
   val proxyCubeCache: LoadingCache[ICube, ProxyCube] =
@@ -34,7 +34,7 @@ class ProxyChunkProviderServer(proxy: ProxyWorldServer, original: CCWorld, layer
         .weakKeys()
         .maximumSize(128 * 128)
         .build(new CacheLoader[ICube, ProxyCube] {
-          override def load(key: ICube): ProxyCube = new ProxyCube(key, layer)
+          override def load(key: ICube): ProxyCube = new ProxyCube(key, layer.bounds, proxy)
         })
     else
       null
@@ -61,7 +61,7 @@ class ProxyChunkProviderServer(proxy: ProxyWorldServer, original: CCWorld, layer
   override def canSave: Boolean = false
 
   override def getPossibleCreatures(creatureType: EnumCreatureType, pos: BlockPos): util.List[Biome.SpawnListEntry] =
-    layer.getPossibleCreatures(creatureType, pos)
+    layer.generator.getPossibleCreatures(creatureType, pos)
 
   override def getNearestStructurePos(worldIn: World, structureName: String, position: BlockPos, findUnexplored: Boolean): BlockPos =
     null

@@ -2,14 +2,16 @@ package hohserg.dimensional
 
 import io.github.opencubicchunks.cubicchunks.api.world.{ICubicWorld, ICubicWorldServer}
 import net.minecraft.client.multiplayer.WorldClient
-import net.minecraft.world.World
+import net.minecraft.world.{World, WorldServer}
 
 import java.util.function.{BiFunction, Consumer}
 import scala.language.implicitConversions
 
 package object layers {
 
-  type CCWorld = World with ICubicWorldServer
+  type CCWorld = World with ICubicWorld
+
+  type CCWorldServer = WorldServer with ICubicWorldServer
 
   type CCWorldClient = WorldClient with ICubicWorld
 

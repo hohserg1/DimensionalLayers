@@ -1,9 +1,11 @@
 package hohserg.dimensional.layers.compatibility.event
 
 import hohserg.dimensional.layers.compatibility.event.mixin.{AccessorASMEventHandler, AccessorEventBus}
-import hohserg.dimensional.layers.worldgen.BaseDimensionLayer
+import hohserg.dimensional.layers.data.LayerManager
+import hohserg.dimensional.layers.data.layer.base.{DimensionalLayer, DimensionalLayerBounds, Layer}
 import hohserg.dimensional.layers.worldgen.proxy.ShiftedBlockPos
-import hohserg.dimensional.layers.{CCWorld, DimensionalLayersManager}
+import hohserg.dimensional.layers.worldgen.proxy.client.ProxyWorldClient
+import hohserg.dimensional.layers.{CCWorld, CCWorldClient, CCWorldServer}
 import io.github.opencubicchunks.cubicchunks.api.util.Coords
 import net.minecraft.entity.Entity
 import net.minecraftforge.common.MinecraftForge
@@ -31,38 +33,46 @@ class BaseEventHandler[E <: Event](modidSet: Set[String]) {
     listeners.foreach(l => l.invoke(fakeEvent))
   }
 
-  def handleEntityBasedEvent(entity: Entity, proxyEvent: => E): Unit = {
+  def handleEntityBasedEvent[SidedProxyWorld <: CCWorld](entity: Entity, proxyEvent: => E,
+                                                         getProxyWorld: Layer => SidedProxyWorld): Unit = {
     if (entity != null) {
-      val originalWorld = entity.world.asInstanceOf[CCWorld]
-      handleHeightBasedEvent(
+      val originalWorld = entity.world.asInstanceOf[CCWorldServer]
+      handleHeightBasedEvent[SidedProxyWorld](
         Coords.blockToCube((entity.posY + 0.5D).toInt), originalWorld, proxyEvent,
         setup =
-          dimensional => {
-            dimensional.proxyWorld.isRemote = isClient
-            entity.world = dimensional.proxyWorld
-            entity.posY = ShiftedBlockPos.unshiftBlockY(entity.posY, dimensional)
+          (dimensional, proxyWorld) => {
+            entity.world = proxyWorld
+            entity.posY = ShiftedBlockPos.unshiftBlockY(entity.posY, dimensional.bounds)
           },
         clear =
-          dimensional => {
-            dimensional.proxyWorld.isRemote = false
+          (dimensional, proxyWorld) => {
             entity.world = originalWorld
-            entity.posY = ShiftedBlockPos.shiftBlockY(entity.posY, dimensional)
-          }
+            entity.posY = ShiftedBlockPos.shiftBlockY(entity.posY, dimensional.bounds)
+          },
+        getProxyWorld
       )
     }
   }
 
-  def handleHeightBasedEvent(cubeY: Int, originalWorld: CCWorld, proxyEvent: => E, setup: BaseDimensionLayer => Unit, clear: BaseDimensionLayer => Unit): Unit = {
-    DimensionalLayersManager.getWorldData(originalWorld) match {
+  def handleHeightBasedEventClient(cubeY: Int, originalWorld: CCWorldClient, proxyEvent: => E,
+                                   setup: (DimensionalLayer, ProxyWorldClient) => Unit,
+                                   clear: (DimensionalLayer, ProxyWorldClient) => Unit): Unit =
+    handleHeightBasedEvent[ProxyWorldClient](cubeY, originalWorld, proxyEvent, setup, clear, _.clientProxyWorld)
+
+  def handleHeightBasedEvent[SidedProxyWorld](cubeY: Int, originalWorld: CCWorld, proxyEvent: => E,
+                                              setup: (DimensionalLayer, SidedProxyWorld) => Unit,
+                                              clear: (DimensionalLayer, SidedProxyWorld) => Unit,
+                                              getProxyWorld: Layer => SidedProxyWorld): Unit = {
+    LayerManager.getWorldData(originalWorld) match {
       case Some(worldData) =>
         worldData.layerAtCubeY.get(cubeY) match {
-          case Some(dimensional: BaseDimensionLayer) =>
+          case Some(dimensional: DimensionalLayer) if dimensional.bounds.isInstanceOf[DimensionalLayerBounds] =>
 
-            setup(dimensional)
+            setup(dimensional, getProxyWorld(dimensional))
 
             post(proxyEvent)
 
-            clear(dimensional)
+            clear(dimensional, getProxyWorld(dimensional))
 
           case _ =>
         }

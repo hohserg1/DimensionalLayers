@@ -13,7 +13,7 @@ class LivingUpdateEventHandler(modidSet: Set[String], entityFilter: EntityLiving
 
     val entity = e.getEntityLiving
     if (entityFilter(entity)) {
-      handleEntityBasedEvent(entity, new LivingEvent.LivingUpdateEvent(entity))
+      handleEntityBasedEvent(entity, new LivingEvent.LivingUpdateEvent(entity), if (entity.world.isRemote) _.clientProxyWorld else _.generator)
     }
   }
 }

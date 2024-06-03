@@ -1,8 +1,10 @@
 package hohserg.dimensional.layers.worldgen.proxy.server
 
-import hohserg.dimensional.layers.worldgen.proxy.ShiftedBlockPos
-import hohserg.dimensional.layers.worldgen.{BaseDimensionLayer, CubicWorldTypeLayer, DimensionLayer}
-import hohserg.dimensional.layers.{CCWorld, Main}
+import hohserg.dimensional.layers.data.layer.base.{DimensionalLayer, Generator}
+import hohserg.dimensional.layers.data.layer.cubic_world_type.{CubicWorldTypeGenerator, CubicWorldTypeLayer}
+import hohserg.dimensional.layers.data.layer.vanilla_dimension.VanillaDimensionLayer
+import hohserg.dimensional.layers.worldgen.proxy.{ProxyWorldCommon, ShiftedBlockPos}
+import hohserg.dimensional.layers.{CCWorldServer, Main}
 import io.github.opencubicchunks.cubicchunks.api.util.Coords
 import io.github.opencubicchunks.cubicchunks.api.world.{ICube, ICubeProviderServer}
 import io.github.opencubicchunks.cubicchunks.api.worldgen.ICubeGenerator
@@ -13,22 +15,36 @@ import net.minecraft.profiler.Profiler
 import net.minecraft.tileentity.{TileEntity, TileEntityLockableLoot}
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.{EnumFacing, WeightedRandom}
+import net.minecraft.world._
 import net.minecraft.world.biome.Biome
 import net.minecraft.world.chunk.Chunk
 import net.minecraft.world.storage.WorldInfo
 import net.minecraft.world.storage.loot.LootTableManager
-import net.minecraft.world.{World, WorldLens, WorldSettings, WorldType}
 
 import java.util
 import scala.collection.mutable
 
 object ProxyWorldServer {
-  def apply(original: CCWorld, layer: DimensionLayer): ProxyWorldServer = {
-    new ProxyWorldServer(original, layer, createLayerWorldInfo(original, layer.spec.seedOverride, layer.spec.worldType, layer.spec.worldTypePreset), isCubicWorld = false)
+  def apply(original: CCWorldServer, layer: VanillaDimensionLayer, generator: Generator): ProxyWorldServer = {
+    new ProxyWorldServer(
+      original,
+      layer,
+      generator,
+      layer.spec.dimensionType,
+      createLayerWorldInfo(original, layer.spec.seedOverride, layer.spec.worldType, layer.spec.worldTypePreset),
+      isCubicWorld = false
+    )
   }
 
-  def apply(original: CCWorld, layer: CubicWorldTypeLayer): ProxyWorldServer = {
-    new ProxyWorldServer(original, layer, createLayerWorldInfo(original, layer.spec.seedOverride, layer.spec.cubicWorldType, layer.spec.worldTypePreset), isCubicWorld = true)
+  def apply(original: CCWorldServer, layer: CubicWorldTypeLayer, generator: CubicWorldTypeGenerator): ProxyWorldServer = {
+    new ProxyWorldServer(
+      original,
+      layer,
+      generator,
+      layer.spec.dimensionType1,
+      createLayerWorldInfo(original, layer.spec.seedOverride, layer.spec.cubicWorldType, layer.spec.worldTypePreset),
+      isCubicWorld = true
+    )
   }
 
   def createLayerWorldInfo(original: World, seedOverride: Option[Long], worldType: WorldType, worldTypePreset: String): WorldInfo = {
@@ -48,16 +64,16 @@ object ProxyWorldServer {
 }
 
 
-class ProxyWorldServer private(original: CCWorld, val layer: BaseDimensionLayer, actualWorldInfo: WorldInfo, override val isCubicWorld: Boolean)
+class ProxyWorldServer private(original: CCWorldServer, val layer: DimensionalLayer, generator: Generator, dimensionType: DimensionType, actualWorldInfo: WorldInfo, override val isCubicWorld: Boolean)
   extends BaseWorldServer(
     new FakeSaveHandler(actualWorldInfo),
     actualWorldInfo,
-    layer.dimensionType.createDimension(),
+    dimensionType.createDimension(),
     new Profiler
-  ) with FakeCubicWorldServer {
+  ) with ProxyWorldCommon with FakeCubicWorldServer {
 
   provider.setWorld(this)
-  provider.setDimension(layer.dimensionType.getId)
+  provider.setDimension(dimensionType.getId)
 
   override def createChunkProvider(): ProxyChunkProviderServer = new ProxyChunkProviderServer(this, original, layer)
 
@@ -69,11 +85,13 @@ class ProxyWorldServer private(original: CCWorld, val layer: BaseDimensionLayer,
 
   initCapabilities()
 
+  def bounds = layer.bounds
+
   override def getSeed: Long = worldInfo.getSeed
 
-  override def getMinHeight: Int = layer.virtualStartBlockY
+  override def getMinHeight: Int = layer.bounds.virtualStartBlockY
 
-  override def getMaxHeight: Int = layer.virtualEndBlockY + 1
+  override def getMaxHeight: Int = layer.bounds.virtualEndBlockY + 1
 
   override def isOutsideBuildHeight(pos: BlockPos): Boolean = {
     pos match {
@@ -85,7 +103,7 @@ class ProxyWorldServer private(original: CCWorld, val layer: BaseDimensionLayer,
   }
 
   override def setBlockState(pos: BlockPos, newState: IBlockState, flags: Int): Boolean = {
-    val shiftedPos = layer.shift(pos)
+    val shiftedPos = layer.bounds.shift(pos)
     getTileEntity(shiftedPos) match {
       case tile: TileEntityLockableLoot =>
         tile.setLootTable(null, 0)
@@ -94,80 +112,80 @@ class ProxyWorldServer private(original: CCWorld, val layer: BaseDimensionLayer,
     original.setBlockState(shiftedPos, newState, flags)
   }
 
-  override def setBlockState(pos: BlockPos, state: IBlockState): Boolean = original.setBlockState(layer.shift(pos), state)
+  override def setBlockState(pos: BlockPos, state: IBlockState): Boolean = original.setBlockState(layer.bounds.shift(pos), state)
 
   override def isChunkLoaded(x: Int, z: Int, allowEmpty: Boolean): Boolean = WorldLens.isChunkLoaded(original, x, z, allowEmpty)
 
   override def isBlockLoaded(pos: BlockPos): Boolean = super.isBlockLoaded(pos)
 
-  override def getBlockState(pos: BlockPos): IBlockState = original.getBlockState(layer.shift(pos))
+  override def getBlockState(pos: BlockPos): IBlockState = original.getBlockState(layer.bounds.shift(pos))
 
-  override def getTileEntity(pos: BlockPos): TileEntity = original.getTileEntity(layer.shift(pos))
+  override def getTileEntity(pos: BlockPos): TileEntity = original.getTileEntity(layer.bounds.shift(pos))
 
   override def setTileEntity(pos: BlockPos, tileEntityIn: TileEntity): Unit = {
-    tileEntityIn.setPos(layer.shift(tileEntityIn.getPos))
-    original.setTileEntity(layer.shift(pos), tileEntityIn)
+    tileEntityIn.setPos(layer.bounds.shift(tileEntityIn.getPos))
+    original.setTileEntity(layer.bounds.shift(pos), tileEntityIn)
   }
 
-  override def isAirBlock(pos: BlockPos): Boolean = original.isAirBlock(layer.shift(pos))
+  override def isAirBlock(pos: BlockPos): Boolean = original.isAirBlock(layer.bounds.shift(pos))
 
   override def markAndNotifyBlock(pos: BlockPos, chunk: Chunk, iblockstate: IBlockState, newState: IBlockState, flags: Int): Unit =
-    original.markAndNotifyBlock(layer.shift(pos), chunk, iblockstate, newState, flags)
+    original.markAndNotifyBlock(layer.bounds.shift(pos), chunk, iblockstate, newState, flags)
 
   override def destroyBlock(pos: BlockPos, dropBlock: Boolean): Boolean =
-    original.destroyBlock(layer.shift(pos), dropBlock)
+    original.destroyBlock(layer.bounds.shift(pos), dropBlock)
 
   override def notifyBlockUpdate(pos: BlockPos, oldState: IBlockState, newState: IBlockState, flags: Int): Unit =
-    original.notifyBlockUpdate(layer.shift(pos), oldState, newState, flags)
+    original.notifyBlockUpdate(layer.bounds.shift(pos), oldState, newState, flags)
 
   override def notifyNeighborsOfStateChange(pos: BlockPos, blockType: Block, updateObservers: Boolean): Unit =
-    original.notifyNeighborsOfStateChange(layer.shift(pos), blockType, updateObservers)
+    original.notifyNeighborsOfStateChange(layer.bounds.shift(pos), blockType, updateObservers)
 
   override def neighborChanged(pos: BlockPos, blockIn: Block, fromPos: BlockPos): Unit =
-    original.neighborChanged(layer.shift(pos), blockIn, fromPos)
+    original.neighborChanged(layer.bounds.shift(pos), blockIn, fromPos)
 
   override def observedNeighborChanged(pos: BlockPos, changedBlock: Block, changedBlockPos: BlockPos): Unit =
-    original.observedNeighborChanged(layer.shift(pos), changedBlock, changedBlockPos)
+    original.observedNeighborChanged(layer.bounds.shift(pos), changedBlock, changedBlockPos)
 
   override def isBlockNormalCube(pos: BlockPos, _default: Boolean): Boolean =
-    original.isBlockNormalCube(layer.shift(pos), _default)
+    original.isBlockNormalCube(layer.bounds.shift(pos), _default)
 
   override def isSideSolid(pos: BlockPos, side: EnumFacing, _default: Boolean): Boolean =
-    original.isSideSolid(layer.shift(pos), side, _default)
+    original.isSideSolid(layer.bounds.shift(pos), side, _default)
 
   override def getBlockLightOpacity(pos: BlockPos): Int =
-    original.getBlockLightOpacity(layer.shift(pos))
+    original.getBlockLightOpacity(layer.bounds.shift(pos))
 
   private val heightCache = new mutable.HashMap[(Int, Int), Int]
 
   override def getHeight(x: Int, z: Int): Int =
     heightCache.getOrElseUpdate(x -> z,
-      (layer.realEndBlockY to layer.realStartBlockY by -1).dropWhile(y => original.isAirBlock(new BlockPos(x, y, z))).headOption
-        .map(_ - layer.realStartBlockY)
+      (layer.bounds.realEndBlockY to layer.bounds.realStartBlockY by -1).dropWhile(y => original.isAirBlock(new BlockPos(x, y, z))).headOption
+        .map(_ - layer.bounds.realStartBlockY)
         .getOrElse(0)
     )
 
   override def getBiome(pos: BlockPos): Biome = {
-    val r = original.getBiome(layer.shift(pos).clamp)
+    val r = original.getBiome(layer.bounds.shift(pos).clamp)
     if (r == null)
       Main.sided.printError("bruh biome null", new NullPointerException(""))
     r
   }
 
   override def getBiomeForCoordsBody(pos: BlockPos): Biome =
-    original.getBiomeForCoordsBody(layer.shift(pos).clamp)
+    original.getBiomeForCoordsBody(layer.bounds.shift(pos).clamp)
 
   override def canSeeSky(pos: BlockPos): Boolean =
-    original.canSeeSky(layer.shift(pos))
+    original.canSeeSky(layer.bounds.shift(pos))
 
   override def canBlockSeeSky(pos: BlockPos): Boolean =
-    original.canBlockSeeSky(layer.shift(pos))
+    original.canBlockSeeSky(layer.bounds.shift(pos))
 
   override def getChunksLowestHorizon(x: Int, z: Int): Int =
     original.getChunksLowestHorizon(x, z)
 
   override def spawnEntity(entityIn: Entity): Boolean = {
-    entityIn.setLocationAndAngles(entityIn.posX, layer.shiftBlockY(entityIn.posY), entityIn.posZ, entityIn.rotationYaw, entityIn.rotationPitch)
+    entityIn.setLocationAndAngles(entityIn.posX, layer.bounds.shiftBlockY(entityIn.posY), entityIn.posZ, entityIn.rotationYaw, entityIn.rotationPitch)
     entityIn.world = original
     val newEntity = EntityList.newEntity(entityIn.getClass, original)
     newEntity.deserializeNBT(entityIn.serializeNBT())
@@ -187,7 +205,7 @@ class ProxyWorldServer private(original: CCWorld, val layer: BaseDimensionLayer,
     getPossibleCreatures(creatureType, pos).contains(spawnListEntry)
 
   private def getPossibleCreatures(creatureType: EnumCreatureType, pos: BlockPos): util.List[Biome.SpawnListEntry] =
-    layer.getPossibleCreatures(creatureType, ShiftedBlockPos.unshift(pos))
+    generator.getPossibleCreatures(creatureType, ShiftedBlockPos.unshift(pos))
 
   override def getCubeFromCubeCoords(cx: Int, cy: Int, cz: Int): ICube =
     proxyChunkProvider.getCube(cx, cy, cz)
@@ -198,8 +216,8 @@ class ProxyWorldServer private(original: CCWorld, val layer: BaseDimensionLayer,
   override def getCubeCache: ICubeProviderServer = proxyChunkProvider
 
   override def getCubeGenerator: ICubeGenerator =
-    layer match {
-      case layer: CubicWorldTypeLayer => layer.generator
+    generator match {
+      case generator: CubicWorldTypeGenerator => generator.generator
       case _ => null
     }
 

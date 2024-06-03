@@ -1,5 +1,10 @@
 package hohserg.dimensional.layers.preset
 
+import hohserg.dimensional.layers.CCWorld
+import hohserg.dimensional.layers.data.layer.base.Layer
+import hohserg.dimensional.layers.data.layer.cubic_world_type.CubicWorldTypeLayer
+import hohserg.dimensional.layers.data.layer.solid.SolidLayer
+import hohserg.dimensional.layers.data.layer.vanilla_dimension.VanillaDimensionLayer
 import hohserg.dimensional.layers.preset.CubicWorldTypeLayerSpec.dummyWorld
 import hohserg.dimensional.layers.worldgen.proxy.server.BaseWorldServer
 import io.github.opencubicchunks.cubicchunks.api.util.Coords
@@ -12,6 +17,10 @@ import net.minecraft.world.chunk.IChunkProvider
 import net.minecraft.world.storage.WorldInfo
 
 sealed trait LayerSpec {
+  def toLayer: (Int, this.type, CCWorld) => Layer
+
+  def toLayer(startFromCubeY: Int, original: CCWorld): Layer = toLayer(startFromCubeY, this, original)
+
 }
 
 case class DimensionLayerSpec(dimensionType: DimensionType,
@@ -20,21 +29,27 @@ case class DimensionLayerSpec(dimensionType: DimensionType,
                               worldType: WorldType = WorldType.DEFAULT, worldTypePreset: String = "") extends LayerSpec {
 
   def height: Int = 16 - topOffset - bottomOffset
+
+  override val toLayer = VanillaDimensionLayer
 }
 
-case class SolidLayerSpec(filler: IBlockState, height: Int, biome: Biome = Biomes.PLAINS) extends LayerSpec
+case class SolidLayerSpec(filler: IBlockState, height: Int, biome: Biome = Biomes.PLAINS) extends LayerSpec {
+  override val toLayer = SolidLayer
+}
 
 case class CubicWorldTypeLayerSpec(cubicWorldType: WorldType with ICubicWorldType, worldTypePreset: String = "",
                                    dimensionType1: DimensionType = DimensionType.OVERWORLD,
                                    seedOverride: Option[Long] = None
                                   ) extends LayerSpec {
 
-  def rangeCube(original: World): (Int, Int) = {
+  def rangeCube(original: CCWorld): (Int, Int) = {
     val range1 = cubicWorldType.calculateGenerationHeightRange(
       dummyWorld(this, original.getWorldInfo.getGameType, original.getWorldInfo.isMapFeaturesEnabled)
     )
     Coords.blockToCube(range1.getMin) -> Coords.blockToCube(range1.getMax)
   }
+
+  override val toLayer = CubicWorldTypeLayer
 }
 
 object CubicWorldTypeLayerSpec {

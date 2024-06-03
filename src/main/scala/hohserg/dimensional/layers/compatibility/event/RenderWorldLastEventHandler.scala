@@ -15,6 +15,6 @@ class RenderWorldLastEventHandler(modidSet: Set[String])
   override def handle(e: RenderWorldLastEvent): Unit = {
     super.handle(e)
 
-    handleEntityBasedEvent(Minecraft.getMinecraft.getRenderViewEntity, e)
+    handleEntityBasedEvent(Minecraft.getMinecraft.getRenderViewEntity, e, _.clientProxyWorld)
   }
 }

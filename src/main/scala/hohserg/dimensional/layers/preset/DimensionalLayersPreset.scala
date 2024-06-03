@@ -1,8 +1,8 @@
 package hohserg.dimensional.layers.preset
 
 import com.google.gson.JsonParseException
-import hohserg.dimensional.layers.worldgen.{CubicWorldTypeLayer, DimensionLayer, Layer, SolidLayer}
-import hohserg.dimensional.layers.{CCWorld, Configuration, Main}
+import hohserg.dimensional.layers.data.layer.base.Layer
+import hohserg.dimensional.layers.{CCWorld, CCWorldServer, Configuration, Main}
 import io.github.opencubicchunks.cubicchunks.api.util.IntRange
 import net.minecraft.init.Blocks
 import net.minecraftforge.common.DimensionManager
@@ -11,11 +11,12 @@ import scala.collection.JavaConverters._
 import scala.util.{Failure, Success, Try}
 
 case class DimensionalLayersPreset(layers: List[LayerSpec]) {
-  def toLayerMap(original: CCWorld): Map[Int, Layer] =
-    toLayerMap(toLayerSeq(original))
+  def toLayerMap(original: CCWorldServer): Map[Int, Layer] =
+    toLayerMap(toLayerSeq(original), identity)
 
-  def toLayerMap(seq: Seq[(IntRange, Layer)]): Map[Int, Layer] =
+  def toLayerMap[LayerEntry](seq: Seq[(IntRange, Layer)], mapper: Layer => LayerEntry): Map[Int, LayerEntry] =
     seq
+      .map { case (range, layer) => range -> mapper(layer) }
       .toMap
       .flatMap { case (range, layer) =>
         for (i <- range.getMin to range.getMax)
@@ -27,19 +28,9 @@ case class DimensionalLayersPreset(layers: List[LayerSpec]) {
     layers
       .foldRight(List[(IntRange, Layer)]() -> 0) {
         case (spec, (acc, lastFreeCubic)) =>
+          val layer: Layer = spec.toLayer(lastFreeCubic, original)
 
-          val layer = spec match {
-            case spec: DimensionLayerSpec =>
-              new DimensionLayer(original, spec, lastFreeCubic)
-
-            case SolidLayerSpec(filler, height, biome) =>
-              SolidLayer(filler, biome, lastFreeCubic, height)
-
-            case spec: CubicWorldTypeLayerSpec =>
-              new CubicWorldTypeLayer(original, spec, lastFreeCubic)
-          }
-
-          (range(lastFreeCubic, layer.height) -> layer :: acc) -> (lastFreeCubic + layer.height)
+          (range(lastFreeCubic, layer.bounds.cubeHeight) -> layer :: acc) -> (lastFreeCubic + layer.bounds.cubeHeight)
       }
       ._1
   }

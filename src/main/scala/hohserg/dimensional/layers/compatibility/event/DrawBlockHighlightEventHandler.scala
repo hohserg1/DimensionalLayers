@@ -15,6 +15,6 @@ class DrawBlockHighlightEventHandler(modidSet: Set[String])
   override def handle(e: DrawBlockHighlightEvent): Unit = {
     super.handle(e)
 
-    handleEntityBasedEvent(Minecraft.getMinecraft.getRenderViewEntity, e)
+    handleEntityBasedEvent(Minecraft.getMinecraft.getRenderViewEntity, e, _.clientProxyWorld)
   }
 }

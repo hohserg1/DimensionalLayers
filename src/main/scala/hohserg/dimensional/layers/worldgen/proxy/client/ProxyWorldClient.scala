@@ -6,6 +6,6 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.multiplayer.WorldClient
 
 class ProxyWorldClient(base: WorldClient)(val preset: DimensionalLayersPreset = DimensionalLayersPreset(base.getWorldInfo.getGeneratorOptions))
-  extends BaseWorldClient(Minecraft.getMinecraft.getConnection, base.getWorldInfo.sett) with ProxyWorldCommon {
+  extends BaseWorldClient(Minecraft.getMinecraft.getConnection, base.getWorldInfo, null, null, null) with ProxyWorldCommon {
 
 }
