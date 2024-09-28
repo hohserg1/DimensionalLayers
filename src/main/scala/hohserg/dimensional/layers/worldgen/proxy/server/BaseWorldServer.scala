@@ -1,6 +1,5 @@
 package hohserg.dimensional.layers.worldgen.proxy.server
 
-import com.google.common.util.concurrent.ListenableFuture
 import com.sun.istack.internal.Nullable
 import net.minecraft.advancements.{AdvancementManager, FunctionManager}
 import net.minecraft.block.Block
@@ -116,14 +115,6 @@ abstract class BaseWorldServer(saveHandlerIn: ISaveHandler, info: WorldInfo, pro
   def spawnParticle(particleType: EnumParticleTypes, longDistance: Boolean, xCoord: Double, yCoord: Double, zCoord: Double, numberOfParticles: Int, xOffset: Double, yOffset: Double, zOffset: Double, particleSpeed: Double, particleArguments: Int*): Unit = {}
 
   def spawnParticle(player: EntityPlayerMP, particle: EnumParticleTypes, longDistance: Boolean, x: Double, y: Double, z: Double, count: Int, xOffset: Double, yOffset: Double, zOffset: Double, speed: Double, arguments: Int*): Unit = {}
-
-  def addScheduledTask(runnableToSchedule: Runnable): ListenableFuture[AnyRef] = ???
-
-  def isCallingFromMinecraftThread: Boolean = {
-    println("bruh, why it called?")
-    new Exception().printStackTrace()
-    false
-  }
 
   @Nullable override def findNearestStructure(structureName: String, position: BlockPos, findUnexplored: Boolean): BlockPos = ???
 

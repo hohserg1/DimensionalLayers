@@ -1,5 +1,6 @@
 package hohserg.dimensional.layers.worldgen.proxy.server
 
+import com.google.common.util.concurrent.ListenableFuture
 import hohserg.dimensional.layers.CCWorldServer
 import hohserg.dimensional.layers.data.layer.base.{DimensionalLayer, Generator}
 import hohserg.dimensional.layers.data.layer.cubic_world_type.{CubicWorldTypeGenerator, CubicWorldTypeLayer}
@@ -92,5 +93,8 @@ class ProxyWorldServer private(val original: CCWorldServer, val layer: Dimension
       case _ => null
     }
 
-  getMapStorage
+  def addScheduledTask(runnableToSchedule: Runnable): ListenableFuture[AnyRef] = original.addScheduledTask(runnableToSchedule)
+
+  def isCallingFromMinecraftThread: Boolean =
+    false
 }
