@@ -8,6 +8,10 @@ trait LayerManager[SidedOriginalWorld <: CCWorld] {
 
   private val worldDataForRealDimension = new mutable.OpenHashMap[Int, WorldData]()
 
+  def unload(world: SidedOriginalWorld): Unit = {
+    worldDataForRealDimension -= world.provider.getDimension
+  }
+
   def haveWorldLayers(world: SidedOriginalWorld): Boolean = {
     world.getWorldInfo.getTerrainType == DimensionalLayersWorldType && DimensionalLayersWorldType.hasCubicGeneratorForWorld(world)
   }

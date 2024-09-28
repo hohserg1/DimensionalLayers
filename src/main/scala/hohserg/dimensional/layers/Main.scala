@@ -1,16 +1,20 @@
 package hohserg.dimensional.layers
 
 import hohserg.dimensional.layers.compatibility.event.CompatEventsHandler
+import hohserg.dimensional.layers.data.{LayerManagerClient, LayerManagerServer}
 import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
 import hohserg.dimensional.layers.gui.settings.GuiFakeCreateWorld
 import hohserg.dimensional.layers.preset.{CubicWorldTypeLayerSpec, DimensionLayerSpec, DimensionalLayersPreset, Serialization}
 import hohserg.dimensional.layers.sided.CommonLogic
+import hohserg.dimensional.layers.worldgen.proxy.client.BaseWorldClient
+import hohserg.dimensional.layers.worldgen.proxy.server.BaseWorldServer
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiCreateWorld
 import net.minecraft.world.DimensionType
 import net.minecraftforge.client.event.GuiOpenEvent
 import net.minecraftforge.client.event.GuiScreenEvent.ActionPerformedEvent
 import net.minecraftforge.event.entity.EntityTravelToDimensionEvent
+import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.Mod.{EventBusSubscriber, EventHandler}
 import net.minecraftforge.fml.common.event.{FMLPostInitializationEvent, FMLPreInitializationEvent, FMLServerStoppedEvent}
 import net.minecraftforge.fml.common.eventhandler.{EventPriority, SubscribeEvent}
@@ -94,6 +98,17 @@ object Main {
       } foreach { layer =>
 
       }
+    }
+  }
+
+  @SubscribeEvent
+  def unloadWorld(e: WorldEvent.Unload): Unit = {
+    e.getWorld match {
+      case _: BaseWorldServer => println("wtf: unloadWorld BaseWorldServer", e)
+      case _: BaseWorldClient => println("wtf: unloadWorld BaseWorldServer", e)
+
+      case w: CCWorldClient => LayerManagerClient.unload(w)
+      case w: CCWorldServer => LayerManagerServer.unload(w)
     }
   }
 }
