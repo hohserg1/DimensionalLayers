@@ -1,6 +1,7 @@
 package hohserg.dimensional.layers.data.layer.base
 
 import com.google.common.collect.ImmutableList
+import hohserg.dimensional.layers.worldgen.proxy.server.ProxyWorldServer
 import io.github.opencubicchunks.cubicchunks.api.world.ICube
 import io.github.opencubicchunks.cubicchunks.api.worldgen.CubePrimer
 import net.minecraft.entity.EnumCreatureType
@@ -11,7 +12,6 @@ import java.util
 
 trait Generator {
   type L <: Layer
-  type BiomeContext
 
   def layer: L
 
@@ -23,16 +23,6 @@ trait Generator {
 
   def generateCube(cubeX: Int, cubeY: Int, cubeZ: Int, primer: CubePrimer): CubePrimer
 
-  protected def calcBiome(localBiomeX: Int, localBiomeY: Int, localBiomeZ: Int, context: BiomeContext): Biome
-
-  protected def generateBiomes(primer: CubePrimer, context: BiomeContext): Unit = {
-    for {
-      localBiomeX <- 0 to 3
-      localBiomeY <- 0 to 3
-      localBiomeZ <- 0 to 3
-    } primer.setBiome(localBiomeX, localBiomeY, localBiomeZ, calcBiome(localBiomeX, localBiomeY, localBiomeZ, context))
-  }
-
   def populateCube(cube: ICube): Unit
 
   def recreateStructures(cube: ICube): Unit
@@ -43,5 +33,26 @@ trait Generator {
   def getPossibleCreaturesNullable(creatureType: EnumCreatureType, realPos: BlockPos): util.List[Biome.SpawnListEntry]
 
   def getNearestStructurePos(name: String, blockPos: BlockPos, findUnexplored: Boolean): Option[BlockPos] = None
+
+}
+
+trait DimensionalGenerator extends Generator {
+
+  def proxyWorld: ProxyWorldServer
+
+}
+
+trait BiomeGeneratorHelper {
+  type BiomeContext
+
+  protected def calcBiome(localBiomeX: Int, localBiomeY: Int, localBiomeZ: Int, context: BiomeContext): Biome
+
+  protected def generateBiomes(primer: CubePrimer, context: BiomeContext): Unit = {
+    for {
+      localBiomeX <- 0 to 3
+      localBiomeY <- 0 to 3
+      localBiomeZ <- 0 to 3
+    } primer.setBiome(localBiomeX, localBiomeY, localBiomeZ, calcBiome(localBiomeX, localBiomeY, localBiomeZ, context))
+  }
 
 }

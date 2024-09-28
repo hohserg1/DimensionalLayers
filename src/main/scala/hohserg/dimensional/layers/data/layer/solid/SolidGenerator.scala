@@ -1,6 +1,6 @@
 package hohserg.dimensional.layers.data.layer.solid
 
-import hohserg.dimensional.layers.data.layer.base.Generator
+import hohserg.dimensional.layers.data.layer.base.{BiomeGeneratorHelper, Generator}
 import io.github.opencubicchunks.cubicchunks.api.world.ICube
 import io.github.opencubicchunks.cubicchunks.api.worldgen.CubePrimer
 import net.minecraft.entity.EnumCreatureType
@@ -9,7 +9,7 @@ import net.minecraft.world.biome.Biome
 
 import java.util
 
-class SolidGenerator(val layer: SolidLayer) extends Generator {
+class SolidGenerator(val layer: SolidLayer) extends Generator with BiomeGeneratorHelper {
   override type L = SolidLayer
   override type BiomeContext = Biome
 

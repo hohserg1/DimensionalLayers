@@ -10,9 +10,7 @@ import net.minecraft.entity.Entity
 class WorldData(val original: CCWorld) {
   val preset = DimensionalLayersPreset(original.getWorldInfo.getGeneratorOptions)
 
-  private val seq = preset.toLayerSeq(original)
-
-  val layerAtCubeY: Map[Int, Layer] = preset.toLayerMap(seq, identity)
+  val layerAtCubeY: Map[Int, Layer] = preset.toLayerMap(preset.toLayerSeq(original), identity)
 
   def getLayerOf(entity: Entity): Option[Layer] = {
     val y = Coords.blockToCube((entity.posY + 0.5).toInt)

@@ -14,7 +14,6 @@ import java.util
 
 class CubicWorldTypeGenerator(original: CCWorldServer, val layer: CubicWorldTypeLayer) extends DimensionalGenerator {
   override type L = CubicWorldTypeLayer
-  override type BiomeContext = Nothing
 
   override val proxyWorld = ProxyWorldServer(original, layer, this)
 
@@ -22,8 +21,6 @@ class CubicWorldTypeGenerator(original: CCWorldServer, val layer: CubicWorldType
 
   override def generateCube(cubeX: Int, cubeY: Int, cubeZ: Int, primer: CubePrimer): CubePrimer =
     generator.generateCube(cubeX, cubeY, cubeZ, primer)
-
-  override protected def calcBiome(localBiomeX: Int, localBiomeY: Int, localBiomeZ: Int, context: Nothing): Biome = ???
 
   override def populateCube(cube: ICube): Unit =
     generator.populate(new ProxyCube(cube, bounds, proxyWorld))

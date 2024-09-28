@@ -1,7 +1,7 @@
 package hohserg.dimensional.layers.data.layer.vanilla_dimension
 
 import com.google.common.cache.{CacheBuilder, CacheLoader, LoadingCache}
-import hohserg.dimensional.layers.data.layer.base.DimensionalGenerator
+import hohserg.dimensional.layers.data.layer.base.{BiomeGeneratorHelper, DimensionalGenerator}
 import hohserg.dimensional.layers.worldgen.proxy.server.ProxyWorldServer
 import hohserg.dimensional.layers.{CCWorldServer, Main}
 import io.github.opencubicchunks.cubicchunks.api.util.Coords
@@ -20,7 +20,7 @@ import java.util.Random
 import java.util.concurrent.TimeUnit
 import scala.collection.JavaConverters._
 
-class VanillaDimensionGenerator(original: CCWorldServer, val layer: VanillaDimensionLayer) extends DimensionalGenerator {
+class VanillaDimensionGenerator(original: CCWorldServer, val layer: VanillaDimensionLayer) extends DimensionalGenerator with BiomeGeneratorHelper {
   override type L = VanillaDimensionLayer
   override type BiomeContext = Array[Biome]
 

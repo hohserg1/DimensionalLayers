@@ -1,17 +1,15 @@
 package hohserg.dimensional.layers
 
 import hohserg.dimensional.layers.compatibility.event.CompatEventsHandler
-import hohserg.dimensional.layers.data.{LayerManagerClient, LayerManagerServer}
 import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
 import hohserg.dimensional.layers.gui.settings.GuiFakeCreateWorld
 import hohserg.dimensional.layers.preset.{CubicWorldTypeLayerSpec, DimensionLayerSpec, DimensionalLayersPreset, Serialization}
 import hohserg.dimensional.layers.sided.CommonLogic
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiCreateWorld
-import net.minecraft.world.{DimensionType, World}
+import net.minecraft.world.DimensionType
 import net.minecraftforge.client.event.GuiOpenEvent
 import net.minecraftforge.client.event.GuiScreenEvent.ActionPerformedEvent
-import net.minecraftforge.event.AttachCapabilitiesEvent
 import net.minecraftforge.event.entity.EntityTravelToDimensionEvent
 import net.minecraftforge.fml.common.Mod.{EventBusSubscriber, EventHandler}
 import net.minecraftforge.fml.common.event.{FMLPostInitializationEvent, FMLPreInitializationEvent, FMLServerStoppedEvent}
@@ -67,17 +65,6 @@ object Main {
   @SubscribeEvent
   def onGuiOpen(e: GuiOpenEvent): Unit = {
     GuiFakeCreateWorld.replaceGuiByParent(e)
-  }
-
-  @SubscribeEvent(priority = EventPriority.HIGHEST)
-  def attachCapa(e: AttachCapabilitiesEvent[World]): Unit = {
-    e.getObject match {
-      case serverWorld: CCWorldServer =>
-        LayerManagerServer.initRealDimension(serverWorld)
-      case clientWorld: CCWorldClient =>
-        LayerManagerClient.initRealDimension(clientWorld)
-      case _ =>
-    }
   }
 
   @EventHandler

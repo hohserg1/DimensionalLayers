@@ -31,8 +31,8 @@ trait DimensionalLayerBounds extends LayerBounds {
 
   def markShifted(pos: BlockPos): ShiftedBlockPos = ShiftedBlockPos.markShifted(pos, this)
 
-  def isInLayer(y: Int): Boolean =
-    virtualStartBlockY <= y && y <= virtualEndBlockY
+  def isInLayer(blockY: Int): Boolean =
+    virtualStartBlockY <= blockY && blockY <= virtualEndBlockY
 
   def executeInLayer[A](pos: BlockPos, f: ShiftedBlockPos => A, default: A): A = {
     val p = shift(pos)
