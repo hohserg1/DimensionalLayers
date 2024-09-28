@@ -51,12 +51,14 @@ class BaseEventHandler[E <: Event](modidSet: Set[String]) {
             entity.world = proxyWorld
             entity.posY = ShiftedBlockPos.unshiftBlockY(entity.posY, dimensional.bounds)
             entity.lastTickPosY = ShiftedBlockPos.unshiftBlockY(entity.lastTickPosY, dimensional.bounds)
+            entity.prevPosY = ShiftedBlockPos.unshiftBlockY(entity.prevPosY, dimensional.bounds)
           },
         clear =
           (dimensional, proxyWorld) => {
             entity.world = originalWorld
             entity.posY = ShiftedBlockPos.shiftBlockY(entity.posY, dimensional.bounds)
             entity.lastTickPosY = ShiftedBlockPos.shiftBlockY(entity.lastTickPosY, dimensional.bounds)
+            entity.prevPosY = ShiftedBlockPos.shiftBlockY(entity.prevPosY, dimensional.bounds)
           },
         getProxyWorld
       )
