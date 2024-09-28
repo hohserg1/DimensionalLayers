@@ -1,7 +1,7 @@
 package hohserg.dimensional.layers.data.layer.vanilla_dimension
 
 import com.google.common.cache.{CacheBuilder, CacheLoader, LoadingCache}
-import hohserg.dimensional.layers.data.layer.base.Generator
+import hohserg.dimensional.layers.data.layer.base.DimensionalGenerator
 import hohserg.dimensional.layers.worldgen.proxy.server.ProxyWorldServer
 import hohserg.dimensional.layers.{CCWorldServer, Main}
 import io.github.opencubicchunks.cubicchunks.api.util.Coords
@@ -20,11 +20,11 @@ import java.util.Random
 import java.util.concurrent.TimeUnit
 import scala.collection.JavaConverters._
 
-class VanillaDimensionGenerator(original: CCWorldServer, val layer: VanillaDimensionLayer) extends Generator {
+class VanillaDimensionGenerator(original: CCWorldServer, val layer: VanillaDimensionLayer) extends DimensionalGenerator {
   override type L = VanillaDimensionLayer
   override type BiomeContext = Array[Biome]
 
-  val proxyWorld = ProxyWorldServer(original, layer, this)
+  override val proxyWorld = ProxyWorldServer(original, layer, this)
   private val provider: WorldProvider = proxyWorld.provider
   val vanillaGenerator: IChunkGenerator = provider.createChunkGenerator()
   var optimizationHack: Boolean = false
@@ -48,7 +48,7 @@ class VanillaDimensionGenerator(original: CCWorldServer, val layer: VanillaDimen
     val chunk = lastChunks.get(cubeX -> cubeZ)
 
     //took from io.github.opencubicchunks.cubicchunks.core.asm.mixin.core.common.MixinChunk_Cubes#init_getStorage
-    val index = ((cubeY - bounds.realStartCubeY + spec.bottomOffset) & 15) - Coords.blockToCube(proxyWorld.getMinHeight())
+    val index = ((cubeY - bounds.realStartCubeY + spec.bottomOffset) & 15) - Coords.blockToCube(proxyWorld.getMinHeight)
 
     val storage = chunk.getBlockStorageArray()(index)
     if (storage != null && !storage.isEmpty) {

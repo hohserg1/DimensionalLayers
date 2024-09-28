@@ -119,7 +119,11 @@ abstract class BaseWorldServer(saveHandlerIn: ISaveHandler, info: WorldInfo, pro
 
   def addScheduledTask(runnableToSchedule: Runnable): ListenableFuture[AnyRef] = ???
 
-  def isCallingFromMinecraftThread: Boolean = ???
+  def isCallingFromMinecraftThread: Boolean = {
+    println("bruh, why it called?")
+    new Exception().printStackTrace()
+    false
+  }
 
   @Nullable override def findNearestStructure(structureName: String, position: BlockPos, findUnexplored: Boolean): BlockPos = ???
 

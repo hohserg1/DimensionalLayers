@@ -1,12 +1,11 @@
 package hohserg.dimensional.layers
 
 import hohserg.dimensional.layers.compatibility.event.CompatEventsHandler
-import hohserg.dimensional.layers.data.LayerManager
+import hohserg.dimensional.layers.data.{LayerManagerClient, LayerManagerServer}
 import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
 import hohserg.dimensional.layers.gui.settings.GuiFakeCreateWorld
 import hohserg.dimensional.layers.preset.{CubicWorldTypeLayerSpec, DimensionLayerSpec, DimensionalLayersPreset, Serialization}
 import hohserg.dimensional.layers.sided.CommonLogic
-import io.github.opencubicchunks.cubicchunks.api.world.ICubicWorld
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiCreateWorld
 import net.minecraft.world.{DimensionType, World}
@@ -73,8 +72,10 @@ object Main {
   @SubscribeEvent(priority = EventPriority.HIGHEST)
   def attachCapa(e: AttachCapabilitiesEvent[World]): Unit = {
     e.getObject match {
-      case serverWorld: World with ICubicWorld =>
-        LayerManager.initRealDimension(serverWorld)
+      case serverWorld: CCWorldServer =>
+        LayerManagerServer.initRealDimension(serverWorld)
+      case clientWorld: CCWorldClient =>
+        LayerManagerClient.initRealDimension(clientWorld)
       case _ =>
     }
   }

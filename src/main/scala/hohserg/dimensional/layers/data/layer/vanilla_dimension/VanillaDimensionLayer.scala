@@ -1,12 +1,13 @@
 package hohserg.dimensional.layers.data.layer.vanilla_dimension
 
-import hohserg.dimensional.layers.data.layer.base.{DimensionalLayer, DimensionalLayerBounds, Generator}
+import hohserg.dimensional.layers.data.layer.base.{DimensionalGenerator, DimensionalLayer, DimensionalLayerBounds}
 import hohserg.dimensional.layers.preset.DimensionLayerSpec
-import hohserg.dimensional.layers.worldgen.proxy.client.ProxyWorldClient
-import hohserg.dimensional.layers.{CCWorld, CCWorldClient, CCWorldServer}
+import hohserg.dimensional.layers.{CCWorld, CCWorldServer}
+import net.minecraft.world.DimensionType
 
 case class VanillaDimensionLayer(_realStartCubeY: Int, spec: DimensionLayerSpec, originalWorld: CCWorld) extends DimensionalLayer {
   override type Spec = DimensionLayerSpec
+  override type G = DimensionalGenerator
 
   override def bounds: DimensionalLayerBounds = new DimensionalLayerBounds {
     override val realStartCubeY: Int = _realStartCubeY
@@ -15,7 +16,10 @@ case class VanillaDimensionLayer(_realStartCubeY: Int, spec: DimensionLayerSpec,
     override val virtualEndCubeY: Int = 16 - spec.topOffset - 1
   }
 
-  override def createGenerator(original: CCWorldServer): Generator = new VanillaDimensionGenerator(original, this)
+  override def isCubic: Boolean = false
 
-  override def createClientProxyWorld(original: CCWorldClient): ProxyWorldClient = ???
+  override def dimensionType: DimensionType = spec.dimensionType
+
+  override def createGenerator(original: CCWorldServer): DimensionalGenerator = new VanillaDimensionGenerator(original, this)
+
 }

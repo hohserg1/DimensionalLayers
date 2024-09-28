@@ -1,11 +1,19 @@
 package hohserg.dimensional.layers.worldgen.proxy.client
 
-import hohserg.dimensional.layers.preset.DimensionalLayersPreset
+import hohserg.dimensional.layers.CCWorldClient
+import hohserg.dimensional.layers.data.layer.base.DimensionalLayer
 import hohserg.dimensional.layers.worldgen.proxy.ProxyWorldCommon
 import net.minecraft.client.Minecraft
-import net.minecraft.client.multiplayer.WorldClient
+import net.minecraft.profiler.Profiler
 
-class ProxyWorldClient(base: WorldClient)(val preset: DimensionalLayersPreset = DimensionalLayersPreset(base.getWorldInfo.getGeneratorOptions))
-  extends BaseWorldClient(Minecraft.getMinecraft.getConnection, base.getWorldInfo, null, null, null) with ProxyWorldCommon {
+case class ProxyWorldClient(original: CCWorldClient, layer: DimensionalLayer)
+  extends BaseWorldClient(Minecraft.getMinecraft.getConnection, original.getWorldInfo, layer.dimensionType, original.getDifficulty, new Profiler)
+    with FakeCubicWorldClient
+    with ProxyWorldCommon {
 
+  override type ProxyChunkProvider = ProxyChunkProviderClient
+
+  override def createProxyChunkProvider(): ProxyChunkProviderClient = ProxyChunkProviderClient(this, original, layer)
+
+  initWorld()
 }

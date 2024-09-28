@@ -14,6 +14,7 @@ class DimensionalLayersCoreMod extends IFMLLoadingPlugin {
     Mixins.addConfiguration("dimensional_layers.mixins.gui.json")
     Mixins.addConfiguration("dimensional_layers.mixins.compat_events.json")
     Mixins.addConfiguration("dimensional_layers.mixins.sync_preset.json")
+    Mixins.addConfiguration("dimensional_layers.mixins.fixbukkitcrash.json")
 
     Array("hohserg.dimensional.layers.asm.BaseWorldServerTransformer")
   }

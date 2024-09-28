@@ -1,7 +1,7 @@
 package hohserg.dimensional.layers.worldgen.proxy
 
+import hohserg.dimensional.layers.CCWorld
 import hohserg.dimensional.layers.data.layer.base.DimensionalLayerBounds
-import hohserg.dimensional.layers.worldgen.proxy.server.ProxyWorldServer
 import io.github.opencubicchunks.cubicchunks.api.util.CubePos
 import io.github.opencubicchunks.cubicchunks.api.world.ICube
 import net.minecraft.block.state.IBlockState
@@ -10,17 +10,17 @@ import net.minecraft.init.Blocks
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.{ClassInheritanceMultiMap, EnumFacing}
-import net.minecraft.world.EnumSkyBlock
 import net.minecraft.world.biome.Biome
 import net.minecraft.world.chunk.Chunk
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage
+import net.minecraft.world.{EnumSkyBlock, World}
 import net.minecraftforge.common.capabilities.{Capability, CapabilityDispatcher}
 
 import java.util
 
-class ProxyCube(original: ICube, layerBounds: DimensionalLayerBounds, proxyWorld: ProxyWorldServer) extends BaseProxyCube {
+class ProxyCube(original: ICube, layerBounds: DimensionalLayerBounds, proxyWorld: CCWorld with ProxyWorldCommon) extends BaseProxyCube {
 
-  override def proxyWorld(): ProxyWorldServer = proxyWorld
+  override def proxyWorld(): World = proxyWorld
 
   override def getBlockState(blockPos: BlockPos): IBlockState =
     original.getBlockState(layerBounds.shift(blockPos))

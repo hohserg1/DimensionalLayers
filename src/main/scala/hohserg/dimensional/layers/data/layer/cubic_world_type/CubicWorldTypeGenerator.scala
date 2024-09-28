@@ -1,7 +1,7 @@
 package hohserg.dimensional.layers.data.layer.cubic_world_type
 
 import hohserg.dimensional.layers.CCWorldServer
-import hohserg.dimensional.layers.data.layer.base.Generator
+import hohserg.dimensional.layers.data.layer.base.DimensionalGenerator
 import hohserg.dimensional.layers.worldgen.proxy.ProxyCube
 import hohserg.dimensional.layers.worldgen.proxy.server.ProxyWorldServer
 import io.github.opencubicchunks.cubicchunks.api.world.ICube
@@ -12,11 +12,11 @@ import net.minecraft.world.biome.Biome
 
 import java.util
 
-class CubicWorldTypeGenerator(original: CCWorldServer, val layer: CubicWorldTypeLayer) extends Generator {
+class CubicWorldTypeGenerator(original: CCWorldServer, val layer: CubicWorldTypeLayer) extends DimensionalGenerator {
   override type L = CubicWorldTypeLayer
   override type BiomeContext = Nothing
 
-  val proxyWorld = ProxyWorldServer(original, layer, this)
+  override val proxyWorld = ProxyWorldServer(original, layer, this)
 
   val generator = spec.cubicWorldType.createCubeGenerator(proxyWorld)
 

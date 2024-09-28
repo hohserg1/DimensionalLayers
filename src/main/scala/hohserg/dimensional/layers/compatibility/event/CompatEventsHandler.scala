@@ -16,12 +16,12 @@ object CompatEventsHandler {
           case EntityContext.player => _.isInstanceOf[EntityPlayer]
           case EntityContext.any_entity => _ => true
         }
-      )),
-      layer_related_events.RenderTickEvent -> (new RenderTickEventHandler(_)),
-      layer_related_events.FogDensity -> (new FogDensityHandler(_)),
-      layer_related_events.FogColors -> (new FogColorsHandler(_)),
-      layer_related_events.RenderWorldLastEvent -> (new RenderWorldLastEventHandler(_)),
-      layer_related_events.DrawBlockHighlightEvent -> (new DrawBlockHighlightEventHandler(_))
+      )) //,
+      //layer_related_events.RenderTickEvent -> (new RenderTickEventHandler(_)),
+      //layer_related_events.FogDensity -> (new FogDensityHandler(_)),
+      //layer_related_events.FogColors -> (new FogColorsHandler(_)),
+      //layer_related_events.RenderWorldLastEvent -> (new RenderWorldLastEventHandler(_)),
+      //layer_related_events.DrawBlockHighlightEvent -> (new DrawBlockHighlightEventHandler(_))
     )
 
     commonEventConfigs.foreach { case (triggeredMods, handlerFactory) =>

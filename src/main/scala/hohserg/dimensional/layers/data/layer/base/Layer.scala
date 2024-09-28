@@ -1,13 +1,13 @@
 package hohserg.dimensional.layers.data.layer.base
 
 import hohserg.dimensional.layers.preset.LayerSpec
-import hohserg.dimensional.layers.worldgen.proxy.client.ProxyWorldClient
-import hohserg.dimensional.layers.{CCWorld, CCWorldClient, CCWorldServer}
-import net.minecraftforge.fml.relauncher.{Side, SideOnly}
+import hohserg.dimensional.layers.{CCWorld, CCWorldServer}
 
 trait Layer {
   type Spec <: LayerSpec
   type Bounds <: LayerBounds
+
+  type G <: Generator
 
   def bounds: Bounds
 
@@ -15,18 +15,10 @@ trait Layer {
 
   def originalWorld: CCWorld
 
-  protected def createGenerator(original: CCWorldServer): Generator
+  protected def createGenerator(original: CCWorldServer): G
 
-  @SideOnly(Side.CLIENT)
-  protected def createClientProxyWorld(original: CCWorldClient): ProxyWorldClient
-
-  lazy val generator: Generator = originalWorld match {
+  lazy val generator: G = originalWorld match {
     case serverWorld: CCWorldServer => createGenerator(serverWorld)
-  }
-
-  @SideOnly(Side.CLIENT)
-  lazy val clientProxyWorld: ProxyWorldClient = originalWorld match {
-    case clientWorld: CCWorldClient => createClientProxyWorld(clientWorld)
   }
 
 }

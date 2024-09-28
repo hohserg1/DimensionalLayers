@@ -1,7 +1,7 @@
 package hohserg.dimensional.layers.worldgen
 
 import com.google.common.collect.ImmutableList
-import hohserg.dimensional.layers.data.LayerManager
+import hohserg.dimensional.layers.data.LayerManagerServer
 import hohserg.dimensional.layers.data.layer.base.Layer
 import hohserg.dimensional.layers.{CCWorldServer, Main}
 import io.github.opencubicchunks.cubicchunks.api.util.{Box, Coords}
@@ -19,7 +19,7 @@ import scala.collection.JavaConverters._
 import scala.collection.mutable
 
 class DimensionalLayersGenerator(original: CCWorldServer) extends ICubeGenerator {
-  val worldData = LayerManager.getWorldData(original).getOrElse(throw new IllegalArgumentException("not a layered world: " + original))
+  val worldData = LayerManagerServer.getWorldData(original).getOrElse(throw new IllegalArgumentException("not a layered world: " + original))
   val preset = worldData.preset
   val layerAtCubeY: Map[Int, Layer] = worldData.layerAtCubeY
 

@@ -1,10 +1,8 @@
 package hohserg.dimensional.layers.worldgen.proxy.server
 
-import com.google.common.cache.{CacheBuilder, CacheLoader, LoadingCache}
 import hohserg.dimensional.layers.CCWorldServer
 import hohserg.dimensional.layers.data.layer.base.DimensionalLayer
-import hohserg.dimensional.layers.worldgen.proxy.{ProxyChunk, ProxyCube}
-import io.github.opencubicchunks.cubicchunks.api.util.CubePos
+import hohserg.dimensional.layers.worldgen.proxy.ProxyChunkProviderCommon
 import io.github.opencubicchunks.cubicchunks.api.world.ICubeProviderServer.Requirement._
 import io.github.opencubicchunks.cubicchunks.api.world.{ICube, ICubeProviderServer}
 import net.minecraft.entity.EnumCreatureType
@@ -16,39 +14,10 @@ import net.minecraft.world.{World, WorldServer}
 
 import java.util
 
-class ProxyChunkProviderServer(proxy: ProxyWorldServer, original: CCWorldServer, layer: DimensionalLayer)
+case class ProxyChunkProviderServer(proxy: ProxyWorldServer, original: CCWorldServer, layer: DimensionalLayer)
   extends ChunkProviderServer(proxy.asInstanceOf[WorldServer], proxy.getSaveHandler.getChunkLoader(proxy.provider), null)
-    with ICubeProviderServer {
-
-  val proxyChunkCache: LoadingCache[Chunk, ProxyChunk] =
-    CacheBuilder.newBuilder()
-      .weakKeys()
-      .maximumSize(128 * 128)
-      .build(new CacheLoader[Chunk, ProxyChunk] {
-        override def load(key: Chunk): ProxyChunk = new ProxyChunk(proxy, key, layer.bounds)
-      })
-
-  val proxyCubeCache: LoadingCache[ICube, ProxyCube] =
-    if (proxy.isCubicWorld)
-      CacheBuilder.newBuilder()
-        .weakKeys()
-        .maximumSize(128 * 128)
-        .build(new CacheLoader[ICube, ProxyCube] {
-          override def load(key: ICube): ProxyCube = new ProxyCube(key, layer.bounds, proxy)
-        })
-    else
-      null
-
-
-  override def getLoadedChunk(cx: Int, cz: Int): Chunk = Option(original.getChunkProvider.getLoadedChunk(cx, cz)).map(proxyChunkCache.get).orNull
-
-  override def provideChunk(cx: Int, cz: Int): Chunk = proxyChunkCache.get(original.getChunkProvider.provideChunk(cx, cz))
-
-  override def tick(): Boolean = false
-
-  override def makeString(): String = "ProxyChunkProvider"
-
-  override def isChunkGeneratedAt(x: Int, z: Int): Boolean = original.getChunkProvider.isChunkGeneratedAt(x, z)
+    with ICubeProviderServer
+    with ProxyChunkProviderCommon {
 
   override def loadChunk(x: Int, z: Int): Chunk = ???
 
@@ -70,30 +39,6 @@ class ProxyChunkProviderServer(proxy: ProxyWorldServer, original: CCWorldServer,
     false
 
   //cubic
-
-  def filterNonCubic[A](f: => A): A =
-    if (proxy.isCubicWorld)
-      f
-    else
-      null.asInstanceOf[A]
-
-  override def getLoadedCube(cx: Int, cy: Int, cz: Int): ICube =
-    filterNonCubic(Option(original.getCubeCache.getLoadedCube(cx, cy, cz)).map(proxyCubeCache.get).orNull)
-
-  override def getLoadedCube(cubePos: CubePos): ICube =
-    getLoadedCube(cubePos.getX, cubePos.getY, cubePos.getZ)
-
-  override def getCube(cx: Int, cy: Int, cz: Int): ICube =
-    filterNonCubic(proxyCubeCache.get(original.getCubeCache.getCube(cx, cy, cz)))
-
-  override def getCube(cubePos: CubePos): ICube =
-    getCube(cubePos.getX, cubePos.getY, cubePos.getZ)
-
-  override def getLoadedColumn(cx: Int, cz: Int): Chunk =
-    getLoadedChunk(cx, cz)
-
-  override def provideColumn(cx: Int, cz: Int): Chunk =
-    provideChunk(cx, cz)
 
   override def getColumn(cx: Int, cz: Int, requirement: ICubeProviderServer.Requirement): Chunk =
     requirement match {
