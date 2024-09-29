@@ -16,6 +16,7 @@
       "handleJoinGame": "Lnet/minecraft/client/network/NetHandlerPlayClient;func_147282_a(Lnet/minecraft/network/play/server/SPacketJoinGame;)V"
     },
     "hohserg/dimensional/layers/preset/sync/mixin/SetFieldOfPacket": {
+      "sendPacket": "Lnet/minecraft/network/NetHandlerPlayServer;func_147359_a(Lnet/minecraft/network/Packet;)V",
       "initializeConnectionToPlayer": "Lnet/minecraft/server/management/PlayerList;func_72355_a(Lnet/minecraft/network/NetworkManager;Lnet/minecraft/entity/player/EntityPlayerMP;Lnet/minecraft/network/NetHandlerPlayServer)V"
     }
   }
