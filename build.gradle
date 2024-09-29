@@ -39,7 +39,8 @@ minecraft {
             'libs_at/bnbgaminglib_at.cfg',
             'libs_at/mist_at.cfg',
             'libs_at/thebetweenlands_at.cfg',
-            'libs_at/rtg_at.cfg'
+            'libs_at/rtg_at.cfg',
+            'libs_at/resourcereloader_at.cfg'
     )
 
     runs {
