@@ -14,7 +14,7 @@ class DimensionalLayersCoreMod extends IFMLLoadingPlugin {
     Mixins.addConfiguration("dimensional_layers.mixins.proxy.json")
     Mixins.addConfiguration("dimensional_layers.mixins.gui.json")
     Mixins.addConfiguration("dimensional_layers.mixins.compat_events.json")
-    //Mixins.addConfiguration("dimensional_layers.mixins.sync_preset.json")
+    Mixins.addConfiguration("dimensional_layers.mixins.sync_preset.json")
     if (Launch.blackboard.get("fml.deobfuscatedEnvironment").asInstanceOf[Boolean])
       Mixins.addConfiguration("dimensional_layers.mixins.fixbukkitcrash.json")
 
