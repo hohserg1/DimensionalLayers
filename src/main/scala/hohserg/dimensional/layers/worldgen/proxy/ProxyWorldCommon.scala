@@ -125,7 +125,7 @@ trait ProxyWorldCommon {
   override def getHeight(x: Int, z: Int): Int =
     heightCache.getOrElseUpdate(x -> z,
       (layer.bounds.realEndBlockY to layer.bounds.realStartBlockY by -1).dropWhile(y => original.isAirBlock(new BlockPos(x, y, z))).headOption
-        .map(_ - layer.bounds.realStartBlockY)
+        .map(_ - layer.bounds.realStartBlockY + 1)
         .getOrElse(0)
     )
 
