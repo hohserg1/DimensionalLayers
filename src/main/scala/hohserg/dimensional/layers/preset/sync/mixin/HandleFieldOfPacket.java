@@ -25,6 +25,5 @@ public class HandleFieldOfPacket {
         WorldSettings worldSettings = new WorldSettings(worldInfo);
         worldSettings.setGeneratorOptions(((AdditionalPacketData) packetIn).getGeneratorOptions());
         worldInfo.populateFromWorldSettings(worldSettings);
-        System.out.println("generatorOptions " + worldSettings.getGeneratorOptions());
     }
 }
