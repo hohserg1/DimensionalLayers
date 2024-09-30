@@ -1,6 +1,7 @@
 package hohserg.dimensional.layers.data
 
 import hohserg.dimensional.layers.CCWorldServer
+import net.minecraftforge.fml.common.Mod.EventBusSubscriber
 
-object LayerManagerServer extends LayerManager[CCWorldServer] {
-}
+@EventBusSubscriber
+object LayerManagerServer extends LayerManager[CCWorldServer]

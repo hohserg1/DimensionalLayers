@@ -1,16 +1,16 @@
 package hohserg.dimensional.layers.data
 
+import hohserg.dimensional.layers.worldgen.proxy.client.BaseWorldClient
+import hohserg.dimensional.layers.worldgen.proxy.server.BaseWorldServer
 import hohserg.dimensional.layers.{CCWorld, DimensionalLayersWorldType}
+import net.minecraftforge.event.world.WorldEvent
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 import scala.collection.mutable
 
 trait LayerManager[SidedOriginalWorld <: CCWorld] {
 
   private val worldDataForRealDimension = new mutable.OpenHashMap[Int, WorldData]()
-
-  def unload(world: SidedOriginalWorld): Unit = {
-    worldDataForRealDimension -= world.provider.getDimension
-  }
 
   def haveWorldLayers(world: SidedOriginalWorld): Boolean = {
     world.getWorldInfo.getTerrainType == DimensionalLayersWorldType && DimensionalLayersWorldType.hasCubicGeneratorForWorld(world)
@@ -21,5 +21,17 @@ trait LayerManager[SidedOriginalWorld <: CCWorld] {
       Some(worldDataForRealDimension.getOrElseUpdate(world.provider.getDimension, new WorldData(world)))
     else
       None
+
+  @SubscribeEvent
+  def unloadWorld(e: WorldEvent.Unload): Unit = {
+    e.getWorld match {
+      case _: BaseWorldServer => println("wtf: unloadWorld BaseWorldServer", e)
+      case _: BaseWorldClient => println("wtf: unloadWorld BaseWorldServer", e)
+
+      case w: SidedOriginalWorld =>
+        worldDataForRealDimension -= w.provider.getDimension
+      case _ =>
+    }
+  }
 
 }
