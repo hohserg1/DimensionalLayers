@@ -12,7 +12,7 @@ class BaseWorldServerTransformer extends IClassTransformer {
     if (basicClass == null)
       return null
 
-    if (transformedName == "hohserg.dimensional.layers.worldgen.proxy.BaseWorldServer") {
+    if (transformedName == "hohserg.dimensional.layers.worldgen.proxy.server.BaseWorldServer") {
       println("transforming BaseWorldServer class")
       processClass(basicClass, transformBaseWorldServer)
 

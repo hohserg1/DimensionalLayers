@@ -1,5 +1,6 @@
 package hohserg.dimensional.layers.asm
 
+import net.minecraft.launchwrapper.Launch
 import net.minecraftforge.common.ForgeVersion
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin
 import org.spongepowered.asm.mixin.Mixins
@@ -12,6 +13,10 @@ class DimensionalLayersCoreMod extends IFMLLoadingPlugin {
   override def getASMTransformerClass: Array[String] = {
     Mixins.addConfiguration("dimensional_layers.mixins.proxy.json")
     Mixins.addConfiguration("dimensional_layers.mixins.gui.json")
+    Mixins.addConfiguration("dimensional_layers.mixins.compat_events.json")
+    Mixins.addConfiguration("dimensional_layers.mixins.sync_preset.json")
+    if (Launch.blackboard.get("fml.deobfuscatedEnvironment").asInstanceOf[Boolean])
+      Mixins.addConfiguration("dimensional_layers.mixins.fixbukkitcrash.json")
 
     Array("hohserg.dimensional.layers.asm.BaseWorldServerTransformer")
   }

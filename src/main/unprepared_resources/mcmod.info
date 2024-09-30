@@ -13,6 +13,8 @@
     "credits": "Thanks @Foreck for magnificent arts!\nThanks my friends @Katze, @virox, @Liahim for early feedback!",
     "logoFile": "logo.png",
     "screenshots": [],
-    "dependencies": []
+    "dependencies": [
+      "cubicchunks"
+    ]
   }
 ]

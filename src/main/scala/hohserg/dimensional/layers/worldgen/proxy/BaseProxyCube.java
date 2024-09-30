@@ -8,7 +8,7 @@ import net.minecraft.world.chunk.Chunk;
 
 public interface BaseProxyCube extends ICube {
 
-    ProxyWorld proxyWorld();
+    World proxyWorld();
 
     @Override
     default <T extends World & ICubicWorld> T getWorld() {

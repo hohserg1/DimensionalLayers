@@ -1,6 +1,6 @@
 package hohserg.dimensional.layers.worldgen.proxy.mixin;
 
-import hohserg.dimensional.layers.worldgen.proxy.ProxyWorld;
+import hohserg.dimensional.layers.worldgen.proxy.server.ProxyWorldServer;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
@@ -28,7 +28,7 @@ public class TemplateMixin {
     private void injected(World worldIn, BlockPos pos, ITemplateProcessor templateProcessor, PlacementSettings placementIn, int flags,
                           CallbackInfo ci,
                           Block block, StructureBoundingBox structureboundingbox, Iterator var8, Template.BlockInfo template$blockinfo, BlockPos blockpos, Template.BlockInfo template$blockinfo1, Block block1, IBlockState iblockstate, IBlockState iblockstate1, TileEntity tileentity2) {
-        if (worldIn instanceof ProxyWorld)
-            tileentity2.setPos(((ProxyWorld) worldIn).layer().shift(tileentity2.getPos()));
+        if (worldIn instanceof ProxyWorldServer)
+            tileentity2.setPos(((ProxyWorldServer) worldIn).bounds().shift(tileentity2.getPos()));
     }
 }
