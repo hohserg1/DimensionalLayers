@@ -42,3 +42,5 @@ hs_err_pid*
 /src/main/resources/assets/itemtransformhelper/
 libs_at/aether_at.cfg
 libs_at/orbis-lib_at.cfg
+libs_at/thebetweenlands_at.cfg
+libs_at/mist_at.cfg
