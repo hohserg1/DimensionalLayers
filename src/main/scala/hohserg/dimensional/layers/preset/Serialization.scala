@@ -8,6 +8,7 @@ import net.minecraft.util.ResourceLocation
 import net.minecraft.world.biome.Biome
 import net.minecraft.world.{DimensionType, WorldType}
 import net.minecraftforge.fml.common.registry.ForgeRegistries
+import org.apache.commons.lang3.ClassUtils
 
 import java.lang.reflect.{ParameterizedType, Type}
 import scala.collection.JavaConverters._
@@ -205,7 +206,13 @@ object Serialization {
     }
     val typeConstructor = currentMirror.runtimeClass(tt)
 
-    val innerTypes = t.typeArgs.map(parameterizedType).toArray
+    val innerTypes = t.typeArgs
+      .map(parameterizedType)
+      .map {
+        case cl: Class[_] if cl.isPrimitive => ClassUtils.primitiveToWrapper(cl)
+        case other => other
+      }
+      .toArray
 
     if (innerTypes.isEmpty)
       typeConstructor
