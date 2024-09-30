@@ -5,7 +5,7 @@ import net.minecraft.client.gui.GuiScreen
 
 import scala.collection.mutable.ListBuffer
 
-class GuiBaseSettings(parent: GuiScreen) extends GuiBase(parent) {
+class GuiBaseSettings(parent: GuiScreen) extends GuiBase(parent) with StateComposite {
   def done(): Unit = {
     back()
   }
@@ -22,11 +22,11 @@ class GuiBaseSettings(parent: GuiScreen) extends GuiBase(parent) {
     })
   }
 
-  private val state = new ListBuffer[ValueHolder[_]]
+  override val state = new ListBuffer[ValueHolder[_]]
 
   def hasChanges: Boolean = state.exists(_.hasChanges)
 
-  private def onStateChanged(): Unit = {
+  override def onStateChanged(): Unit = {
     doneButton.enabled = hasChanges
   }
 
@@ -34,7 +34,7 @@ class GuiBaseSettings(parent: GuiScreen) extends GuiBase(parent) {
 
 object GuiBaseSettings {
 
-  class ValueHolder[A](init: A, validate: A => A = (v: A) => v)(implicit gui: GuiBaseSettings) {
+  class ValueHolder[A](init: A, validate: A => A = (v: A) => v)(implicit gui: StateComposite) {
     private var value: A = init
     private[GuiBaseSettings] var hasChanges = false
 

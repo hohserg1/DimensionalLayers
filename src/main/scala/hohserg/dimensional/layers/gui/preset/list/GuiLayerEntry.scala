@@ -25,13 +25,13 @@ object GuiLayerEntry {
   val texture = new ResourceLocation(Main.modid, "textures/gui/layer_entry.png")
 
   val moveUp = DrawableArea(
-    RelativeCoord.alignLeft(IconUtils.width + 4), RelativeCoord.alignTop(4),
-    RelativeCoord.alignLeft(IconUtils.width + 4 + 26), RelativeCoord.alignTop(4 + 16),
+    RelativeCoord.alignLeft(IconUtils.width + 11), RelativeCoord.alignTop(4),
+    RelativeCoord.alignLeft(IconUtils.width + 11 + 26), RelativeCoord.alignTop(4 + 16),
     new Rectangle(2, 2, 26, 16)
   )
   val moveDown = DrawableArea(
-    RelativeCoord.alignLeft(IconUtils.width + 4), RelativeCoord.alignBottom(-4 - 16),
-    RelativeCoord.alignLeft(IconUtils.width + 4 + 26), RelativeCoord.alignBottom(-4),
+    RelativeCoord.alignLeft(IconUtils.width + 11), RelativeCoord.alignBottom(-4 - 16),
+    RelativeCoord.alignLeft(IconUtils.width + 11 + 26), RelativeCoord.alignBottom(-4),
     new Rectangle(2, 20, 26, 16)
   )
   val remove = DrawableArea(
@@ -43,7 +43,14 @@ object GuiLayerEntry {
   val background = DrawableArea(
     RelativeCoord.alignLeft(0), RelativeCoord.alignTop(0),
     RelativeCoord.alignRight(0), RelativeCoord.alignBottom(0),
-    new Rectangle(150, 0, 1, 1)
+    new Rectangle(0, 0, 1, 1)
+  )
+
+  val rulers = DrawableArea(
+    RelativeCoord.alignLeft(IconUtils.width + 2), RelativeCoord.alignTop(-3),
+    RelativeCoord.alignLeft(IconUtils.width + 2 + 7), RelativeCoord.alignBottom(2),
+    new Rectangle(150, 0, 7, 73),
+    sameHoveringUV = true
   )
 
   val settings = DrawableArea(
@@ -55,6 +62,7 @@ object GuiLayerEntry {
 }
 
 trait GuiLayerEntry extends DrawableArea.Container {
+
   implicit def self: DrawableArea.Container = this
 
   def parent: GuiLayersList
@@ -80,16 +88,15 @@ trait GuiLayerEntry extends DrawableArea.Container {
     this.mouseX = mouseX
     this.mouseY = mouseY
 
+    mc.getTextureManager.bindTexture(GuiLayerEntry.texture)
+
+    val tess = Tessellator.getInstance()
+    val buffer = tess.getBuffer
+    buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX)
+
+    rulers.draw(buffer)
+
     if (background.isHovering) {
-      mc.getTextureManager.bindTexture(GuiLayerEntry.texture)
-
-      val tess = Tessellator.getInstance()
-      val buffer = tess.getBuffer
-
-      buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX)
-
-      background.draw(buffer)
-
       if (isNotFirst(index))
         moveUp.draw(buffer)
 
@@ -98,9 +105,13 @@ trait GuiLayerEntry extends DrawableArea.Container {
 
       remove.draw(buffer)
       settings.draw(buffer)
-
-      tess.draw()
     }
+
+    tess.draw()
+
+    val endCubeY = parent.startCubeY.get + parent.entries.dropWhile(_ != this).map(_.layer.height).sum
+
+    mc.fontRenderer.drawStringWithShadow("" + endCubeY, minX + IconUtils.width + 11, minY - 6, 0xffffff)
   }
 
   def clicked(index: Int, mouseX: Int, mouseY: Int): Unit = {

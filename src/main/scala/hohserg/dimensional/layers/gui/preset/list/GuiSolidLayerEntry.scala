@@ -13,8 +13,8 @@ class GuiSolidLayerEntry(val parent: GuiLayersList, val layer: SolidLayerSpec) e
 
   override def drawEntry(index: Int, minX: Int, minY: Int, maxX: Int, maxY: Int, mouseX: Int, mouseY: Int): Unit = {
     super.drawEntry(index, minX, minY, maxX, maxY, mouseX, mouseY)
-    mc.fontRenderer.drawStringWithShadow(block.tooltip, minX + IconUtils.width + 4, minY + (maxY - minY) / 2 - 10, 0xffffff)
-    mc.fontRenderer.drawStringWithShadow("height: " + layer.height + " cubes", minX + IconUtils.width + 4, minY + (maxY - minY) / 2, 0xffffff)
+    mc.fontRenderer.drawStringWithShadow(block.tooltip, minX + IconUtils.width + 11, minY + (maxY - minY) / 2 - 10, 0xffffff)
+    mc.fontRenderer.drawStringWithShadow("height: " + layer.height + " cubes", minX + IconUtils.width + 11, minY + (maxY - minY) / 2, 0xffffff)
     RenderHelper.enableGUIStandardItemLighting()
     val centered = 64 / 2 - 32 / 2
     val x = minX + centered

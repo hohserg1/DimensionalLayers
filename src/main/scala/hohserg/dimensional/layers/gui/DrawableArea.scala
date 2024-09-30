@@ -44,6 +44,12 @@ object DrawableArea {
       new Rectangle(uv.x + uv.width + 2, uv.y, uv.width, uv.height)
     )
 
+  def apply(minX: RelativeCoord, minY: RelativeCoord, maxX: RelativeCoord, maxY: RelativeCoord, uv: Rectangle, sameHoveringUV: Boolean): DrawableArea =
+    if (sameHoveringUV)
+      DrawableArea(minX, minY, maxX, maxY, uv, uv)
+    else
+      DrawableArea(minX, minY, maxX, maxY, uv)
+
   def apply(minX: RelativeCoord, minY: RelativeCoord, maxX: RelativeCoord, maxY: RelativeCoord, uv: Rectangle, hoveringUV: Rectangle): DrawableArea =
     DrawableArea(
       minX, minY, maxX, maxY,

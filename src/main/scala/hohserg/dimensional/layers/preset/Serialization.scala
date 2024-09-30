@@ -24,7 +24,8 @@ object Serialization {
       .registerMapper[WorldType, String](_.getName, WorldType.byName)
       .registerSerializer(blockStateSerializer)
       .registerMapper[Biome, String](biome => biome.getRegistryName.toString, x => ForgeRegistries.BIOMES.getValue(new ResourceLocation(x)))
-      .registerMapper[DimensionalLayersPreset, java.util.List[LayerSpec]](_.layers.asJava, x => DimensionalLayersPreset(x.asScala.toList), hierarchic = false)
+      .registerMapper[List[LayerSpec], java.util.List[LayerSpec]](_.asJava, x => x.asScala.toList, hierarchic = false)
+      .registerTypeAdapter(classOf[DimensionalLayersPreset], new ProductSerializer(implicitly[TypeTag[DimensionalLayersPreset]].tpe.typeSymbol.asClass))
 
     val layerSpecSymbol = implicitly[TypeTag[LayerSpec]].tpe.typeSymbol.asClass
     val caseClasses = getAllSubCaseClasses(layerSpecSymbol)
@@ -41,7 +42,7 @@ object Serialization {
 
     val companionMirror = currentMirror.reflect(currentMirror.reflectModule(cl.companion.asModule).instance)
 
-    val applyMethod = companionType.member(TermName("apply")).asMethod
+    val applyMethod = companionType.member(TermName("apply")).asTerm.alternatives.head.asMethod
 
     val applyMirror = companionMirror.reflectMethod(applyMethod)
 

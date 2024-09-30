@@ -10,7 +10,7 @@ import net.minecraftforge.common.DimensionManager
 import scala.collection.JavaConverters._
 import scala.util.{Failure, Success, Try}
 
-case class DimensionalLayersPreset(layers: List[LayerSpec]) {
+case class DimensionalLayersPreset(layers: List[LayerSpec], startCubeY: Int = 0) { //-1073741824
   def toLayerMap(original: CCWorldServer): Map[Int, Layer] =
     toLayerMap(toLayerSeq(original), identity)
 
@@ -26,7 +26,7 @@ case class DimensionalLayersPreset(layers: List[LayerSpec]) {
 
   def toLayerSeq(original: CCWorld): Seq[(IntRange, Layer)] = {
     layers
-      .foldRight(List[(IntRange, Layer)]() -> 0) {
+      .foldRight(List[(IntRange, Layer)]() -> startCubeY) {
         case (spec, (acc, lastFreeCubic)) =>
           val layer: Layer = spec.toLayer(lastFreeCubic, original)
 
@@ -41,7 +41,7 @@ case class DimensionalLayersPreset(layers: List[LayerSpec]) {
 }
 
 object DimensionalLayersPreset {
-  def apply(settings: String): DimensionalLayersPreset =
+  def fromJson(settings: String): DimensionalLayersPreset =
     Try(settings)
       .filter(_.nonEmpty)
       .orElse(Try(Configuration.defaultPreset).filter(_.nonEmpty))

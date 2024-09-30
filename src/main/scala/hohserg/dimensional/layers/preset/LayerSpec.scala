@@ -17,6 +17,8 @@ import net.minecraft.world.chunk.IChunkProvider
 import net.minecraft.world.storage.WorldInfo
 
 sealed trait LayerSpec {
+  def height: Int
+
   def toLayer: (Int, this.type, CCWorld) => Layer
 
   def toLayer(startFromCubeY: Int, original: CCWorld): Layer = toLayer(startFromCubeY, this, original)
@@ -28,7 +30,7 @@ case class DimensionLayerSpec(dimensionType: DimensionType,
                               topOffset: Int = 0, bottomOffset: Int = 0,
                               worldType: WorldType = WorldType.DEFAULT, worldTypePreset: String = "") extends LayerSpec {
 
-  def height: Int = 16 - topOffset - bottomOffset
+  override val height: Int = 16 - topOffset - bottomOffset
 
   override val toLayer = VanillaDimensionLayer
 }
@@ -42,14 +44,22 @@ case class CubicWorldTypeLayerSpec(cubicWorldType: WorldType with ICubicWorldTyp
                                    seedOverride: Option[Long] = None
                                   ) extends LayerSpec {
 
-  def rangeCube(original: CCWorld): (Int, Int) = {
+  def rangeCube(originalWorld: CCWorld): (Int, Int) =
+    rangeCube(originalWorld.getWorldInfo.getGameType, originalWorld.getWorldInfo.isMapFeaturesEnabled)
+
+  def rangeCube(gameType: GameType, isMapFeaturesEnabled: Boolean): (Int, Int) = {
     val range1 = cubicWorldType.calculateGenerationHeightRange(
-      dummyWorld(this, original.getWorldInfo.getGameType, original.getWorldInfo.isMapFeaturesEnabled)
+      dummyWorld(this, gameType, isMapFeaturesEnabled)
     )
     Coords.blockToCube(range1.getMin) -> Coords.blockToCube(range1.getMax)
   }
 
   override val toLayer = CubicWorldTypeLayer
+
+  override val height: Int = {
+    val (virtualStartCubeY, virtualEndCubeY) = rangeCube(GameType.SURVIVAL, isMapFeaturesEnabled = true)
+    virtualEndCubeY - virtualStartCubeY + 1
+  }
 }
 
 object CubicWorldTypeLayerSpec {

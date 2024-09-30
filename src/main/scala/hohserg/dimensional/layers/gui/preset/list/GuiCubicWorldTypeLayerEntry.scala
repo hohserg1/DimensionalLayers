@@ -12,7 +12,7 @@ class GuiCubicWorldTypeLayerEntry(val parent: GuiLayersList, val layer: CubicWor
     drawLogo(layer.cubicWorldType, minX, minY)
     drawLogo(layer.dimensionType1, minX + 32, minY + 32, 32)
 
-    mc.fontRenderer.drawStringWithShadow(layer.cubicWorldType.getName, minX + width + 4, minY + (maxY - minY) / 2 + 4, 0xffffff)
+    mc.fontRenderer.drawStringWithShadow(layer.cubicWorldType.getName, minX + width + 11, minY + (maxY - minY) / 2 + 4, 0xffffff)
   }
 
   override def guiSettings(index: Int, parent: GuiSetupDimensionalLayersPreset): GuiBase = new cubic.worldtype.GuiSettingsLayer(parent, layer, index)

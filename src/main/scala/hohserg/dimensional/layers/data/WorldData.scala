@@ -8,7 +8,7 @@ import net.minecraft.entity.Entity
 
 
 class WorldData(val original: CCWorld) {
-  val preset = DimensionalLayersPreset(original.getWorldInfo.getGeneratorOptions)
+  val preset = DimensionalLayersPreset.fromJson(original.getWorldInfo.getGeneratorOptions)
 
   val layerAtCubeY: Map[Int, Layer] = preset.toLayerMap(preset.toLayerSeq(original), identity)
 

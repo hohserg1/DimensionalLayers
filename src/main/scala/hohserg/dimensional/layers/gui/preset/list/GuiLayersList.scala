@@ -1,17 +1,30 @@
 package hohserg.dimensional.layers.gui.preset.list
 
+import hohserg.dimensional.layers.clamp
+import hohserg.dimensional.layers.gui.GuiBaseSettings.ValueHolder
 import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
-import hohserg.dimensional.layers.gui.{GuiScrollingListElement, IconUtils}
+import hohserg.dimensional.layers.gui.{GuiScrollingListElement, IconUtils, StateComposite}
 import hohserg.dimensional.layers.preset._
 import net.minecraft.client.renderer.Tessellator
 
 import scala.collection.mutable
+import scala.collection.mutable.ListBuffer
 
 class GuiLayersList(val parent: GuiSetupDimensionalLayersPreset, settings: String, scrollDistance: Float)
   extends GuiScrollingListElement(10, 10, parent.width - 200, parent.height - 20, IconUtils.width + 4) {
 
+  private val fromPreset: DimensionalLayersPreset = DimensionalLayersPreset.fromJson(settings)
+
+  val startCubeY: ValueHolder[Int] = new ValueHolder[Int](fromPreset.startCubeY, clamp(_, -1875000, 1875000))(new StateComposite {
+    override val state = new ListBuffer[ValueHolder[_]]
+
+    override def onStateChanged(): Unit = ()
+  })
+
+  val startCubeYField = new GuiStartCubeYField(10 + IconUtils.width + 11, 10 + parent.height - 30, startCubeY)(parent)
+
   val entries: mutable.Buffer[GuiLayerEntry] =
-    DimensionalLayersPreset(settings).layers
+    fromPreset.layers
       .map(GuiLayerEntry(this, _))
       .toBuffer
 
@@ -29,7 +42,7 @@ class GuiLayersList(val parent: GuiSetupDimensionalLayersPreset, settings: Strin
     setScrollDistanceWithLimits(accessor.getScrollDistance + this.slotHeight)
   }
 
-  def toSettings: String = DimensionalLayersPreset(entries.map(_.layer).toList).toSettings
+  def toSettings: String = DimensionalLayersPreset(entries.map(_.layer).toList, startCubeY.get).toSettings
 
   override def getSize: Int = entries.size
 
@@ -44,6 +57,18 @@ class GuiLayersList(val parent: GuiSetupDimensionalLayersPreset, settings: Strin
     if (entries.indices contains index)
       entries(index).clicked(index, mouseX, mouseY)
   }
+
+  override def drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float): Unit = {
+    super.drawScreen(mouseX, mouseY, partialTicks)
+
+    val baseY = top + 4 - accessor.getScrollDistance.toInt
+    startCubeYField.y = baseY + entries.size * this.slotHeight - 11
+    startCubeYField.drawTextBox()
+  }
+
+  override def mouseClick: Option[(Int, Int, Int) => Unit] = startCubeYField.mouseClick
+
+  override def keyTyped: Option[(Char, Int) => Unit] = startCubeYField.keyTyped
 
   override def isSelected(index: Int): Boolean = false
 

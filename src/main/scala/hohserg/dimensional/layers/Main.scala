@@ -10,6 +10,7 @@ import hohserg.dimensional.layers.worldgen.proxy.client.BaseWorldClient
 import hohserg.dimensional.layers.worldgen.proxy.server.BaseWorldServer
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiCreateWorld
+import net.minecraft.client.resources.I18n
 import net.minecraft.world.DimensionType
 import net.minecraftforge.client.event.GuiOpenEvent
 import net.minecraftforge.client.event.GuiScreenEvent.ActionPerformedEvent
@@ -20,6 +21,8 @@ import net.minecraftforge.fml.common.event.{FMLPostInitializationEvent, FMLPreIn
 import net.minecraftforge.fml.common.eventhandler.{EventPriority, SubscribeEvent}
 import net.minecraftforge.fml.common.{Mod, SidedProxy}
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
+
+import java.util.Random
 
 @Mod(modid = Main.modid, name = Main.name, modLanguage = "scala")
 @EventBusSubscriber
@@ -53,13 +56,20 @@ object Main {
 
   @SideOnly(Side.CLIENT)
   @SubscribeEvent(priority = EventPriority.LOWEST)
-  def onGuiCreateWorld(event: ActionPerformedEvent): Unit =
+  def onGuiCreateWorld(event: ActionPerformedEvent.Pre): Unit =
     if (Configuration.worldTypeByDefault)
       event.getGui match {
         case guiCreateWorld: GuiCreateWorld =>
-          if (guiCreateWorld.worldSeed.isEmpty)
-            if (event.getButton == guiCreateWorld.btnMoreOptions)
+          if (guiCreateWorld.worldSeed.isEmpty) {
+            if (event.getButton.displayString == I18n.format("selectWorld.moreWorldOptions") ||
+              event.getButton.displayString == I18n.format("selectWorld.create")) {
               guiCreateWorld.selectedIndex = DimensionalLayersWorldType.getId
+
+            } else if (event.getButton.displayString == I18n.format("gui.done")) {
+              guiCreateWorld.worldSeed = new Random().nextLong.toString
+              guiCreateWorld.worldSeedField.setText(guiCreateWorld.worldSeed);
+            }
+          }
 
         case _ =>
       }
@@ -87,7 +97,7 @@ object Main {
     val targetDimType = DimensionType.getById(target)
 
     if (DimensionalLayersWorldType.hasCubicGeneratorForWorld(entity.world)) {
-      val preset = DimensionalLayersPreset(entity.world.getWorldInfo.getGeneratorOptions)
+      val preset = DimensionalLayersPreset.fromJson(entity.world.getWorldInfo.getGeneratorOptions)
       preset.layers.find {
         case spec: DimensionLayerSpec if spec.dimensionType == targetDimType =>
           true
