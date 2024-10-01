@@ -1,21 +1,15 @@
 package hohserg.dimensional.layers
 
 import hohserg.dimensional.layers.compatibility.event.CompatEventsHandler
-import hohserg.dimensional.layers.data.{LayerManagerClient, LayerManagerServer}
 import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
 import hohserg.dimensional.layers.gui.settings.GuiFakeCreateWorld
-import hohserg.dimensional.layers.preset.{CubicWorldTypeLayerSpec, DimensionLayerSpec, DimensionalLayersPreset, Serialization}
+import hohserg.dimensional.layers.preset.{DimensionalLayersPreset, Serialization}
 import hohserg.dimensional.layers.sided.CommonLogic
-import hohserg.dimensional.layers.worldgen.proxy.client.BaseWorldClient
-import hohserg.dimensional.layers.worldgen.proxy.server.BaseWorldServer
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiCreateWorld
 import net.minecraft.client.resources.I18n
-import net.minecraft.world.DimensionType
 import net.minecraftforge.client.event.GuiOpenEvent
 import net.minecraftforge.client.event.GuiScreenEvent.ActionPerformedEvent
-import net.minecraftforge.event.entity.EntityTravelToDimensionEvent
-import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.Mod.{EventBusSubscriber, EventHandler}
 import net.minecraftforge.fml.common.event.{FMLPostInitializationEvent, FMLPreInitializationEvent, FMLServerStoppedEvent}
 import net.minecraftforge.fml.common.eventhandler.{EventPriority, SubscribeEvent}
@@ -84,41 +78,5 @@ object Main {
   @EventHandler
   def serverStopped(e: FMLServerStoppedEvent): Unit = {
     println("serverStopped")
-  }
-
-  @SubscribeEvent
-  def changeLayerInsteadOfDimension(e: EntityTravelToDimensionEvent): Unit = {
-    if (true)
-      return
-
-    val entity = e.getEntity
-    val current = entity.dimension
-    val target = e.getDimension
-    val targetDimType = DimensionType.getById(target)
-
-    if (DimensionalLayersWorldType.hasCubicGeneratorForWorld(entity.world)) {
-      val preset = DimensionalLayersPreset.fromJson(entity.world.getWorldInfo.getGeneratorOptions)
-      preset.layers.find {
-        case spec: DimensionLayerSpec if spec.dimensionType == targetDimType =>
-          true
-        case spec: CubicWorldTypeLayerSpec if spec.dimensionType1 == targetDimType =>
-          true
-        case _ =>
-          false
-      } foreach { layer =>
-
-      }
-    }
-  }
-
-  @SubscribeEvent
-  def unloadWorld(e: WorldEvent.Unload): Unit = {
-    e.getWorld match {
-      case _: BaseWorldServer => println("wtf: unloadWorld BaseWorldServer", e)
-      case _: BaseWorldClient => println("wtf: unloadWorld BaseWorldServer", e)
-
-      case w: CCWorldClient => LayerManagerClient.unload(w)
-      case w: CCWorldServer => LayerManagerServer.unload(w)
-    }
   }
 }
