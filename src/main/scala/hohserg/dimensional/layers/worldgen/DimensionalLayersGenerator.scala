@@ -55,7 +55,7 @@ class DimensionalLayersGenerator(original: CCWorldServer) extends ICubeGenerator
   }
 
   private def recursiveGeneration(cubeX: Int, cubeY: Int, cubeZ: Int, layer: Layer): Unit = {
-    for (y <- (layer.bounds.realStartCubeY + layer.bounds.cubeHeight - 1) to layer.bounds.realStartCubeY by -1)
+    for (y <- layer.bounds.realEndCubeY to layer.bounds.realStartCubeY by -1)
       if (y != cubeY)
         original.asInstanceOf[ICubicWorld].getCubeFromCubeCoords(cubeX, y, cubeZ)
   }
