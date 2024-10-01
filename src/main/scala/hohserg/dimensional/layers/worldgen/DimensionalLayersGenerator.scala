@@ -1,6 +1,7 @@
 package hohserg.dimensional.layers.worldgen
 
 import com.google.common.collect.ImmutableList
+import com.google.common.util.concurrent.UncheckedExecutionException
 import hohserg.dimensional.layers.data.LayerManagerServer
 import hohserg.dimensional.layers.data.layer.base.Layer
 import hohserg.dimensional.layers.{CCWorldServer, Main}
@@ -32,6 +33,9 @@ class DimensionalLayersGenerator(original: CCWorldServer) extends ICubeGenerator
       WorldgenHangWatchdog.startWorldGen()
       Some(generator(cubeX, cubeY, cubeZ, target))
     } catch {
+      case e: UncheckedExecutionException =>
+        Main.sided.printError("Generation issue in cache:", e.getCause)
+        None
       case e: Throwable =>
         Main.sided.printError("Generation issue:", e)
         None
