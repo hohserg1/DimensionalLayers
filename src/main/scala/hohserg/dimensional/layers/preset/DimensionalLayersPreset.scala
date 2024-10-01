@@ -48,7 +48,7 @@ object DimensionalLayersPreset {
       .map(Serialization.gson.fromJson(_, classOf[DimensionalLayersPreset]))
     match {
       case Failure(exception) =>
-        handleError(exception)
+        handleError(settings, exception)
         mixedPreset
       case Success(value) =>
         value
@@ -63,7 +63,7 @@ object DimensionalLayersPreset {
         :+ SolidLayerSpec(Blocks.BEDROCK.getDefaultState, 1)
     )
 
-  private def handleError(exception: Throwable): Unit = {
+  private def handleError(preset: String, exception: Throwable): Unit = {
     (exception match {
       case ingore: NoSuchElementException =>
         None
@@ -72,7 +72,7 @@ object DimensionalLayersPreset {
       case unexpected: Throwable =>
         Some("Error while parsing json. Plz report to author")
     }).foreach { humanReadable =>
-      Main.sided.printError(humanReadable, exception)
+      Main.sided.printError(humanReadable, preset, exception)
     }
   }
 }

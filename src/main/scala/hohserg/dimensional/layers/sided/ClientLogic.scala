@@ -6,8 +6,8 @@ import net.minecraft.util.text.TextComponentString
 
 class ClientLogic extends CommonLogic {
 
-  override def printError(msg: String, e: Throwable): Unit = {
-    super.printError(msg, e)
+  override def printError(msg: String, context: String, e: Throwable): Unit = {
+    super.printError(msg, context, e)
     showErrorMsgClient(e, msg)
   }
 

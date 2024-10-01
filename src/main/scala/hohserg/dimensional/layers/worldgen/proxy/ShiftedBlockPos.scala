@@ -68,6 +68,7 @@ class ShiftedBlockPos(private val x: Int,
     if (shifted.layerBounds != layerBounds)
       Main.sided.printError(
         "wtf, attempt to " + operationName + " different layers shifted poses: " + this + ", " + shifted,
+        "Context(currentBounds=" + layerBounds + ", otherBounds=" + shifted.layerBounds + ")",
         new IllegalArgumentException("shifted pos from another layer")
       )
   }

@@ -132,7 +132,7 @@ trait ProxyWorldCommon {
   override def getBiome(pos: BlockPos): Biome = {
     val r = original.getBiome(layer.bounds.shift(pos).clamp)
     if (r == null)
-      Main.sided.printError("bruh biome null", new NullPointerException(""))
+      Main.sided.printError("bruh biome null", "Context(seed=" + original.getSeed + "layer=" + layer.spec + ")", new NullPointerException(""))
     r
   }
 

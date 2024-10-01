@@ -34,10 +34,10 @@ class DimensionalLayersGenerator(original: CCWorldServer) extends ICubeGenerator
       Some(generator(cubeX, cubeY, cubeZ, target))
     } catch {
       case e: UncheckedExecutionException =>
-        Main.sided.printError("Generation issue in cache:", e.getCause)
+        Main.sided.printGenerationError("Generation issue in cache:", original.getSeed, original.getWorldInfo.getGeneratorOptions, e.getCause)
         None
       case e: Throwable =>
-        Main.sided.printError("Generation issue:", e)
+        Main.sided.printGenerationError("Generation issue:", original.getSeed, original.getWorldInfo.getGeneratorOptions, e)
         None
     } finally {
       WorldgenHangWatchdog.endWorldGen()

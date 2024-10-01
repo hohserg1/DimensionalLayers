@@ -8,8 +8,13 @@ class CommonLogic {
     print("INFO", msg)
   }
 
-  def printError(msg: String, e: Throwable): Unit = {
-    print("ERROR", msg)
+  def printGenerationError(msg: String, contextSeed: Long, contextPreset: String, e: Throwable): Unit = {
+    printError(msg, "Context(seed=" + contextSeed + ", preset=" + contextPreset + ")", e)
+  }
+
+  def printError(msg: String, context: String, e: Throwable): Unit = {
+    print("ERROR" + (if (e.getStackTrace.nonEmpty) "][useful" else ""), msg)
+    print("ERROR", context)
     e.printStackTrace()
   }
 

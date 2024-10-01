@@ -55,7 +55,7 @@ object GuiSelectCompatibleDimension {
 
     } catch {
       case e: Throwable =>
-        Main.sided.printError("failed to filter dimension types for cubic world type: " + worldType.getName, e)
+        Main.sided.printError("failed to filter dimension types for cubic world type: ", worldType.getName, e)
         allDimensions
 
     } finally {
