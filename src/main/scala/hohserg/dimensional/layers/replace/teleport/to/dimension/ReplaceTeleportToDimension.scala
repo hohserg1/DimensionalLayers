@@ -4,7 +4,8 @@ import hohserg.dimensional.layers.CCWorldServer
 import hohserg.dimensional.layers.data.LayerManagerServer
 import hohserg.dimensional.layers.data.layer.base.DimensionalLayer
 import net.minecraft.entity.player.EntityPlayerMP
-import net.minecraft.util.math.MathHelper
+import net.minecraft.init.Blocks
+import net.minecraft.util.math.{BlockPos, MathHelper}
 import net.minecraftforge.event.entity.EntityTravelToDimensionEvent
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -40,13 +41,19 @@ object ReplaceTeleportToDimension {
             val fineY = nearestTargetLayer.generator.proxyWorld.getHeight(newX.toInt, newZ.toInt) + 2
             val newY = if (fineY == 0) midY else fineY + nearestTargetLayer.bounds.realStartBlockY
 
+            val underNewPos = new BlockPos(newX, newY - 1, newZ)
+            if (world.isAirBlock(underNewPos))
+              world.setBlockState(underNewPos, Blocks.GLASS.getDefaultState)
 
-            entity match {
-              case player: EntityPlayerMP =>
-                player.connection.setPlayerLocation(newX, newY, newZ, 90, 0)
-              case _ =>
-                entity.setLocationAndAngles(newX, newY, newZ, 90, 0)
-            }
+            def setLocation(x: Double, y: Double, z: Double): Unit =
+              entity match {
+                case player: EntityPlayerMP =>
+                  player.connection.setPlayerLocation(x, y, z, 90, 0)
+                case _ =>
+                  entity.setLocationAndAngles(x, y, z, 90, 0)
+              }
+
+            setLocation(newX + 0.5, newY, newZ + 0.5)
             //val teleporter = entity.asInstanceOf[ILastUsedTeleporter].getLastUsedTeleporter
             //teleporter.placeEntity(world, entity, entity.rotationYaw)
           }
