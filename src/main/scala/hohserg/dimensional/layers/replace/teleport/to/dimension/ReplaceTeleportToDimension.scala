@@ -34,11 +34,11 @@ object ReplaceTeleportToDimension {
             val targetMovementFactor: Double = movementFactorOfLayer(nearestTargetLayer)
 
             val moveFactor = currentMovementFactor / targetMovementFactor
-            val newX = clampCoord(entity.posX * moveFactor, world)
-            val newZ = clampCoord(entity.posZ * moveFactor, world)
+            val newX = clampCoord(entity.posX * moveFactor, world).toInt >> 2 << 2
+            val newZ = clampCoord(entity.posZ * moveFactor, world).toInt >> 2 << 2
 
             val midY = nearestTargetLayer.bounds.realStartBlockY + (nearestTargetLayer.bounds.realEndBlockY - nearestTargetLayer.bounds.realStartBlockY) / 2
-            val fineY = nearestTargetLayer.generator.proxyWorld.getHeight(newX.toInt, newZ.toInt) + 2
+            val fineY = nearestTargetLayer.generator.proxyWorld.getHeight(newX, newZ)
             val newY = if (fineY == 0) midY else fineY + nearestTargetLayer.bounds.realStartBlockY
 
             val underNewPos = new BlockPos(newX, newY - 1, newZ)
