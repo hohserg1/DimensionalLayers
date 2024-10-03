@@ -3,6 +3,7 @@ package hohserg.dimensional.layers.preset
 import com.google.gson.JsonParseException
 import hohserg.dimensional.layers.data.LayerMap
 import hohserg.dimensional.layers.data.layer.base.Layer
+import hohserg.dimensional.layers.preset.DimensionalLayersPreset.IllegalPresetException
 import hohserg.dimensional.layers.{CCWorld, Configuration, Main}
 import io.github.opencubicchunks.cubicchunks.api.util.IntRange
 import net.minecraft.init.{Biomes, Blocks}
@@ -13,6 +14,10 @@ import scala.collection.JavaConverters._
 import scala.util.{Failure, Success, Try}
 
 case class DimensionalLayersPreset(layers: List[LayerSpec], startCubeY: Int = 0) {
+
+  if (layers.isEmpty)
+    throw new IllegalPresetException("no layers available in preset, need to add at least one")
+
   def toLayerSeq(original: CCWorld): Seq[(IntRange, Layer)] = {
     layers
       .foldRight(List[(IntRange, Layer)]() -> startCubeY) {
@@ -63,6 +68,8 @@ object DimensionalLayersPreset {
     (exception match {
       case ingore: NoSuchElementException =>
         None
+      case badPreset: IllegalPresetException =>
+        Some("Malformed preset:")
       case badJson: JsonParseException =>
         Some("Malformed json:")
       case unexpected: Throwable =>
@@ -71,4 +78,6 @@ object DimensionalLayersPreset {
       Main.sided.printError(humanReadable, preset, exception)
     }
   }
+
+  class IllegalPresetException(msg: String) extends IllegalArgumentException(msg)
 }
