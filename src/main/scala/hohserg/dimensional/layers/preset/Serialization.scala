@@ -26,7 +26,7 @@ object Serialization {
       .registerSerializer(blockStateSerializer)
       .registerMapper[Biome, String](biome => biome.getRegistryName.toString, x => ForgeRegistries.BIOMES.getValue(new ResourceLocation(x)))
       .registerMapper[List[LayerSpec], java.util.List[LayerSpec]](_.asJava, x => x.asScala.toList, hierarchic = false)
-      .registerTypeAdapter(classOf[DimensionalLayersPreset], new ProductSerializer(implicitly[TypeTag[DimensionalLayersPreset]].tpe.typeSymbol.asClass))
+      .registerSerializer(presetSerializer, hierarchic = false)
 
     val layerSpecSymbol = implicitly[TypeTag[LayerSpec]].tpe.typeSymbol.asClass
     val caseClasses = getAllSubCaseClasses(layerSpecSymbol)
@@ -37,6 +37,27 @@ object Serialization {
 
     builder.create()
   }
+
+  def presetSerializer: JsonSerializer[DimensionalLayersPreset] with JsonDeserializer[DimensionalLayersPreset] =
+    new JsonSerializer[DimensionalLayersPreset] with JsonDeserializer[DimensionalLayersPreset] {
+      override def serialize(src: DimensionalLayersPreset, typeOfSrc: Type, context: JsonSerializationContext): JsonElement = {
+        val r = new JsonObject
+        val overworldLayer = new JsonObject
+        overworldLayer.add("layers", context.serialize(src.layers))
+        overworldLayer.addProperty("startCubeY", src.startCubeY)
+        r.add("0", overworldLayer)
+        r
+      }
+
+      override def deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): DimensionalLayersPreset = {
+        val o = json.getAsJsonObject
+        val overworldLayer = o.getAsJsonObject("0")
+        DimensionalLayersPreset(
+          context.deserialize(overworldLayer.getAsJsonArray("layers"), parameterizedType(implicitly[TypeTag[List[LayerSpec]]].tpe)),
+          overworldLayer.get("startCubeY").getAsInt
+        )
+      }
+    }
 
   class ProductSerializer(cl: ClassSymbol) extends JsonSerializer[Product] with JsonDeserializer[Product] {
     val companionType = cl.companion.asModule.typeSignature
