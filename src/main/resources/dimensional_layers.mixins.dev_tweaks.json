@@ -1,6 +1,6 @@
 {
   "required": true,
-  "package": "hohserg.dimensional.layers.asm.fix.bukkit.crash.mixins",
+  "package": "hohserg.dimensional.layers.asm.dev.tweaks",
   "refmap": "dimensional_layers.mixins.refmap.json",
   "compatibilityLevel": "JAVA_8",
   "minVersion": "0.7.10",
@@ -11,6 +11,7 @@
     "conformVisibility": true
   },
   "mixins": [
-    "NetworkRegistryMixin"
+    "CompatHandlerMixin",
+    "FixBukkitCrashMixin"
   ]
 }

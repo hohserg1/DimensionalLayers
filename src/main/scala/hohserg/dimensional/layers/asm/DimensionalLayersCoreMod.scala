@@ -17,7 +17,7 @@ class DimensionalLayersCoreMod extends IFMLLoadingPlugin {
     Mixins.addConfiguration("dimensional_layers.mixins.sync_preset.json")
     Mixins.addConfiguration("dimensional_layers.mixins.catch_teleporter.json")
     if (Launch.blackboard.get("fml.deobfuscatedEnvironment").asInstanceOf[Boolean])
-      Mixins.addConfiguration("dimensional_layers.mixins.fixbukkitcrash.json")
+      Mixins.addConfiguration("dimensional_layers.mixins.dev_tweaks.json")
 
     Array("hohserg.dimensional.layers.asm.BaseWorldServerTransformer")
   }

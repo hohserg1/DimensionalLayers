@@ -1,4 +1,4 @@
-package hohserg.dimensional.layers.asm.fix.bukkit.crash.mixins;
+package hohserg.dimensional.layers.asm.dev.tweaks;
 
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.relauncher.Side;
@@ -7,7 +7,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(NetworkRegistry.class)
-public class NetworkRegistryMixin {
+public class FixBukkitCrashMixin {
 
     @Redirect(
             method = "newChannel(Lnet/minecraftforge/fml/common/ModContainer;Ljava/lang/String;[Lio/netty/channel/ChannelHandler;)Ljava/util/EnumMap;",
