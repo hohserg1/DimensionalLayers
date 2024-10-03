@@ -1,10 +1,12 @@
 package hohserg.dimensional.layers.preset
 
 import com.google.gson.JsonParseException
+import hohserg.dimensional.layers.data.LayerMap
 import hohserg.dimensional.layers.data.layer.base.Layer
-import hohserg.dimensional.layers.{CCWorld, CCWorldServer, Configuration, Main}
+import hohserg.dimensional.layers.{CCWorld, Configuration, Main}
 import io.github.opencubicchunks.cubicchunks.api.util.IntRange
-import net.minecraft.init.Blocks
+import net.minecraft.init.{Biomes, Blocks}
+import net.minecraft.world.DimensionType
 import net.minecraftforge.common.DimensionManager
 
 import scala.collection.JavaConverters._
@@ -41,13 +43,20 @@ object DimensionalLayersPreset {
         value
     }
 
+  def isNotVanillaDim(dimensionType: DimensionType): Boolean =
+    dimensionType != DimensionType.OVERWORLD && dimensionType != DimensionType.NETHER && dimensionType != DimensionType.THE_END
+
+
   lazy val mixedPresetTop: List[DimensionLayerSpec] =
-    DimensionManager.getRegisteredDimensions.keySet().asScala.map(DimensionLayerSpec(_)).toList
+    DimensionManager.getRegisteredDimensions.keySet().asScala.filter(isNotVanillaDim).map(DimensionLayerSpec(_)).toList
 
   def mixedPreset =
     DimensionalLayersPreset(
-      scala.util.Random.shuffle(mixedPresetTop)
-        :+ SolidLayerSpec(Blocks.BEDROCK.getDefaultState, 1)
+      scala.util.Random.shuffle(mixedPresetTop) ++
+        List(DimensionLayerSpec(DimensionType.THE_END), DimensionLayerSpec(DimensionType.OVERWORLD), DimensionLayerSpec(DimensionType.NETHER, topOffset = 8))
+        :+ SolidLayerSpec(Blocks.NETHERRACK.getDefaultState, 0 - LayerMap.minCubeY - 1, Biomes.HELL)
+        :+ SolidLayerSpec(Blocks.BEDROCK.getDefaultState, 1),
+      startCubeY = LayerMap.minCubeY
     )
 
   private def handleError(preset: String, exception: Throwable): Unit = {
