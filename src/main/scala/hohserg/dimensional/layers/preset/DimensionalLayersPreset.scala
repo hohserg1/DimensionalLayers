@@ -10,20 +10,7 @@ import net.minecraftforge.common.DimensionManager
 import scala.collection.JavaConverters._
 import scala.util.{Failure, Success, Try}
 
-case class DimensionalLayersPreset(layers: List[LayerSpec], startCubeY: Int = 0) { //-1073741824
-  def toLayerMap(original: CCWorldServer): Map[Int, Layer] =
-    toLayerMap(toLayerSeq(original), identity)
-
-  def toLayerMap[LayerEntry](seq: Seq[(IntRange, Layer)], mapper: Layer => LayerEntry): Map[Int, LayerEntry] =
-    seq
-      .map { case (range, layer) => range -> mapper(layer) }
-      .toMap
-      .flatMap { case (range, layer) =>
-        for (i <- range.getMin to range.getMax)
-          yield i -> layer
-      }
-
-
+case class DimensionalLayersPreset(layers: List[LayerSpec], startCubeY: Int = 0) {
   def toLayerSeq(original: CCWorld): Seq[(IntRange, Layer)] = {
     layers
       .foldRight(List[(IntRange, Layer)]() -> startCubeY) {
