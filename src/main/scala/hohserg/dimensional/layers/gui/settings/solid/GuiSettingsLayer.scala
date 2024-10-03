@@ -1,5 +1,6 @@
 package hohserg.dimensional.layers.gui.settings.solid
 
+import hohserg.dimensional.layers.data.LayerMap
 import hohserg.dimensional.layers.gui.GuiBaseSettings.ValueHolder
 import hohserg.dimensional.layers.gui.GuiTileList.SelectHandler
 import hohserg.dimensional.layers.gui.RelativeCoord.{alignBottom, alignLeft, alignTop}
@@ -31,7 +32,7 @@ class GuiSettingsLayer(parent: GuiSetupDimensionalLayersPreset, layer: SolidLaye
     val heightField = addElement(new GuiNumericField(
       x = rightPaneMinX + fontRenderer.getStringWidth("height:") + 3,
       y = doneButton.y + doneButton.height + 10,
-      maxLen = 2,
+      maxLen = LayerMap.maxCubeY.toString.length,
       value = heightH,
       fromString = _.toInt
     ))

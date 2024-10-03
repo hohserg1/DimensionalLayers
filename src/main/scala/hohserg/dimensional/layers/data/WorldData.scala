@@ -12,7 +12,7 @@ class WorldData(val original: CCWorld) {
 
   private val seq: Seq[(IntRange, Layer)] = preset.toLayerSeq(original)
 
-  val layerAtCubeY: Map[Int, Layer] = preset.toLayerMap(seq, identity)
+  val layerAtCubeY: LayerMap = LayerMap(seq)
 
   val dimensionRelatedLayers: Map[Int, Seq[DimensionalLayer]] = seq.map(_._2).collect { case l: DimensionalLayer => l }.groupBy(_.dimensionType.getId)
 

@@ -1,5 +1,6 @@
 package hohserg.dimensional.layers
 
+import hohserg.dimensional.layers.data.layer.base.Layer
 import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
 import hohserg.dimensional.layers.preset.DimensionalLayersPreset
 import hohserg.dimensional.layers.worldgen.DimensionalLayersGenerator
@@ -22,10 +23,10 @@ object DimensionalLayersWorldType extends WorldType("dimlayers") with ICubicWorl
   }
 
   override def calculateGenerationHeightRange(worldServer: WorldServer): IntRange = {
-    val layers = DimensionalLayersPreset.fromJson(worldServer.getWorldInfo.getGeneratorOptions).toLayerMap(worldServer.asInstanceOf[CCWorldServer])
+    val layers: Seq[(IntRange, Layer)] = DimensionalLayersPreset.fromJson(worldServer.getWorldInfo.getGeneratorOptions).toLayerSeq(worldServer.asInstanceOf[CCWorldServer])
     IntRange.of(
-      layers.keys.min * 16,
-      layers.keys.max * 16 + 16
+      layers.minBy(_._1.getMin)._1.getMin * 16,
+      layers.maxBy(_._1.getMax)._1.getMax * 16 + 16
     )
   }
 

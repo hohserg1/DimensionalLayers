@@ -22,7 +22,7 @@ import scala.collection.mutable
 class DimensionalLayersGenerator(original: CCWorldServer) extends ICubeGenerator {
   val worldData = LayerManagerServer.getWorldData(original).getOrElse(throw new IllegalArgumentException("not a layered world: " + original))
   val preset = worldData.preset
-  val layerAtCubeY: Map[Int, Layer] = worldData.layerAtCubeY
+  val layerAtCubeY = worldData.layerAtCubeY
 
   val optimizationHack: mutable.Map[Layer, Boolean] = new ju.IdentityHashMap[Layer, Boolean]().asScala.withDefaultValue(false)
 

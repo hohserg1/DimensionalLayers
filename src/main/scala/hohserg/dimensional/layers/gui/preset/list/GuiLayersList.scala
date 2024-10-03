@@ -1,6 +1,7 @@
 package hohserg.dimensional.layers.gui.preset.list
 
 import hohserg.dimensional.layers.clamp
+import hohserg.dimensional.layers.data.LayerMap
 import hohserg.dimensional.layers.gui.GuiBaseSettings.ValueHolder
 import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
 import hohserg.dimensional.layers.gui.{GuiScrollingListElement, IconUtils, StateComposite}
@@ -15,7 +16,7 @@ class GuiLayersList(val parent: GuiSetupDimensionalLayersPreset, settings: Strin
 
   private val fromPreset: DimensionalLayersPreset = DimensionalLayersPreset.fromJson(settings)
 
-  val startCubeY: ValueHolder[Int] = new ValueHolder[Int](fromPreset.startCubeY, clamp(_, -1875000, 1875000))(new StateComposite {
+  val startCubeY: ValueHolder[Int] = new ValueHolder[Int](fromPreset.startCubeY, clamp(_, LayerMap.minCubeY, LayerMap.maxCubeY))(new StateComposite {
     override val state = new ListBuffer[ValueHolder[_]]
 
     override def onStateChanged(): Unit = ()
