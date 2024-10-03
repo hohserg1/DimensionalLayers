@@ -56,6 +56,8 @@ class GuiOffsetField(gridTop: Int, value: ValueHolder[Int], topPair: GuiOffsetFi
         gridTop + (16 - value.get) * gridCellSize - 3
   }
 
+  updateVisual(value.get)
+
   override def drawTextBox(): Unit = {
     GlStateManager.color(1, 1, 1, 1)
     Minecraft.getMinecraft.getTextureManager.bindTexture(texture)
