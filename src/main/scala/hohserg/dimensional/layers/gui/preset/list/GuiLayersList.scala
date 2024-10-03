@@ -10,6 +10,7 @@ import net.minecraft.client.renderer.Tessellator
 
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
+import scala.util.Try
 
 class GuiLayersList(val parent: GuiSetupDimensionalLayersPreset, settings: String, scrollDistance: Float)
   extends GuiScrollingListElement(10, 10, parent.width - 200, parent.height - 20, IconUtils.width + 4) {
@@ -43,7 +44,8 @@ class GuiLayersList(val parent: GuiSetupDimensionalLayersPreset, settings: Strin
     setScrollDistanceWithLimits(accessor.getScrollDistance + this.slotHeight)
   }
 
-  def toSettings: String = DimensionalLayersPreset(entries.map(_.layer).toList, startCubeY.get).toSettings
+  def toSettings: String = Try(DimensionalLayersPreset(entries.map(_.layer).toList, startCubeY.get).toSettings).getOrElse("")
+
 
   override def getSize: Int = entries.size
 
