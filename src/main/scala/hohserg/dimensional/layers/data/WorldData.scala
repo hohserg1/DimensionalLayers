@@ -14,7 +14,9 @@ class WorldData(val original: CCWorld) {
 
   val layerAtCubeY: LayerMap = LayerMap(seq)
 
-  val dimensionRelatedLayers: Map[Int, Seq[DimensionalLayer]] = seq.map(_._2).collect { case l: DimensionalLayer => l }.groupBy(_.dimensionType.getId)
+  type DimensionId = Int
+
+  val dimensionRelatedLayers: Map[DimensionId, Seq[DimensionalLayer]] = seq.map(_._2).collect { case l: DimensionalLayer => l }.groupBy(_.dimensionType.getId)
 
   def getLayerOf(entity: Entity): Option[Layer] = {
     val y = Coords.blockToCube((entity.posY + 0.5).toInt)
