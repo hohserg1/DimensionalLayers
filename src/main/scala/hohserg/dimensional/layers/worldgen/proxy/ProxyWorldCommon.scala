@@ -55,9 +55,9 @@ trait ProxyWorldCommon {
   override def getCubeFromBlockCoords(pos: BlockPos): ICube =
     proxyChunkProvider.getCube(Coords.blockToCube(pos.getX), Coords.blockToCube(pos.getY), Coords.blockToCube(pos.getZ))
 
-  override def getMinHeight: Int = math.min(0, layer.bounds.virtualStartBlockY)
+  override def getMinHeight: Int = 0
 
-  override def getMaxHeight: Int = layer.bounds.virtualEndBlockY + 1
+  override def getMaxHeight: Int = 256
 
   override def isOutsideBuildHeight(pos: BlockPos): Boolean = {
     pos match {
