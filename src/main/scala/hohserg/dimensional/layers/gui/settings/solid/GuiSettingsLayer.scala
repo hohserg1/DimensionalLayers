@@ -21,7 +21,7 @@ class GuiSettingsLayer(parent: GuiSetupDimensionalLayersPreset, layer: SolidLaye
 
   val fillerH = new ValueHolder[IBlockState](layer.filler)
   val biomeH = new ValueHolder[Biome](layer.biome)
-  val heightH = new ValueHolder[Int](layer.height)
+  val heightH = new ValueHolder[Int](layer.height, math.max(_, 1))
 
   override def buildLayerSpec(): LayerSpec = SolidLayerSpec(fillerH.get, heightH.get, biomeH.get)
 
