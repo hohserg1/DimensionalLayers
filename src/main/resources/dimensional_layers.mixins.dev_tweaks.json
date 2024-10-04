@@ -12,6 +12,8 @@
   },
   "mixins": [
     "CompatHandlerMixin",
-    "FixBukkitCrashMixin"
+    "FixBukkitCrashMixin",
+    "GeographicraftAccessorFix",
+    "GeographicraftAccessorFloatFix"
   ]
 }
