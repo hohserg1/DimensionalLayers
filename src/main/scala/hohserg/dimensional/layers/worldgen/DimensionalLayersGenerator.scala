@@ -26,11 +26,14 @@ class DimensionalLayersGenerator(original: CCWorldServer) extends ICubeGenerator
 
   val optimizationHack: mutable.Map[Layer, Boolean] = new ju.IdentityHashMap[Layer, Boolean]().asScala.withDefaultValue(false)
 
+  final val watchdogEnabled = false
+
   private def generateWithWatchdog[BlockStateAcceptor, Result](generator: (Int, Int, Int, BlockStateAcceptor) => Result,
                                                                cubeX: Int, cubeY: Int, cubeZ: Int,
                                                                target: BlockStateAcceptor): Option[Result] = {
     try {
-      WorldgenHangWatchdog.startWorldGen()
+      if (watchdogEnabled)
+        WorldgenHangWatchdog.startWorldGen()
       Some(generator(cubeX, cubeY, cubeZ, target))
     } catch {
       case e: UncheckedExecutionException =>
@@ -40,7 +43,8 @@ class DimensionalLayersGenerator(original: CCWorldServer) extends ICubeGenerator
         Main.sided.printGenerationError("Generation issue:", original.getSeed, original.getWorldInfo.getGeneratorOptions, e)
         None
     } finally {
-      WorldgenHangWatchdog.endWorldGen()
+      if (watchdogEnabled)
+        WorldgenHangWatchdog.endWorldGen()
     }
   }
 
