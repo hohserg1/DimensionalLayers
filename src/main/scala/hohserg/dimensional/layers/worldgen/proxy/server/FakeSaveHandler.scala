@@ -43,7 +43,19 @@ class FakeSaveHandler(val loadWorldInfo: WorldInfo) extends ISaveHandler {
     r
   }
 
-  override def getMapFileFromName(mapName: String): File = ???
+  lazy val mapDataDir: File = {
+    val r = new File(getWorldDirectory, "data")
+    r.mkdirs()
+    r
+  }
+
+  override def getMapFileFromName(mapName: String): File =
+    mapName match {
+      case "idcounts" => null
+      case _ =>
+        println("wtf, getMapFileFromName", mapName)
+        new File(mapDataDir, mapName + ".dat")
+    }
 
   val templateManager: TemplateManager = new TemplateManager(new File(new File(".", "world"), "structures").toString, DataFixesManager.createFixer())
 

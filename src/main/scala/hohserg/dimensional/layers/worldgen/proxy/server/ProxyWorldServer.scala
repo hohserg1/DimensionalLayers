@@ -16,6 +16,7 @@ import net.minecraft.world._
 import net.minecraft.world.biome.Biome
 import net.minecraft.world.storage.WorldInfo
 
+import java.io.File
 import java.util
 
 object ProxyWorldServer {
@@ -71,6 +72,8 @@ class ProxyWorldServer private(val original: CCWorldServer, val layer: Dimension
 
   initCapabilities()
 
+  mapStorage = new FakeMapStorage(saveHandler)
+
   override def getCubeCache: ICubeProviderServer = proxyChunkProvider
 
   override def getSpawnListEntryForTypeAt(creatureType: EnumCreatureType, pos: BlockPos): Biome.SpawnListEntry = {
@@ -97,4 +100,10 @@ class ProxyWorldServer private(val original: CCWorldServer, val layer: Dimension
 
   def isCallingFromMinecraftThread: Boolean =
     false
+
+  override lazy val getChunkSaveLocation: File = {
+    val r = new File(saveHandler.getWorldDirectory, "region")
+    r.mkdirs()
+    r
+  }
 }
