@@ -10,6 +10,7 @@ import io.github.opencubicchunks.cubicchunks.api.world.ICubeProviderServer
 import io.github.opencubicchunks.cubicchunks.api.worldgen.ICubeGenerator
 import net.minecraft.entity.EnumCreatureType
 import net.minecraft.profiler.Profiler
+import net.minecraft.server.MinecraftServer
 import net.minecraft.util.WeightedRandom
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world._
@@ -106,4 +107,6 @@ class ProxyWorldServer private(val original: CCWorldServer, val layer: Dimension
     r.mkdirs()
     r
   }
+
+  override def getMinecraftServer: MinecraftServer = original.getMinecraftServer
 }
