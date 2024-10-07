@@ -40,6 +40,7 @@ minecraft {
             'libs_at/mist_at.cfg',
             'libs_at/thebetweenlands_at.cfg',
             'libs_at/rtg_at.cfg',
+            'libs_at/openterraingenerator_at.cfg',
             'libs_at/resourcereloader_at.cfg'
     )
 
@@ -71,35 +72,41 @@ repositories {
 }
 
 dependencies {
+
     minecraft 'net.minecraftforge:forge:1.12.2-14.23.5.2860'
 
     compileOnly 'abc:CubicChunks-1.12.2:0.0.1270.0-SNAPSHOT:dev-all'
     compileOnly 'abc:CubicWorldGen-1.12.2:0.0.180.0-SNAPSHOT:dev'
     compileOnly fg.deobf('abc:malisiscore-1.12.2:6.5.1')
 
-    implementation 'abc:DivineRPG:1.7.1'
+    //implementation 'abc:DivineRPG:1.7.1'
 
     //implementation fg.deobf('abc:aether_ii-1.12.2:0.3.0')
     //implementation fg.deobf('abc:orbis-lib-1.12.2:0.2.0')
 
     //implementation fg.deobf('abc:RTG-1.12.2:6.1.0.0')
 
-    implementation 'abc:AbyssalCraft:1.12.2-1.10.4'
+    //implementation 'abc:AbyssalCraft:1.12.2-1.10.4'
 
     //implementation fg.deobf('abc:backrooms-ultimate-edition-1.12.1-1.12.2:0.1.7:hotfix')
 
-    implementation fg.deobf('abc:DimensionalControl-1.12.2:2.13.0')
-    implementation fg.deobf('abc:BNBGamingLib-1.12.2:2.17.6')
-    implementation fg.deobf('abc:BNBGamingCore-1.12.2:0.12.0')
+    //implementation fg.deobf('abc:DimensionalControl-1.12.2:2.13.0')
+    //implementation fg.deobf('abc:BNBGamingLib-1.12.2:2.17.6')
+    //implementation fg.deobf('abc:BNBGamingCore-1.12.2:0.12.0')
 
     //implementation fg.deobf("abc:TheBetweenlands:3.9.6:universal")
     //compileOnly fg.deobf("abc:TheBetweenlands:3.9.6:core")
 
     //implementation fg.deobf("abc:MistyWorld-1.12.2:1.2.5.3")
 
-    implementation fg.deobf("abc:DefaultWorldGenerator-port-1.12:2.3")
+    //implementation fg.deobf("abc:DefaultWorldGenerator-port-1.12:2.3")
 
-    implementation fg.deobf("abc:DynamicTrees-1.12.2:0.9.29")
+    //implementation fg.deobf("abc:DynamicTrees-1.12.2:0.9.29")
+
+    compileOnly fg.deobf("abc:Geographicraft-1.12.2:0.9.8.5")
+
+    implementation fg.deobf("abc:OpenTerrainGenerator:1.12.2-v9.5-R2")
+    implementation fg.deobf("abc:OTG:Core")
 
 }
 
