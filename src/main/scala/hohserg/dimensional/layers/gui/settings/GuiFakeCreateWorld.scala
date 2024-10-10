@@ -3,6 +3,8 @@ package hohserg.dimensional.layers.gui.settings
 import hohserg.dimensional.layers.gui.GuiBaseSettings.ValueHolder
 import net.minecraft.client.gui.GuiCreateWorld
 import net.minecraftforge.client.event.GuiOpenEvent
+import net.minecraftforge.fml.common.Mod.EventBusSubscriber
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 @SideOnly(Side.CLIENT)
@@ -11,7 +13,11 @@ class GuiFakeCreateWorld(val parent: GuiBaseSettingsLayer {val worldTypePresetH:
 }
 
 @SideOnly(Side.CLIENT)
-object GuiFakeCreateWorld {
+@EventBusSubscriber(Array(Side.CLIENT))
+object GuiFakeCreateWorldSupport {
+
+  @SideOnly(Side.CLIENT)
+  @SubscribeEvent
   def replaceGuiByParent(e: GuiOpenEvent): Unit = {
     e.getGui match {
       case gui: GuiFakeCreateWorld =>
