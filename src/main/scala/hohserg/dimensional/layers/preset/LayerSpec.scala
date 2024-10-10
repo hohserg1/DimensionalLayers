@@ -3,6 +3,7 @@ package hohserg.dimensional.layers.preset
 import hohserg.dimensional.layers.CCWorld
 import hohserg.dimensional.layers.data.layer.base.Layer
 import hohserg.dimensional.layers.data.layer.cubic_world_type.CubicWorldTypeLayer
+import hohserg.dimensional.layers.data.layer.otg.OpenTerrainGeneratorLayer
 import hohserg.dimensional.layers.data.layer.solid.SolidLayer
 import hohserg.dimensional.layers.data.layer.vanilla_dimension.VanillaDimensionLayer
 import hohserg.dimensional.layers.preset.CubicWorldTypeLayerSpec.dummyWorld
@@ -85,4 +86,10 @@ object CubicWorldTypeLayerSpec {
       override def isChunkLoaded(x: Int, z: Int, allowEmpty: Boolean): Boolean = ???
     }.asInstanceOf[WorldServer]
   }
+}
+
+case class OpenTerrainGeneratorLayerSpec(presetName: String, seedOverride: Option[Long] = None) extends LayerSpec {
+  override def height: Int = 16
+
+  override val toLayer = OpenTerrainGeneratorLayer
 }

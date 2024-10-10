@@ -26,6 +26,7 @@ object GuiSettingsLayer {
       .filter(_ != null)
       .filter(_.canBeCreated)
       .filter(!_.isInstanceOf[ICubicWorldType])
+      .filter(_.getName != "OTG")
 
   class CyclicValueHolder[A](init: A, possible: Seq[A])(implicit gui: GuiBaseSettings)
     extends ValueHolder[Int](possible.indexOf(init), _ % possible.size) {

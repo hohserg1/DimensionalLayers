@@ -6,6 +6,7 @@ import net.minecraft.world.{World, WorldServer}
 
 import java.util.function.{BiFunction, Consumer}
 import scala.language.implicitConversions
+import scala.util.{Failure, Success, Try}
 
 package object layers {
 
@@ -34,6 +35,15 @@ package object layers {
     val n = implicitly[Numeric[N]]
     import n._
     minV max v min maxV
+  }
+
+  implicit class RichOption[A](val x: Option[A]) extends AnyVal {
+    def mapNull[B](f: A => B): Option[B] =
+      x.flatMap(i => Option(f(i)))
+
+    def toTry(msg: String): Try[A] =
+      x.map(Success(_))
+        .getOrElse(Failure(new NoSuchElementException(msg)))
   }
 
 }

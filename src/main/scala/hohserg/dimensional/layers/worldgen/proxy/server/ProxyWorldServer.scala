@@ -1,9 +1,11 @@
 package hohserg.dimensional.layers.worldgen.proxy.server
 
 import com.google.common.util.concurrent.ListenableFuture
+import com.pg85.otg.forge.OTGPlugin
 import hohserg.dimensional.layers.CCWorldServer
 import hohserg.dimensional.layers.data.layer.base.{DimensionalLayer, Generator}
 import hohserg.dimensional.layers.data.layer.cubic_world_type.{CubicWorldTypeGenerator, CubicWorldTypeLayer}
+import hohserg.dimensional.layers.data.layer.otg.{OpenTerrainGeneratorGenerator, OpenTerrainGeneratorLayer}
 import hohserg.dimensional.layers.data.layer.vanilla_dimension.VanillaDimensionLayer
 import hohserg.dimensional.layers.worldgen.proxy.{ProxyWorldCommon, ShiftedBlockPos}
 import io.github.opencubicchunks.cubicchunks.api.world.ICubeProviderServer
@@ -39,6 +41,15 @@ object ProxyWorldServer {
     )
   }
 
+  def apply(original: CCWorldServer, layer: OpenTerrainGeneratorLayer, generator: OpenTerrainGeneratorGenerator): ProxyWorldServer = {
+    new ProxyWorldServer(
+      original,
+      layer,
+      generator,
+      createLayerWorldInfo(original, layer.spec.seedOverride, OTGPlugin.OtgWorldType, "OpenTerrainGenerator")
+    )
+  }
+
   def createLayerWorldInfo(original: World, seedOverride: Option[Long], worldType: WorldType, worldTypePreset: String): WorldInfo = {
     val originalWorldInfo = original.getWorldInfo
     val actualWorldInfo = new WorldInfo(originalWorldInfo)
@@ -58,7 +69,7 @@ object ProxyWorldServer {
 
 class ProxyWorldServer private(val original: CCWorldServer, val layer: DimensionalLayer, generator: Generator, actualWorldInfo: WorldInfo)
   extends BaseWorldServer(
-    new FakeSaveHandler(actualWorldInfo),
+    new FakeSaveHandler(original, layer, actualWorldInfo),
     actualWorldInfo,
     layer.dimensionType.createDimension(),
     new Profiler

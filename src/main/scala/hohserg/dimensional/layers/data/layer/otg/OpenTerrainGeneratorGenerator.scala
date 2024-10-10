@@ -1,14 +1,14 @@
-package hohserg.dimensional.layers.data.layer.vanilla_dimension
+package hohserg.dimensional.layers.data.layer.otg
 
 import com.google.common.cache.{CacheBuilder, CacheLoader, LoadingCache}
 import hohserg.dimensional.layers.data.layer.base.{BiomeGeneratorHelper, DimensionalGenerator}
 import hohserg.dimensional.layers.worldgen.proxy.server.ProxyWorldServer
 import hohserg.dimensional.layers.{CCWorldServer, Main}
-import io.github.opencubicchunks.cubicchunks.api.util.Coords
 import io.github.opencubicchunks.cubicchunks.api.world.ICube
 import io.github.opencubicchunks.cubicchunks.api.worldgen.CubePrimer
 import io.github.opencubicchunks.cubicchunks.core.asm.mixin.core.common.IGameRegistry
 import net.minecraft.entity.EnumCreatureType
+import net.minecraft.init.Biomes
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.WorldProvider
 import net.minecraft.world.biome.Biome
@@ -20,11 +20,12 @@ import java.util.Random
 import java.util.concurrent.TimeUnit
 import scala.collection.JavaConverters._
 
-class VanillaDimensionGenerator(original: CCWorldServer, val layer: VanillaDimensionLayer) extends DimensionalGenerator with BiomeGeneratorHelper {
-  override type L = VanillaDimensionLayer
+class OpenTerrainGeneratorGenerator(original: CCWorldServer, val layer: OpenTerrainGeneratorLayer) extends DimensionalGenerator with BiomeGeneratorHelper {
+  override type L = OpenTerrainGeneratorLayer
   override type BiomeContext = Array[Biome]
 
   override val proxyWorld = ProxyWorldServer(original, layer, this)
+
   private val provider: WorldProvider = proxyWorld.provider
   val vanillaGenerator: IChunkGenerator = provider.createChunkGenerator()
   var biomes: Array[Biome] = _
@@ -41,13 +42,10 @@ class VanillaDimensionGenerator(original: CCWorldServer, val layer: VanillaDimen
         }
       })
 
-  override def needGenerateTotalColumn: Boolean = true
-
   override def generateCube(cubeX: Int, cubeY: Int, cubeZ: Int, primer: CubePrimer): CubePrimer = {
     val chunk = lastChunks.get(cubeX -> cubeZ)
 
-    //took from io.github.opencubicchunks.cubicchunks.core.asm.mixin.core.common.MixinChunk_Cubes#init_getStorage
-    val index = ((cubeY - bounds.realStartCubeY + spec.bottomOffset) & 15) - Coords.blockToCube(proxyWorld.getMinHeight)
+    val index = (cubeY - bounds.realStartCubeY) & 15
 
     val storage = chunk.getBlockStorageArray()(index)
     if (storage != null && !storage.isEmpty) {
@@ -59,7 +57,13 @@ class VanillaDimensionGenerator(original: CCWorldServer, val layer: VanillaDimen
       } primer.setBlockState(x, y, z, block)
     }
 
-    biomes = proxyWorld.getBiomeProvider.getBiomes(biomes, Coords.cubeToMinBlock(cubeX), Coords.cubeToMinBlock(cubeZ), 16, 16)
+
+    if (biomes == null)
+      biomes = new Array[Biome](16 * 16)
+    val rawBiomes = chunk.getBiomeArray
+    for (i <- rawBiomes.indices) {
+      biomes(i) = Biome.getBiome(rawBiomes(i), Biomes.DEFAULT);
+    }
     generateBiomes(primer, biomes)
 
     primer

@@ -26,7 +26,7 @@ class DimensionalLayersGenerator(original: CCWorldServer) extends ICubeGenerator
 
   val optimizationHack: mutable.Map[Layer, Boolean] = new ju.IdentityHashMap[Layer, Boolean]().asScala.withDefaultValue(false)
 
-  final val watchdogEnabled = true
+  final val watchdogEnabled = false
 
   private def generateWithWatchdog[BlockStateAcceptor, Result](generator: (Int, Int, Int, BlockStateAcceptor) => Result,
                                                                cubeX: Int, cubeY: Int, cubeZ: Int,

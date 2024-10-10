@@ -1,5 +1,6 @@
 package hohserg.dimensional.layers.worldgen.proxy
 
+import com.pg85.otg.util.helpers.ReflectionHelper
 import hohserg.dimensional.layers.data.layer.base.DimensionalLayer
 import hohserg.dimensional.layers.{CCWorld, Main}
 import io.github.opencubicchunks.cubicchunks.api.util.Coords
@@ -13,7 +14,7 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.world.biome.Biome
 import net.minecraft.world.chunk.{Chunk, IChunkProvider}
 import net.minecraft.world.storage.loot.LootTableManager
-import net.minecraft.world.{World, WorldLens}
+import net.minecraft.world.{DimensionType, World, WorldLens}
 
 import scala.collection.mutable
 
@@ -33,6 +34,9 @@ trait ProxyWorldCommon {
   override def createChunkProvider(): IChunkProvider = proxyChunkProvider
 
   def initWorld(): Unit = {
+    if (provider.getClass.getName == "com.pg85.otg.forge.dimensions.OTGWorldProvider") {
+      ReflectionHelper.setValueInFieldOfType(provider, classOf[DimensionType], layer.dimensionType)
+    }
     provider.setWorld(this)
     provider.setDimension(layer.dimensionType.getId)
 
