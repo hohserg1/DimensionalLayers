@@ -5,8 +5,10 @@ import hohserg.dimensional.layers.gui.GuiTileList.{GuiTileLine, SelectHandler, s
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.Tessellator
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 
+@SideOnly(Side.CLIENT)
 object GuiTileList {
 
   trait SelectHandler[A <: Drawable] {
@@ -80,6 +82,7 @@ object GuiTileList {
   def slotWidth(itemWidth: Int): Int = itemWidth + border * 2
 }
 
+@SideOnly(Side.CLIENT)
 class GuiTileList[A <: Drawable](val parent: GuiScreen with SelectHandler[A],
                                  x: Int, y: Int,
                                  availableWidth: Int, height: Int,

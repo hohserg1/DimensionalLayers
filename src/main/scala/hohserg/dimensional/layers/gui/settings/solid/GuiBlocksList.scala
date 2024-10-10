@@ -9,10 +9,12 @@ import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.init.{Blocks, Items}
 import net.minecraft.item.{Item, ItemStack}
 import net.minecraftforge.fml.common.registry.ForgeRegistries
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 import scala.collection.JavaConverters._
 
 
+@SideOnly(Side.CLIENT)
 object GuiBlocksList {
   val itemWidth = 18
   lazy val allBlocks: Seq[DrawableBlock] =
@@ -35,6 +37,7 @@ object GuiBlocksList {
   }
 }
 
+@SideOnly(Side.CLIENT)
 class GuiBlocksList(parent: GuiSettingsLayer, availableWidth: Int) extends GuiTileList(parent, 10, 10, parent.height - 20, availableWidth, itemWidth, blockLinesByLen)() {
   override def drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float): Unit = {
     RenderHelper.enableGUIStandardItemLighting()

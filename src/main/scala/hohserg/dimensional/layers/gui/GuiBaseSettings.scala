@@ -2,9 +2,11 @@ package hohserg.dimensional.layers.gui
 
 import hohserg.dimensional.layers.gui.GuiBaseSettings.ValueHolder
 import net.minecraft.client.gui.GuiScreen
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 import scala.collection.mutable.ListBuffer
 
+@SideOnly(Side.CLIENT)
 class GuiBaseSettings(parent: GuiScreen) extends GuiBase(parent) with StateComposite {
   def done(): Unit = {
     back()
@@ -32,6 +34,7 @@ class GuiBaseSettings(parent: GuiScreen) extends GuiBase(parent) with StateCompo
 
 }
 
+@SideOnly(Side.CLIENT)
 object GuiBaseSettings {
 
   class ValueHolder[A](init: A, validate: A => A = (v: A) => v)(implicit gui: StateComposite) {

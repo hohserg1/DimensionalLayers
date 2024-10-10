@@ -12,10 +12,12 @@ import it.unimi.dsi.fastutil.ints.{Int2ObjectLinkedOpenHashMap, Int2ObjectMap, I
 import net.minecraft.world.{DimensionType, WorldServer, WorldType}
 import net.minecraftforge.common.DimensionManager
 import net.minecraftforge.common.util.EnumHelper
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
 
+@SideOnly(Side.CLIENT)
 class GuiSelectCompatibleDimension(parent: GuiSettingsLayer)
   extends GuiSelectDimension(parent, dimLinesByLenByCubicWorldType.get(parent.layer.cubicWorldType)) {
 
@@ -25,6 +27,7 @@ class GuiSelectCompatibleDimension(parent: GuiSettingsLayer)
   }
 }
 
+@SideOnly(Side.CLIENT)
 object GuiSelectCompatibleDimension {
   val dimLinesByLenByCubicWorldType: LoadingCache[WorldType with ICubicWorldType, LoadingCache[Integer, Seq[GuiTileList.GuiTileLine[DrawableDim]]]] =
     CacheBuilder.newBuilder()

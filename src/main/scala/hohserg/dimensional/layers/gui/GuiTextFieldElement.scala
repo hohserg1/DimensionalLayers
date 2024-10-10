@@ -3,9 +3,11 @@ package hohserg.dimensional.layers.gui
 import com.google.common.base.Predicate
 import hohserg.dimensional.layers.gui.GuiBaseSettings.ValueHolder
 import net.minecraft.client.gui.GuiTextField
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 import scala.util.Try
 
+@SideOnly(Side.CLIENT)
 class GuiTextFieldElement[A](x: Int, y: Int, w: Int, h: Int, value: ValueHolder[A], fromString: String => A)
                             (implicit gui: GuiBase)
   extends GuiTextField(gui.nextElementId(), gui.fr, x, y, w, h)

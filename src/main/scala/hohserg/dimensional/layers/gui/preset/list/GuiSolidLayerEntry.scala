@@ -6,7 +6,9 @@ import hohserg.dimensional.layers.gui.settings.solid.GuiBlocksList.DrawableBlock
 import hohserg.dimensional.layers.gui.{GuiBase, IconUtils}
 import hohserg.dimensional.layers.preset.SolidLayerSpec
 import net.minecraft.client.renderer.{GlStateManager, RenderHelper}
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
+@SideOnly(Side.CLIENT)
 class GuiSolidLayerEntry(val parent: GuiLayersList, val layer: SolidLayerSpec) extends GuiLayerEntry {
 
   val block = DrawableBlock(layer.filler.getBlock)

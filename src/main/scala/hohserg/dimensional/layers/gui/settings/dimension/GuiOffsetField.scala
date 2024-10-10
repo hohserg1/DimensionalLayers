@@ -6,14 +6,12 @@ import hohserg.dimensional.layers.gui.{DrawableArea, GuiBase, GuiNumericField}
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.client.renderer.{GlStateManager, Tessellator}
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import org.lwjgl.opengl.GL11
 
 import java.awt.Rectangle
 
-object GuiOffsetField {
-
-}
-
+@SideOnly(Side.CLIENT)
 class GuiOffsetField(gridTop: Int, value: ValueHolder[Int], topPair: GuiOffsetField)
                     (implicit gui: GuiBase)
   extends GuiNumericField[Int](gridLeft + 19, 0, 2, value, _.toInt, gui.fr.FONT_HEIGHT)

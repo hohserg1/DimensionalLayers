@@ -1,5 +1,8 @@
 package hohserg.dimensional.layers.gui
 
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
+
+@SideOnly(Side.CLIENT)
 trait GuiElement {
   def draw: Option[(Int, Int, Float) => Unit] = None
 

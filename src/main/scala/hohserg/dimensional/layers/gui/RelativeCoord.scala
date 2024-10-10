@@ -1,11 +1,15 @@
 package hohserg.dimensional.layers.gui
 
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
+
 import scala.language.implicitConversions
 
+@SideOnly(Side.CLIENT)
 trait RelativeCoord {
   def absoluteCoord(minX: Int, minY: Int, maxX: Int, maxY: Int): Int
 }
 
+@SideOnly(Side.CLIENT)
 object RelativeCoord {
 
   def alignLeft(offset: Int): RelativeCoord =
