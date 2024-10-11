@@ -12,7 +12,9 @@
   },
   "mixins": [
     "AddFieldToPacket",
-    "HandleFieldOfPacket",
     "SetFieldOfPacket"
+  ],
+  "client": [
+    "HandleFieldOfPacket"
   ]
 }
