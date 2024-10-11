@@ -23,7 +23,9 @@ public class TemplateMixin {
     @Inject(
             method = "addBlocksToWorld(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/world/gen/structure/template/ITemplateProcessor;Lnet/minecraft/world/gen/structure/template/PlacementSettings;I)V",
             at = @At(value = "INVOKE", shift = At.Shift.AFTER, target = "Lnet/minecraft/tileentity/TileEntity;readFromNBT(Lnet/minecraft/nbt/NBTTagCompound;)V"),
-            locals = LocalCapture.CAPTURE_FAILHARD
+            locals = LocalCapture.CAPTURE_FAILHARD,
+            require = 1,
+            allow = 1
     )
     private void injected(World worldIn, BlockPos pos, ITemplateProcessor templateProcessor, PlacementSettings placementIn, int flags,
                           CallbackInfo ci,

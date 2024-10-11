@@ -18,7 +18,9 @@ public class HandleFieldOfPacket {
     @Inject(
             method = "handleJoinGame",
             at = @At("RETURN"),
-            locals = LocalCapture.CAPTURE_FAILHARD
+            locals = LocalCapture.CAPTURE_FAILHARD,
+            require = 1,
+            allow = 1
     )
     public void handleJoinGame(SPacketJoinGame packetIn, CallbackInfo ci) {
         WorldInfo worldInfo = Minecraft.getMinecraft().world.getWorldInfo();

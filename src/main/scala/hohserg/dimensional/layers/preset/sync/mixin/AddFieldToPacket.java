@@ -15,7 +15,9 @@ public class AddFieldToPacket implements AdditionalPacketData {
 
     @Inject(
             method = "writePacketData",
-            at = @At("RETURN")
+            at = @At("RETURN"),
+            require = 1,
+            allow = 1
     )
     public void writePacketData(PacketBuffer buf, CallbackInfo ci) {
         buf.writeString(generatorOptions);
@@ -23,7 +25,8 @@ public class AddFieldToPacket implements AdditionalPacketData {
 
     @Inject(
             method = "readPacketData",
-            at = @At("RETURN")
+            at = @At("RETURN"),
+            require = 1
     )
     public void readPacketData(PacketBuffer buf, CallbackInfo ci) {
         generatorOptions = buf.readString(32767);
