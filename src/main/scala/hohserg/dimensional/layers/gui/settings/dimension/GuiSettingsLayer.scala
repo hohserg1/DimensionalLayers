@@ -13,9 +13,11 @@ import io.github.opencubicchunks.cubicchunks.api.world.ICubicWorldType
 import net.minecraft.client.resources.I18n
 import net.minecraft.util.ResourceLocation
 import net.minecraft.world.WorldType
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 import scala.util.Try
 
+@SideOnly(Side.CLIENT)
 object GuiSettingsLayer {
   val texture = new ResourceLocation(Main.modid, "textures/gui/dimension_settings.png")
   val gridCellSize = 13
@@ -41,6 +43,7 @@ object GuiSettingsLayer {
 
 }
 
+@SideOnly(Side.CLIENT)
 class GuiSettingsLayer(parent: GuiSetupDimensionalLayersPreset, index: Int, layer: DimensionLayerSpec) extends GuiBaseSettingsLayer(parent, index) {
   val seedOverrideH = new ValueHolder[String](layer.seedOverride.map(_.toString).getOrElse(""))
   val topOffset: ValueHolder[Int] = new ValueHolder[Int](layer.topOffset, clamp(_, 0, 15 - bottomOffset.get))

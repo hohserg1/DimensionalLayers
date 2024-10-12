@@ -8,8 +8,10 @@ import hohserg.dimensional.layers.preset.CubicWorldTypeLayerSpec
 import io.github.opencubicchunks.cubicchunks.api.world.ICubicWorldType
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.world.WorldType
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 
+@SideOnly(Side.CLIENT)
 object GuiAddLayer {
   lazy val possibleWorldTypes =
     WorldType.WORLD_TYPES
@@ -20,6 +22,7 @@ object GuiAddLayer {
       .filter(_ != DimensionalLayersWorldType)
 }
 
+@SideOnly(Side.CLIENT)
 class GuiAddLayer(parent: GuiSetupDimensionalLayersPreset) extends GuiBase(parent) {
   override def initGui(): Unit = {
     super.initGui()

@@ -4,10 +4,12 @@ import com.google.gson.{GsonBuilder, JsonParser}
 import hohserg.dimensional.layers.gui.GuiBaseSettings.ValueHolder
 import hohserg.dimensional.layers.gui.{GuiBaseSettings, GuiClickableButton}
 import net.minecraft.client.gui.GuiScreen
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import org.lwjgl.input.Keyboard
 
 import scala.util.Try
 
+@SideOnly(Side.CLIENT)
 class GuiImportPreset(parent: GuiSetupDimensionalLayersPreset) extends GuiBaseSettings(parent) {
   val presetJson = new ValueHolder[String](parent.layersList.toSettings)
 
@@ -43,6 +45,7 @@ class GuiImportPreset(parent: GuiSetupDimensionalLayersPreset) extends GuiBaseSe
   }
 }
 
+@SideOnly(Side.CLIENT)
 object GuiImportPreset {
   def export(parent: GuiSetupDimensionalLayersPreset): () => Unit = () => {
     GuiScreen.setClipboardString(parent.layersList.toSettings)

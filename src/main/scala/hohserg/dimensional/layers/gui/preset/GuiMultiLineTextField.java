@@ -12,6 +12,8 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ChatAllowedCharacters;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Mouse;
 
 import java.util.ArrayList;
@@ -20,6 +22,7 @@ import static net.minecraft.util.math.MathHelper.clamp;
 
 //made by Draco18s
 //https://gist.github.com/Draco18s/2b02762b597e67a9b887aed241f25077
+@SideOnly(Side.CLIENT)
 public class GuiMultiLineTextField extends Gui {
 
     private final int id;

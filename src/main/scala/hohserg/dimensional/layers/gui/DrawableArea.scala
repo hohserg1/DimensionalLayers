@@ -2,9 +2,11 @@ package hohserg.dimensional.layers.gui
 
 import hohserg.dimensional.layers.gui.DrawableArea.Container
 import net.minecraft.client.renderer.BufferBuilder
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 import java.awt.Rectangle
 
+@SideOnly(Side.CLIENT)
 case class DrawableArea(minX: RelativeCoord, minY: RelativeCoord, maxX: RelativeCoord, maxY: RelativeCoord, uv: (Double, Double, Double, Double), hoveringUV: (Double, Double, Double, Double)) {
   def isHovering(implicit container: Container): Boolean = {
     DrawableArea.isHovering(
@@ -36,6 +38,7 @@ case class DrawableArea(minX: RelativeCoord, minY: RelativeCoord, maxX: Relative
   }
 }
 
+@SideOnly(Side.CLIENT)
 object DrawableArea {
   def apply(minX: RelativeCoord, minY: RelativeCoord, maxX: RelativeCoord, maxY: RelativeCoord, uv: Rectangle): DrawableArea =
     DrawableArea(

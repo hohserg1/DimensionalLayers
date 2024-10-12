@@ -13,7 +13,9 @@ public class SetFieldOfPacket {
 
     @Inject(
             method = "sendPacket",
-            at = @At("HEAD")
+            at = @At("HEAD"),
+            require = 1,
+            allow = 1
     )
     public void sendPacket(final Packet<?> packetIn, CallbackInfo ci) {
         if (packetIn instanceof AdditionalPacketData) {

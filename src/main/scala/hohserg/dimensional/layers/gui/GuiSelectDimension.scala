@@ -5,9 +5,11 @@ import hohserg.dimensional.layers.gui.GuiSelectDimension.DrawableDim
 import hohserg.dimensional.layers.gui.IconUtils._
 import net.minecraft.world.DimensionType
 import net.minecraftforge.common.DimensionManager
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 import scala.collection.JavaConverters._
 
+@SideOnly(Side.CLIENT)
 abstract class GuiSelectDimension(parent: GuiBase,
                                   linesCache: LoadingCache[Integer, Seq[GuiTileList.GuiTileLine[DrawableDim]]] = GuiSelectDimension.dimLinesByLen)
   extends GuiBase(parent) with GuiTileList.SelectHandler[DrawableDim] {

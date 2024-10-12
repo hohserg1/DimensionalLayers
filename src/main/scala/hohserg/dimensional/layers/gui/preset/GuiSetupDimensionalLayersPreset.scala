@@ -5,9 +5,11 @@ import hohserg.dimensional.layers.gui.add._
 import hohserg.dimensional.layers.gui.preset.list.GuiLayersList
 import hohserg.dimensional.layers.gui.{GuiBase, GuiClickableButton}
 import net.minecraft.client.gui.GuiCreateWorld
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 import java.util.Random
 
+@SideOnly(Side.CLIENT)
 class GuiSetupDimensionalLayersPreset(parent: GuiCreateWorld) extends GuiBase(parent) {
   var layersList: GuiLayersList = _
   var exportButton: GuiClickableButton = _

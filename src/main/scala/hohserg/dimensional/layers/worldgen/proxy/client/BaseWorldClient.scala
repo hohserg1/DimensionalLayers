@@ -42,7 +42,7 @@ class BaseWorldClient(netHandler: NetHandlerPlayClient, info: WorldInfo, dimensi
 
   override def addEntityToWorld(p_73027_1_ : Int, p_73027_2_ : Entity): Unit = ???
 
-  override def getEntityByID(p_73045_1_ : Int): Entity = ???
+  override def getEntityByID(id: Int): Entity = ???
 
   override def invalidateBlockReceiveRegion(p_73031_1_ : Int, p_73031_2_ : Int, p_73031_3_ : Int, p_73031_4_ : Int, p_73031_5_ : Int, p_73031_6_ : Int): Unit = ???
 

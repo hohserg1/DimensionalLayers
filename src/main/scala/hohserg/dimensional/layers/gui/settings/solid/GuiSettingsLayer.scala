@@ -13,9 +13,11 @@ import net.minecraft.block.state.IBlockState
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.world.biome.Biome
 import net.minecraftforge.fml.common.registry.ForgeRegistries
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 import scala.collection.JavaConverters.{collectionAsScalaIterableConverter, mapAsScalaMapConverter}
 
+@SideOnly(Side.CLIENT)
 class GuiSettingsLayer(parent: GuiSetupDimensionalLayersPreset, layer: SolidLayerSpec, index: Int)
   extends GuiBaseSettingsLayer(parent, index) with SelectHandler[GuiBlocksList.DrawableBlock] {
 

@@ -1,7 +1,5 @@
 package hohserg.dimensional.layers.data
 
-import hohserg.dimensional.layers.worldgen.proxy.client.BaseWorldClient
-import hohserg.dimensional.layers.worldgen.proxy.server.BaseWorldServer
 import hohserg.dimensional.layers.{CCWorld, DimensionalLayersWorldType}
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -27,9 +25,6 @@ trait LayerManager[SidedOriginalWorld <: CCWorld] {
   @SubscribeEvent
   def unloadWorld(e: WorldEvent.Unload): Unit = {
     e.getWorld match {
-      case _: BaseWorldServer => println("wtf: unloadWorld BaseWorldServer", e)
-      case _: BaseWorldClient => println("wtf: unloadWorld BaseWorldServer", e)
-
       case w: SidedOriginalWorld =>
         worldDataForRealDimension -= w.provider.getDimension
       case _ =>

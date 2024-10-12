@@ -13,10 +13,12 @@ import hohserg.dimensional.layers.gui.settings.{GuiBaseSettingsLayer, GuiFakeCre
 import hohserg.dimensional.layers.preset.{CubicWorldTypeLayerSpec, LayerSpec}
 import net.minecraft.client.resources.I18n
 import net.minecraft.world.DimensionType
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 import java.awt.Rectangle
 import scala.util.Try
 
+@SideOnly(Side.CLIENT)
 class GuiSettingsLayer(parent: GuiSetupDimensionalLayersPreset, val layer: CubicWorldTypeLayerSpec, index: Int)
   extends GuiBaseSettingsLayer(parent, index)
     with SelectHandler[DrawableDim]
@@ -84,6 +86,7 @@ class GuiSettingsLayer(parent: GuiSetupDimensionalLayersPreset, val layer: Cubic
   override def maxY: Int = height
 }
 
+@SideOnly(Side.CLIENT)
 object GuiSettingsLayer {
   val dimensionTypeArea = DrawableArea(
     new Rectangle(10, 10 + IconUtils.width + 10 + 10 + 10, IconUtils.width, IconUtils.width),

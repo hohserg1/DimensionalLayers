@@ -8,9 +8,11 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.client.renderer.{BufferBuilder, Tessellator}
 import net.minecraft.util.ResourceLocation
 import net.minecraft.world.{DimensionType, WorldType}
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 import java.io.FileNotFoundException
 
+@SideOnly(Side.CLIENT)
 object IconUtils {
 
   final val width = 64

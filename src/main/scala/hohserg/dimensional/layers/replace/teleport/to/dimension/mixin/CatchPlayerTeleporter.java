@@ -16,7 +16,9 @@ public class CatchPlayerTeleporter implements ILastUsedTeleporter {
 
     @Inject(
             method = "changeDimension(ILnet/minecraftforge/common/util/ITeleporter;)Lnet/minecraft/entity/Entity;",
-            at = @At("HEAD")
+            at = @At("HEAD"),
+            require = 1,
+            allow = 1
     )
     public void changeDimension(int dimensionIn, ITeleporter teleporter,
                                 CallbackInfoReturnable<Entity> ci) {

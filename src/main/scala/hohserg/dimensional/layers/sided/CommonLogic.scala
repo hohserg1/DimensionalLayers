@@ -1,8 +1,14 @@
 package hohserg.dimensional.layers.sided
 
 import hohserg.dimensional.layers.Main
+import hohserg.dimensional.layers.compatibility.event.CompatEventsHandler
+import net.minecraftforge.fml.common.event.FMLInitializationEvent
 
 class CommonLogic {
+
+  def init(e: FMLInitializationEvent): Unit = {
+    CompatEventsHandler.init()
+  }
 
   def printInfo(msg: String): Unit = {
     print("INFO", msg)

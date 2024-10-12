@@ -5,7 +5,9 @@ import hohserg.dimensional.layers.gui.IconUtils._
 import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
 import hohserg.dimensional.layers.gui.settings._
 import hohserg.dimensional.layers.preset.CubicWorldTypeLayerSpec
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
+@SideOnly(Side.CLIENT)
 class GuiCubicWorldTypeLayerEntry(val parent: GuiLayersList, val layer: CubicWorldTypeLayerSpec) extends GuiLayerEntry {
   override def drawEntry(index: Int, minX: Int, minY: Int, maxX: Int, maxY: Int, mouseX: Int, mouseY: Int): Unit = {
     super.drawEntry(index, minX, minY, maxX, maxY, mouseX, mouseY)

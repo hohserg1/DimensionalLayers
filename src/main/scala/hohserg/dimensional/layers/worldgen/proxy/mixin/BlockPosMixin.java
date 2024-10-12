@@ -13,7 +13,9 @@ public class BlockPosMixin {
     @Inject(
             method = "add(Lnet/minecraft/util/math/Vec3i;)Lnet/minecraft/util/math/BlockPos;",
             at = @At("HEAD"),
-            cancellable = true
+            cancellable = true,
+            require = 1,
+            allow = 1
     )
     public void add(Vec3i vec, CallbackInfoReturnable<BlockPos> ci) {
         if (vec instanceof ShiftedBlockPos)
@@ -23,7 +25,9 @@ public class BlockPosMixin {
     @Inject(
             method = "subtract(Lnet/minecraft/util/math/Vec3i;)Lnet/minecraft/util/math/BlockPos;",
             at = @At("HEAD"),
-            cancellable = true
+            cancellable = true,
+            require = 1,
+            allow = 1
     )
     public void subtract(Vec3i vec, CallbackInfoReturnable<BlockPos> ci) {
         if (vec instanceof ShiftedBlockPos) {

@@ -4,9 +4,11 @@ import hohserg.dimensional.layers.gui.GuiClickableButton.Handler
 import hohserg.dimensional.layers.gui.RelativeCoord.{alignLeft, alignTop}
 import net.minecraft.client.gui.{FontRenderer, GuiScreen}
 import net.minecraft.client.renderer.GlStateManager
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 import scala.collection.mutable.ListBuffer
 
+@SideOnly(Side.CLIENT)
 class GuiBase(val parent: GuiScreen) extends GuiScreen {
   def fr: FontRenderer = fontRenderer
 

@@ -9,11 +9,13 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.ResourceLocation
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import org.lwjgl.opengl.GL11
 
 import java.awt.Rectangle
 
 
+@SideOnly(Side.CLIENT)
 object GuiLayerEntry {
   def apply(parent: GuiLayersList, layer: LayerSpec): GuiLayerEntry =
     layer match {
@@ -62,6 +64,7 @@ object GuiLayerEntry {
 
 }
 
+@SideOnly(Side.CLIENT)
 trait GuiLayerEntry extends DrawableArea.Container {
 
   implicit def self: DrawableArea.Container = this

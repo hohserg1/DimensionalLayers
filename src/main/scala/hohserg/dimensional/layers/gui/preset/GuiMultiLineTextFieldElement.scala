@@ -2,7 +2,9 @@ package hohserg.dimensional.layers.gui.preset
 
 import hohserg.dimensional.layers.gui.GuiBaseSettings.ValueHolder
 import hohserg.dimensional.layers.gui.{GuiBase, GuiEditableElement}
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
+@SideOnly(Side.CLIENT)
 class GuiMultiLineTextFieldElement(x: Int, y: Int, w: Int, h: Int, value: ValueHolder[String])(implicit gui: GuiBase)
   extends GuiMultiLineTextField(gui.nextElementId(), gui.fr, x, y, w, h)
     with GuiEditableElement[String] {
