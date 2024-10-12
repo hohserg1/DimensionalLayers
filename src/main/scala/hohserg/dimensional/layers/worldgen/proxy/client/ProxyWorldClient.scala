@@ -4,6 +4,7 @@ import hohserg.dimensional.layers.CCWorldClient
 import hohserg.dimensional.layers.data.layer.base.DimensionalLayer
 import hohserg.dimensional.layers.worldgen.proxy.ProxyWorldCommon
 import net.minecraft.client.Minecraft
+import net.minecraft.entity.Entity
 import net.minecraft.profiler.Profiler
 
 case class ProxyWorldClient(original: CCWorldClient, layer: DimensionalLayer)
@@ -16,4 +17,6 @@ case class ProxyWorldClient(original: CCWorldClient, layer: DimensionalLayer)
   override def createProxyChunkProvider(): ProxyChunkProviderClient = ProxyChunkProviderClient(this, original, layer)
 
   initWorld()
+
+  override def getEntityByID(id: Int): Entity = original.getEntityByID(id)
 }
