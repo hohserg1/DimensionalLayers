@@ -19,7 +19,7 @@ class DimensionalLayersCoreMod extends IFMLLoadingPlugin {
     if (Launch.blackboard.get("fml.deobfuscatedEnvironment").asInstanceOf[Boolean])
       Mixins.addConfiguration("dimensional_layers.mixins.dev_tweaks.json")
 
-    Mixins.addConfiguration("dimensional_layers.mixins.compat_geographicraft.json")
+    //Mixins.addConfiguration("dimensional_layers.mixins.compat_geographicraft.json")
 
     Array("hohserg.dimensional.layers.asm.BaseWorldServerTransformer")
   }
