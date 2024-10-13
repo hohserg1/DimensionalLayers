@@ -35,9 +35,27 @@ object Serialization {
       .registerSerializer(dimensionLayerSpecSerializer, hierarchic = false)
       .registerSerializer(solidLayerSpecSerializer, hierarchic = false)
       .registerSerializer(cubicWorldTypeLayerSpecSerializer, hierarchic = false)
+      .registerSerializer(openTerrainGeneratorLayerSpecSpecSerializer, hierarchic = false)
 
     builder.create()
   }
+
+  def openTerrainGeneratorLayerSpecSpecSerializer: JsonSerializer[OpenTerrainGeneratorLayerSpec] with JsonDeserializer[OpenTerrainGeneratorLayerSpec] =
+    new JsonSerializer[OpenTerrainGeneratorLayerSpec] with JsonDeserializer[OpenTerrainGeneratorLayerSpec] {
+      override def serialize(src: OpenTerrainGeneratorLayerSpec, typeOfSrc: Type, context: JsonSerializationContext): JsonElement =
+        context.serialize(ListMap(
+          "presetName" -> src.presetName,
+          putOrElse("seedOverride", src.seedOverride, None)
+        ))
+
+      override def deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): OpenTerrainGeneratorLayerSpec = {
+        val jsonObject = json.getAsJsonObject
+        OpenTerrainGeneratorLayerSpec(
+          jsonObject.get("presetName").getAsString,
+          getOrElse(jsonObject, "seedOverride", None, context)
+        )
+      }
+    }
 
   def cubicWorldTypeLayerSpecSerializer: JsonSerializer[CubicWorldTypeLayerSpec] with JsonDeserializer[CubicWorldTypeLayerSpec] =
     new JsonSerializer[CubicWorldTypeLayerSpec] with JsonDeserializer[CubicWorldTypeLayerSpec] {
