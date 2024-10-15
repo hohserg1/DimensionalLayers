@@ -22,6 +22,7 @@ import scala.util.Try
 class OTGPresetInfoPanel(parent: otg.GuiAddLayer) extends GuiElement {
   private val fakeParent = new OTGGuiPresetList(null, true)
   fakeParent.setWorldAndResolution(Minecraft.getMinecraft, parent.width, parent.height)
+  fakeParent.bottomMargin = fakeParent.topMargin
   private val contentByPresetName: Map[String, OTGGuiScrollingListInfo] =
     GuiHandler.GuiPresets.asScala.toMap.map { case (presetName: String, presetData: DimensionConfigGui) =>
       val maybeMod = Option(presetData.worldPackerModName)
