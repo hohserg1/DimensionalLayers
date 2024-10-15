@@ -32,7 +32,7 @@ class OTGPresetInfoPanel(parent: otg.GuiAddLayer) extends GuiElement {
         List(
           "Name: " + presetName,
           "Version: " + maybeMod.mapNull(_.version).getOrElse("Unknown"),
-          "Credits: " + maybeMod.mapNull(_.credits).getOrElse("Unknown")
+          "Credits: " + maybeMod.mapNull(_.credits).getOrElse(presetData.author)
         ) ++
           maybeMod.mapNull(_.url).map("URL: " + _) :+
           maybeMod.mapNull(_.description).getOrElse(presetData.description)
