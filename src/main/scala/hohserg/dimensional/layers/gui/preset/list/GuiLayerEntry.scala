@@ -17,13 +17,6 @@ import java.awt.Rectangle
 
 @SideOnly(Side.CLIENT)
 object GuiLayerEntry {
-  def apply(parent: GuiLayersList, layer: LayerSpec): GuiLayerEntry =
-    layer match {
-      case spec: DimensionLayerSpec => new GuiDimensionLayerEntry(parent, spec)
-      case spec: SolidLayerSpec => new GuiSolidLayerEntry(parent, spec)
-      case spec: CubicWorldTypeLayerSpec => new GuiCubicWorldTypeLayerEntry(parent, spec)
-      case spec: OpenTerrainGeneratorLayerSpec => new GuiOpenTerrainGeneratorLayerEntry(parent, spec)
-    }
 
   val texture = new ResourceLocation(Main.modid, "textures/gui/layer_entry.png")
 

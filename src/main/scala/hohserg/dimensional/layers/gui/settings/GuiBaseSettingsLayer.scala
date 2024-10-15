@@ -2,7 +2,6 @@ package hohserg.dimensional.layers.gui.settings
 
 import hohserg.dimensional.layers.gui.GuiBaseSettings
 import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
-import hohserg.dimensional.layers.gui.preset.list.GuiLayerEntry
 import hohserg.dimensional.layers.preset.LayerSpec
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
@@ -12,7 +11,7 @@ abstract class GuiBaseSettingsLayer(parent: GuiSetupDimensionalLayersPreset, ind
   def buildLayerSpec(): LayerSpec
 
   override def done(): Unit = {
-    parent.layersList.entries.update(index, GuiLayerEntry(parent.layersList, buildLayerSpec()))
+    parent.layersList.entries.update(index, buildLayerSpec().toGuiLayerEntry(parent.layersList))
     super.done()
   }
 }

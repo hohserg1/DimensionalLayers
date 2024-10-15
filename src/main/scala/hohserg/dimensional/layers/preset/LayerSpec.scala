@@ -6,6 +6,7 @@ import hohserg.dimensional.layers.data.layer.cubic_world_type.CubicWorldTypeLaye
 import hohserg.dimensional.layers.data.layer.otg.OpenTerrainGeneratorLayer
 import hohserg.dimensional.layers.data.layer.solid.SolidLayer
 import hohserg.dimensional.layers.data.layer.vanilla_dimension.VanillaDimensionLayer
+import hohserg.dimensional.layers.gui.preset.list._
 import hohserg.dimensional.layers.preset.CubicWorldTypeLayerSpec.dummyWorld
 import hohserg.dimensional.layers.worldgen.proxy.server.BaseWorldServer
 import io.github.opencubicchunks.cubicchunks.api.util.Coords
@@ -16,6 +17,7 @@ import net.minecraft.world._
 import net.minecraft.world.biome.Biome
 import net.minecraft.world.chunk.IChunkProvider
 import net.minecraft.world.storage.WorldInfo
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 sealed trait LayerSpec {
   def height: Int
@@ -23,6 +25,9 @@ sealed trait LayerSpec {
   def toLayer: (Int, this.type, CCWorld) => Layer
 
   def toLayer(startFromCubeY: Int, original: CCWorld): Layer = toLayer(startFromCubeY, this, original)
+
+  @SideOnly(Side.CLIENT)
+  def toGuiLayerEntry(parent: GuiLayersList): GuiLayerEntry
 
 }
 
@@ -34,10 +39,16 @@ case class DimensionLayerSpec(dimensionType: DimensionType,
   override val height: Int = 16 - topOffset - bottomOffset
 
   override val toLayer = VanillaDimensionLayer
+
+  @SideOnly(Side.CLIENT)
+  override def toGuiLayerEntry(parent: GuiLayersList): GuiLayerEntry = new GuiDimensionLayerEntry(parent, this)
 }
 
 case class SolidLayerSpec(filler: IBlockState, height: Int, biome: Biome = Biomes.PLAINS) extends LayerSpec {
   override val toLayer = SolidLayer
+
+  @SideOnly(Side.CLIENT)
+  override def toGuiLayerEntry(parent: GuiLayersList): GuiLayerEntry = new GuiSolidLayerEntry(parent, this)
 }
 
 case class CubicWorldTypeLayerSpec(cubicWorldType: WorldType with ICubicWorldType, worldTypePreset: String = "",
@@ -61,6 +72,9 @@ case class CubicWorldTypeLayerSpec(cubicWorldType: WorldType with ICubicWorldTyp
     val (virtualStartCubeY, virtualEndCubeY) = rangeCube(GameType.SURVIVAL, isMapFeaturesEnabled = true)
     virtualEndCubeY - virtualStartCubeY + 1
   }
+
+  @SideOnly(Side.CLIENT)
+  override def toGuiLayerEntry(parent: GuiLayersList): GuiLayerEntry = new GuiCubicWorldTypeLayerEntry(parent, this)
 }
 
 object CubicWorldTypeLayerSpec {
@@ -92,4 +106,7 @@ case class OpenTerrainGeneratorLayerSpec(presetName: String, seedOverride: Optio
   override def height: Int = 16
 
   override val toLayer = OpenTerrainGeneratorLayer
+
+  @SideOnly(Side.CLIENT)
+  override def toGuiLayerEntry(parent: GuiLayersList): GuiLayerEntry = new GuiOpenTerrainGeneratorLayerEntry(parent, this)
 }
