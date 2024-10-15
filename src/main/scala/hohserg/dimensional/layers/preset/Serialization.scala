@@ -155,6 +155,9 @@ object Serialization {
         else if (jsonObject.has("cubicWorldType"))
           context.deserialize(jsonObject, classOf[CubicWorldTypeLayerSpec])
 
+        else if (jsonObject.has("presetName"))
+          context.deserialize(jsonObject, classOf[OpenTerrainGeneratorLayerSpec])
+
         else
           throw new MalformedJsonException("unknown layer type")
       }
