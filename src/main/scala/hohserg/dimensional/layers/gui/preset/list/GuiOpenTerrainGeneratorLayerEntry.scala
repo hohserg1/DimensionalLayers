@@ -3,6 +3,7 @@ package hohserg.dimensional.layers.gui.preset.list
 import hohserg.dimensional.layers.gui.GuiBase
 import hohserg.dimensional.layers.gui.IconUtils._
 import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
+import hohserg.dimensional.layers.gui.settings.otg
 import hohserg.dimensional.layers.preset.OpenTerrainGeneratorLayerSpec
 
 class GuiOpenTerrainGeneratorLayerEntry(val parent: GuiLayersList, val layer: OpenTerrainGeneratorLayerSpec) extends GuiLayerEntry {
@@ -13,5 +14,5 @@ class GuiOpenTerrainGeneratorLayerEntry(val parent: GuiLayersList, val layer: Op
     mc.fontRenderer.drawStringWithShadow(layer.presetName, minX + width + 11, minY + (maxY - minY) / 2 + 4, 0xffffff)
   }
 
-  override def guiSettings(index: Int, parent: GuiSetupDimensionalLayersPreset): GuiBase = ???
+  override def guiSettings(index: Int, prevGui: GuiSetupDimensionalLayersPreset): GuiBase = new otg.GuiSettingsLayer(prevGui, layer, index)
 }
