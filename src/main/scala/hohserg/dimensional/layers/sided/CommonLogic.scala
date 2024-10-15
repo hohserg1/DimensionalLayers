@@ -18,6 +18,10 @@ class CommonLogic {
     printError(msg, "Context(seed=" + contextSeed + ", preset=" + contextPreset + ")", e)
   }
 
+  def printSimpleError(msg: String, dest: String): Unit = {
+    print("ERROR][simple", msg + ":" + dest)
+  }
+
   def printError(msg: String, context: String, e: Throwable): Unit = {
     print("ERROR" + (if (e.getStackTrace.nonEmpty) "][useful" else ""), msg)
     print("ERROR", context)

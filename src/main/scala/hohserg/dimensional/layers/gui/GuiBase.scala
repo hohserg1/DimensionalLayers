@@ -1,5 +1,6 @@
 package hohserg.dimensional.layers.gui
 
+import hohserg.dimensional.layers.Main
 import hohserg.dimensional.layers.gui.GuiClickableButton.Handler
 import hohserg.dimensional.layers.gui.RelativeCoord.{alignLeft, alignTop}
 import net.minecraft.client.gui.{FontRenderer, GuiScreen}
@@ -20,6 +21,9 @@ class GuiBase(val parent: GuiScreen) extends GuiScreen {
 
   protected def show(nextGuiByParent: this.type => GuiScreen): Handler =
     () => mc.displayGuiScreen(nextGuiByParent(this))
+
+  protected def showWarning(msg: String, desc: String): Handler =
+    () => Main.sided.printSimpleError(msg, desc)
 
   private var elementId = 0
 
