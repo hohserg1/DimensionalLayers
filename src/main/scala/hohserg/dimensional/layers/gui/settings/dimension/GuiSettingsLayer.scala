@@ -15,8 +15,6 @@ import net.minecraft.util.ResourceLocation
 import net.minecraft.world.WorldType
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
-import scala.util.Try
-
 @SideOnly(Side.CLIENT)
 object GuiSettingsLayer {
   val texture = new ResourceLocation(Main.modid, "textures/gui/dimension_settings.png")
@@ -54,7 +52,7 @@ class GuiSettingsLayer(parent: GuiSetupDimensionalLayersPreset, index: Int, laye
   override def buildLayerSpec(): LayerSpec =
     DimensionLayerSpec(
       layer.dimensionType,
-      Some(seedOverrideH.get).filter(_.nonEmpty).map(toLongSeed),
+      toLongSeed(seedOverrideH.get),
       topOffset.get,
       bottomOffset.get,
       worldTypeH.getA,
@@ -92,9 +90,6 @@ class GuiSettingsLayer(parent: GuiSetupDimensionalLayersPreset, index: Int, laye
       guiFakeCreateWorld.chunkProviderSettingsJson = ""
     }))
   }
-
-  def toLongSeed(str: String): Long =
-    Try(str.toLong).filter(_ != 0).getOrElse(str.hashCode.toLong)
 
   override def drawScreenPre(mouseX: Int, mouseY: Int, partialTicks: Float): Unit = {
     super.drawScreenPre(mouseX, mouseY, partialTicks)

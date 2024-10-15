@@ -16,7 +16,6 @@ import net.minecraft.world.DimensionType
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 import java.awt.Rectangle
-import scala.util.Try
 
 @SideOnly(Side.CLIENT)
 class GuiSettingsLayer(parent: GuiSetupDimensionalLayersPreset, val layer: CubicWorldTypeLayerSpec, index: Int)
@@ -32,13 +31,10 @@ class GuiSettingsLayer(parent: GuiSetupDimensionalLayersPreset, val layer: Cubic
       layer.cubicWorldType,
       worldTypePresetH.get,
       dimensionTypeH.get,
-      Some(seedOverrideH.get).filter(_.nonEmpty).map(toLongSeed)
+      toLongSeed(seedOverrideH.get)
     )
 
   private val guiFakeCreateWorld = new GuiFakeCreateWorld(this, layer.worldTypePreset)
-
-  def toLongSeed(str: String): Long =
-    Try(str.toLong).filter(_ != 0).getOrElse(str.hashCode.toLong)
 
   override def initGui(): Unit = {
     super.initGui()
