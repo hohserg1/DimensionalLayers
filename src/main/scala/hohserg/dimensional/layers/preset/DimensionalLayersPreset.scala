@@ -54,7 +54,7 @@ object DimensionalLayersPreset {
 
   lazy val mixedPresetTop: List[DimensionLayerSpec] =
     DimensionManager.getRegisteredDimensions.asScala.toSeq
-      .collect { case (dimType, realUsedIds) if !realUsedIds.isEmpty => dimType }
+      .collect { case (dimType, realUsedIds) if !realUsedIds.isEmpty && Try(DimensionManager.createProviderFor(dimType.getId)).isSuccess => dimType }
       .filter(isNotVanillaDim)
       .map(DimensionLayerSpec(_))
       .toList
