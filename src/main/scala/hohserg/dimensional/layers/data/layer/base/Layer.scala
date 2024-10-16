@@ -62,8 +62,7 @@ trait DimensionalLayer extends Layer {
     case clientWorld: CCWorldClient =>
       Try(createClientProxyWorld(clientWorld)) match {
         case Failure(exception) =>
-          println(dimensionType, dimensionType.getId, dimensionType.clazz, dimensionType.getName, dimensionType.suffix)
-          Main.sided.printError("bruh, exceptino while creating client proxy world", this.toString, exception)
+          Main.sided.printError("failed to create client proxy world", (dimensionType, dimensionType.getId, dimensionType.clazz, dimensionType.getName, dimensionType.suffix, this.toString), exception)
           throw exception
 
         case Success(value) =>
