@@ -7,6 +7,7 @@ import net.minecraft.world.DimensionType
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 import java.io.File
+import scala.util.{Failure, Success, Try}
 
 trait Layer {
   type Spec <: LayerSpec
@@ -58,6 +59,15 @@ trait DimensionalLayer extends Layer {
 
   @SideOnly(Side.CLIENT)
   lazy val clientProxyWorld: ProxyWorldClient = originalWorld match {
-    case clientWorld: CCWorldClient => createClientProxyWorld(clientWorld)
+    case clientWorld: CCWorldClient =>
+      Try(createClientProxyWorld(clientWorld)) match {
+        case Failure(exception) =>
+          println(dimensionType, dimensionType.getId, dimensionType.clazz, dimensionType.getName, dimensionType.suffix)
+          Main.sided.printError("bruh, exceptino while creating client proxy world", this.toString, exception)
+          throw exception
+
+        case Success(value) =>
+          value
+      }
   }
 }
