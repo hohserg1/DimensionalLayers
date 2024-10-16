@@ -3,8 +3,9 @@ package hohserg.dimensional.layers.data.layer.vanilla_dimension
 import com.google.common.cache.{CacheBuilder, CacheLoader, LoadingCache}
 import hohserg.dimensional.layers.data.layer.base.{BiomeGeneratorHelper, DimensionalGenerator}
 import hohserg.dimensional.layers.worldgen.proxy.server.ProxyWorldServer
+import hohserg.dimensional.layers.worldgen.proxy.server.ProxyWorldServer.createLayerWorldInfo
 import hohserg.dimensional.layers.{CCWorldServer, Main}
-import io.github.opencubicchunks.cubicchunks.api.util.Coords
+import io.github.opencubicchunks.cubicchunks.api.util.{Coords, CubePos}
 import io.github.opencubicchunks.cubicchunks.api.world.ICube
 import io.github.opencubicchunks.cubicchunks.api.worldgen.CubePrimer
 import io.github.opencubicchunks.cubicchunks.core.asm.mixin.core.common.IGameRegistry
@@ -19,12 +20,18 @@ import java.util
 import java.util.Random
 import java.util.concurrent.TimeUnit
 import scala.collection.JavaConverters._
+import scala.collection.mutable
 
 class VanillaDimensionGenerator(original: CCWorldServer, val layer: VanillaDimensionLayer) extends DimensionalGenerator with BiomeGeneratorHelper {
   override type L = VanillaDimensionLayer
   override type BiomeContext = Array[Biome]
 
-  override val proxyWorld = ProxyWorldServer(original, layer, this)
+  override val proxyWorld = new ProxyWorldServer(
+    original,
+    layer,
+    this,
+    createLayerWorldInfo(original, layer.spec.seedOverride, layer.spec.worldType, layer.spec.worldTypePreset)
+  )
   private val provider: WorldProvider = proxyWorld.provider
   val vanillaGenerator: IChunkGenerator = provider.createChunkGenerator()
   var biomes: Array[Biome] = _
@@ -68,8 +75,14 @@ class VanillaDimensionGenerator(original: CCWorldServer, val layer: VanillaDimen
   override protected def calcBiome(localBiomeX: Int, localBiomeY: Int, localBiomeZ: Int, biomes: Array[Biome]): Biome =
     biomes((localBiomeX << 2) & 15 | ((localBiomeZ << 2) & 15) << 4)
 
+  val populated = new mutable.HashSet[CubePos]
+
   override def populateCube(cube: ICube): Unit = {
     try {
+      val pos = cube.getCoords
+      if (populated.contains(pos))
+        println("again populating same cube")
+      populated += pos
       vanillaGenerator.populate(cube.getX, cube.getZ)
       applyModGenerators(cube.getX, cube.getZ)
     } catch {

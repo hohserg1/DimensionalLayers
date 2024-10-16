@@ -1,8 +1,10 @@
 package hohserg.dimensional.layers.data.layer.otg
 
 import com.google.common.cache.{CacheBuilder, CacheLoader, LoadingCache}
+import com.pg85.otg.forge.OTGPlugin
 import hohserg.dimensional.layers.data.layer.base.{BiomeGeneratorHelper, DimensionalGenerator}
 import hohserg.dimensional.layers.worldgen.proxy.server.ProxyWorldServer
+import hohserg.dimensional.layers.worldgen.proxy.server.ProxyWorldServer.createLayerWorldInfo
 import hohserg.dimensional.layers.{CCWorldServer, Main}
 import io.github.opencubicchunks.cubicchunks.api.world.ICube
 import io.github.opencubicchunks.cubicchunks.api.worldgen.CubePrimer
@@ -24,7 +26,12 @@ class OpenTerrainGeneratorGenerator(original: CCWorldServer, val layer: OpenTerr
   override type L = OpenTerrainGeneratorLayer
   override type BiomeContext = Array[Biome]
 
-  override val proxyWorld = ProxyWorldServer(original, layer, this)
+  override val proxyWorld = new ProxyWorldServer(
+    original,
+    layer,
+    this,
+    createLayerWorldInfo(original, layer.spec.seedOverride, OTGPlugin.OtgWorldType, "OpenTerrainGenerator")
+  )
 
   private val provider: WorldProvider = proxyWorld.provider
   val vanillaGenerator: IChunkGenerator = provider.createChunkGenerator()
