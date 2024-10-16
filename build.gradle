@@ -21,7 +21,7 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
-version = '4.5'
+version = '4.6'
 group = 'hohserg.dimensional.layers' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'DimensionalLayers'
 
@@ -41,6 +41,8 @@ minecraft {
             'libs_at/thebetweenlands_at.cfg',
             'libs_at/rtg_at.cfg',
             'libs_at/openterraingenerator_at.cfg',
+            'libs_at/tconstruct_at.cfg',
+            'libs_at/mantle_at.cfg',
             'libs_at/resourcereloader_at.cfg'
     )
 
@@ -107,6 +109,10 @@ dependencies {
 
     implementation fg.deobf("abc:OpenTerrainGenerator:1.12.2-v9.5-R2")
     implementation fg.deobf("abc:OTG:Core")
+
+
+    implementation fg.deobf("abc:TConstruct-1.12.2:2.13.0.183")
+    implementation fg.deobf("abc:Mantle-1.12:1.3.3.55")
 
 }
 
