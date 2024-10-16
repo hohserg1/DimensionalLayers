@@ -42,8 +42,6 @@ class GuiSetupDimensionalLayersPreset(parent: GuiCreateWorld) extends GuiBase(pa
       else
         showWarning("Need to install", "CubicWorldGen or smth like")
     ))
-
-    println("bruhlol", Main.otgPresent)
     addButton(new GuiClickableButton(width - 150 - 10, 10 + 20 + 10 + 20 + 1 + 20 + 1 + 20 + 1, 150, 20, "Add OTG layer")(
       if (Main.otgPresent)
         show(new otg.GuiAddLayer(_))
