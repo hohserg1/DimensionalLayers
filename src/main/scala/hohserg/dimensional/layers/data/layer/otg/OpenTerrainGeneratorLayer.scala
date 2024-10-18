@@ -5,7 +5,7 @@ import com.pg85.otg.configuration.dimensions.DimensionConfig
 import com.pg85.otg.configuration.world.WorldConfig
 import com.pg85.otg.forge.dimensions.{OTGDimensionManager, OTGWorldProvider}
 import hohserg.dimensional.layers.data.layer.base.{DimensionalLayer, DimensionalLayerBounds}
-import hohserg.dimensional.layers.preset.OpenTerrainGeneratorLayerSpec
+import hohserg.dimensional.layers.preset.spec.OpenTerrainGeneratorLayerSpec
 import hohserg.dimensional.layers.{CCWorld, CCWorldServer}
 import net.minecraft.world.DimensionType
 import net.minecraftforge.common.DimensionManager

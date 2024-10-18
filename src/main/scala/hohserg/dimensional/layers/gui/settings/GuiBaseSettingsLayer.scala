@@ -2,7 +2,7 @@ package hohserg.dimensional.layers.gui.settings
 
 import hohserg.dimensional.layers.gui.GuiBaseSettings
 import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
-import hohserg.dimensional.layers.preset.LayerSpec
+import hohserg.dimensional.layers.preset.spec.LayerSpec
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 import scala.util.Try

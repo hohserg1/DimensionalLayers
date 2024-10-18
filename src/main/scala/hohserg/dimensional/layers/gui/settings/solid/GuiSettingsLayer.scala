@@ -8,7 +8,7 @@ import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
 import hohserg.dimensional.layers.gui.settings.GuiBaseSettingsLayer
 import hohserg.dimensional.layers.gui.settings.solid.GuiBlocksList.DrawableBlock
 import hohserg.dimensional.layers.gui.{GuiNumericField, GuiScrollingListElement}
-import hohserg.dimensional.layers.preset.{LayerSpec, SolidLayerSpec}
+import hohserg.dimensional.layers.preset.spec.{LayerSpec, SolidLayerSpec}
 import net.minecraft.block.state.IBlockState
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.world.biome.Biome

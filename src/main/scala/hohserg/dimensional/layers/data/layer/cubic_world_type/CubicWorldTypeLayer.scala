@@ -1,7 +1,7 @@
 package hohserg.dimensional.layers.data.layer.cubic_world_type
 
 import hohserg.dimensional.layers.data.layer.base.{DimensionalLayer, DimensionalLayerBounds}
-import hohserg.dimensional.layers.preset.CubicWorldTypeLayerSpec
+import hohserg.dimensional.layers.preset.spec.CubicWorldTypeLayerSpec
 import hohserg.dimensional.layers.{CCWorld, CCWorldServer}
 import net.minecraft.world.DimensionType
 

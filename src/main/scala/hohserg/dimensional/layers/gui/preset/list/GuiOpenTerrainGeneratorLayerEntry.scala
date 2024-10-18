@@ -4,7 +4,7 @@ import hohserg.dimensional.layers.gui.GuiBase
 import hohserg.dimensional.layers.gui.IconUtils._
 import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
 import hohserg.dimensional.layers.gui.settings.otg
-import hohserg.dimensional.layers.preset.OpenTerrainGeneratorLayerSpec
+import hohserg.dimensional.layers.preset.spec.OpenTerrainGeneratorLayerSpec
 
 class GuiOpenTerrainGeneratorLayerEntry(val parent: GuiLayersList, val layer: OpenTerrainGeneratorLayerSpec) extends GuiLayerEntry {
   override def drawEntry(index: Int, minX: Int, minY: Int, maxX: Int, maxY: Int, mouseX: Int, mouseY: Int): Unit = {

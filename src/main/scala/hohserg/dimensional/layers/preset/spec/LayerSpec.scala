@@ -1,4 +1,4 @@
-package hohserg.dimensional.layers.preset
+package hohserg.dimensional.layers.preset.spec
 
 import hohserg.dimensional.layers.CCWorld
 import hohserg.dimensional.layers.data.layer.base.Layer
@@ -7,7 +7,7 @@ import hohserg.dimensional.layers.data.layer.otg.OpenTerrainGeneratorLayer
 import hohserg.dimensional.layers.data.layer.solid.SolidLayer
 import hohserg.dimensional.layers.data.layer.vanilla_dimension.VanillaDimensionLayer
 import hohserg.dimensional.layers.gui.preset.list._
-import hohserg.dimensional.layers.preset.CubicWorldTypeLayerSpec.dummyWorld
+import hohserg.dimensional.layers.preset.spec.CubicWorldTypeLayerSpec.dummyWorld
 import hohserg.dimensional.layers.worldgen.proxy.server.BaseWorldServer
 import io.github.opencubicchunks.cubicchunks.api.util.Coords
 import io.github.opencubicchunks.cubicchunks.api.world.ICubicWorldType

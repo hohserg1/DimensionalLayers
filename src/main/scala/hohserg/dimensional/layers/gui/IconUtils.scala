@@ -1,6 +1,6 @@
 package hohserg.dimensional.layers.gui
 
-import hohserg.dimensional.layers.preset.OpenTerrainGeneratorLayerSpec
+import hohserg.dimensional.layers.preset.spec.OpenTerrainGeneratorLayerSpec
 import hohserg.dimensional.layers.{Main, Memoized}
 import io.github.opencubicchunks.cubicchunks.api.world.ICubicWorldType
 import net.minecraft.client.Minecraft

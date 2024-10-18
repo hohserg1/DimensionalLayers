@@ -1,6 +1,6 @@
 package hohserg.dimensional.layers.data.layer.base
 
-import hohserg.dimensional.layers.preset.LayerSpec
+import hohserg.dimensional.layers.preset.spec.LayerSpec
 import hohserg.dimensional.layers.worldgen.proxy.client.ProxyWorldClient
 import hohserg.dimensional.layers.{CCWorld, CCWorldClient, CCWorldServer, Main}
 import net.minecraft.world.DimensionType

@@ -6,6 +6,7 @@ import hohserg.dimensional.layers.gui.GuiBaseSettings.ValueHolder
 import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
 import hohserg.dimensional.layers.gui.{GuiScrollingListElement, IconUtils, StateComposite}
 import hohserg.dimensional.layers.preset._
+import hohserg.dimensional.layers.preset.spec.LayerSpec
 import net.minecraft.client.renderer.Tessellator
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 

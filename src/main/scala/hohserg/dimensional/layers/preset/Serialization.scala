@@ -2,6 +2,7 @@ package hohserg.dimensional.layers.preset
 
 import com.google.gson._
 import com.google.gson.stream.MalformedJsonException
+import hohserg.dimensional.layers.preset.spec._
 import net.minecraft.block.properties.IProperty
 import net.minecraft.block.state.IBlockState
 import net.minecraft.command.CommandBase

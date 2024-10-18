@@ -4,7 +4,7 @@ import hohserg.dimensional.layers.DimensionalLayersWorldType
 import hohserg.dimensional.layers.gui._
 import hohserg.dimensional.layers.gui.add.cubic.worldtype.GuiAddLayer.possibleWorldTypes
 import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
-import hohserg.dimensional.layers.preset.CubicWorldTypeLayerSpec
+import hohserg.dimensional.layers.preset.spec.CubicWorldTypeLayerSpec
 import io.github.opencubicchunks.cubicchunks.api.world.ICubicWorldType
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.world.WorldType

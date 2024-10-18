@@ -4,7 +4,7 @@ import hohserg.dimensional.layers.gui.IconUtils._
 import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
 import hohserg.dimensional.layers.gui.settings.dimension
 import hohserg.dimensional.layers.gui.{GuiBase, makeDimensionTypeLabel}
-import hohserg.dimensional.layers.preset.DimensionLayerSpec
+import hohserg.dimensional.layers.preset.spec.DimensionLayerSpec
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 @SideOnly(Side.CLIENT)

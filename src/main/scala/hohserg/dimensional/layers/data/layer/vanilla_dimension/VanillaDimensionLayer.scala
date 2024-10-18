@@ -1,7 +1,7 @@
 package hohserg.dimensional.layers.data.layer.vanilla_dimension
 
 import hohserg.dimensional.layers.data.layer.base.{DimensionalLayer, DimensionalLayerBounds}
-import hohserg.dimensional.layers.preset.DimensionLayerSpec
+import hohserg.dimensional.layers.preset.spec.DimensionLayerSpec
 import hohserg.dimensional.layers.{CCWorld, CCWorldServer}
 import net.minecraft.world.DimensionType
 

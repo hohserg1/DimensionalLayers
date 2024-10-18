@@ -4,6 +4,7 @@ import com.google.gson.JsonParseException
 import hohserg.dimensional.layers.data.LayerMap
 import hohserg.dimensional.layers.data.layer.base.Layer
 import hohserg.dimensional.layers.preset.DimensionalLayersPreset.IllegalPresetException
+import hohserg.dimensional.layers.preset.spec.{DimensionLayerSpec, LayerSpec, SolidLayerSpec}
 import hohserg.dimensional.layers.{CCWorld, Configuration, Main}
 import io.github.opencubicchunks.cubicchunks.api.util.IntRange
 import net.minecraft.init.{Biomes, Blocks}

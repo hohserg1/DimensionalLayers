@@ -5,7 +5,7 @@ import com.pg85.otg.forge.gui.GuiHandler
 import com.pg85.otg.forge.gui.presets.OTGPresetInfoPanel
 import hohserg.dimensional.layers.gui._
 import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
-import hohserg.dimensional.layers.preset.OpenTerrainGeneratorLayerSpec
+import hohserg.dimensional.layers.preset.spec.OpenTerrainGeneratorLayerSpec
 import net.minecraft.client.renderer.Tessellator
 
 import scala.collection.JavaConverters._

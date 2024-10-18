@@ -4,7 +4,7 @@ import hohserg.dimensional.layers.Main
 import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
 import hohserg.dimensional.layers.gui.preset.list.GuiLayerEntry._
 import hohserg.dimensional.layers.gui.{DrawableArea, GuiBase, IconUtils, RelativeCoord}
-import hohserg.dimensional.layers.preset._
+import hohserg.dimensional.layers.preset.spec.LayerSpec
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats

@@ -7,7 +7,7 @@ import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
 import hohserg.dimensional.layers.gui.settings.GuiBaseSettingsLayer
 import hohserg.dimensional.layers.gui.settings.solid.GuiBlocksList
 import hohserg.dimensional.layers.gui.{GuiBlockSelector, GuiClickableButton, GuiTextFieldElement}
-import hohserg.dimensional.layers.preset.{LayerSpec, OpenTerrainGeneratorLayerSpec}
+import hohserg.dimensional.layers.preset.spec.{LayerSpec, OpenTerrainGeneratorLayerSpec}
 import net.minecraft.block.state.IBlockState
 
 class GuiSettingsLayer(parent: GuiSetupDimensionalLayersPreset, layer: OpenTerrainGeneratorLayerSpec, index: Int)
