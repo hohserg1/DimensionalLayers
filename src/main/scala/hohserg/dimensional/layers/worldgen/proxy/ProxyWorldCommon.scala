@@ -8,6 +8,7 @@ import io.github.opencubicchunks.cubicchunks.api.world.{ICube, ICubeProvider, IC
 import net.minecraft.block.Block
 import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.{Entity, EntityList}
+import net.minecraft.server.MinecraftServer
 import net.minecraft.tileentity.{TileEntity, TileEntityLockableLoot}
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.BlockPos
@@ -162,5 +163,7 @@ trait ProxyWorldCommon {
   }
 
   override def setEntityState(entityIn: Entity, state: Byte): Unit = original.setEntityState(entityIn, state)
+
+  override def getMinecraftServer: MinecraftServer = original.getMinecraftServer
 
 }
