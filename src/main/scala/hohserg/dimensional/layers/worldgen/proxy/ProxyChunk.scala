@@ -12,6 +12,7 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.world.EnumSkyBlock
 import net.minecraft.world.chunk.Chunk
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage
+import net.minecraft.world.{EnumSkyBlock, World}
 
 class ProxyChunk(proxy: CCWorld with ProxyWorldCommon, original: Chunk, layerBounds: DimensionalLayerBounds) extends Chunk(original.getWorld, original.x, original.z) {
   val column = original.asInstanceOf[IColumn]
@@ -39,7 +40,7 @@ class ProxyChunk(proxy: CCWorld with ProxyWorldCommon, original: Chunk, layerBou
   override def setBlockState(pos: BlockPos, state: IBlockState): IBlockState =
     executeInLayer(pos, original.setBlockState(_, state), null)
 
-  override def getHeightValue(x: Int, z: Int): Int = proxy.getHeight(x, z)
+  override def getHeightValue(x: Int, z: Int): Int = proxy.asInstanceOf[World].getHeight(x, z)
 
   override def getTopFilledSegment: Int = {
     for (i <- layerBounds.realEndCubeY to layerBounds.realStartCubeY by -1) {
