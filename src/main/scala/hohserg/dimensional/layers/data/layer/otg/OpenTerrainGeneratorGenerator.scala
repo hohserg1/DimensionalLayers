@@ -49,6 +49,8 @@ class OpenTerrainGeneratorGenerator(original: CCWorldServer, val layer: OpenTerr
         }
       })
 
+  override def needGenerateTotalColumn: Boolean = true
+
   override def generateCube(cubeX: Int, cubeY: Int, cubeZ: Int, primer: CubePrimer): CubePrimer = {
     val chunk = lastChunks.get(cubeX -> cubeZ)
 
