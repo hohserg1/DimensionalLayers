@@ -9,7 +9,6 @@ import net.minecraft.entity.Entity
 import net.minecraft.init.Blocks
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.math.BlockPos
-import net.minecraft.world.EnumSkyBlock
 import net.minecraft.world.chunk.Chunk
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage
 import net.minecraft.world.{EnumSkyBlock, World}
@@ -87,7 +86,7 @@ class ProxyChunk(proxy: CCWorld with ProxyWorldCommon, original: Chunk, layerBou
     original.removeTileEntity(layerBounds.shift(pos))
 
   override def getPrecipitationHeight(pos: BlockPos): BlockPos =
-    proxy.getHeight(pos).up()
+    proxy.getHeight(pos)
 
   override def isEmptyBetween(startY: Int, endY: Int): Boolean =
     original.isEmptyBetween(layerBounds.shiftBlockY(startY), layerBounds.shiftBlockY(endY))
