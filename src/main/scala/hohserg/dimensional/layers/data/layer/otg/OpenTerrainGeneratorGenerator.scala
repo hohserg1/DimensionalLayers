@@ -71,7 +71,7 @@ class OpenTerrainGeneratorGenerator(original: CCWorldServer, val layer: OpenTerr
       biomes = new Array[Biome](16 * 16)
     val rawBiomes = chunk.getBiomeArray
     for (i <- rawBiomes.indices) {
-      biomes(i) = Biome.getBiome(rawBiomes(i), Biomes.DEFAULT);
+      biomes(i) = Biome.getBiome(rawBiomes(i), Biomes.DEFAULT)
     }
     generateBiomes(primer, biomes)
 
