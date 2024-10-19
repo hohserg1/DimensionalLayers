@@ -110,7 +110,7 @@ abstract class BaseWorldServer(saveHandlerIn: ISaveHandler, info: WorldInfo, pro
 
   def getPlayerChunkMap(): PlayerChunkMap = ???
 
-  def getDefaultTeleporter(): Teleporter = ???
+  def getDefaultTeleporter: Teleporter = ???
 
   def spawnParticle(particleType: EnumParticleTypes, longDistance: Boolean, xCoord: Double, yCoord: Double, zCoord: Double, numberOfParticles: Int, xOffset: Double, yOffset: Double, zOffset: Double, particleSpeed: Double, particleArguments: Int*): Unit = {}
 

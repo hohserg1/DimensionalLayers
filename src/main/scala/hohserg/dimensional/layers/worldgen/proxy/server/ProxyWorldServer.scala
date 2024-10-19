@@ -88,5 +88,7 @@ class ProxyWorldServer(val original: CCWorldServer, val layer: DimensionalLayer,
     r
   }
 
+  override lazy val getDefaultTeleporter = new Teleporter(this.asInstanceOf[WorldServer])
+
 
 }
