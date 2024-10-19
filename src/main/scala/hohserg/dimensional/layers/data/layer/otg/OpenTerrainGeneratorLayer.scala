@@ -2,7 +2,6 @@ package hohserg.dimensional.layers.data.layer.otg
 
 import com.pg85.otg.OTG
 import com.pg85.otg.configuration.dimensions.DimensionConfig
-import com.pg85.otg.configuration.world.WorldConfig
 import com.pg85.otg.forge.dimensions.{OTGDimensionManager, OTGWorldProvider}
 import hohserg.dimensional.layers.data.layer.base.{DimensionalLayer, DimensionalLayerBounds}
 import hohserg.dimensional.layers.preset.spec.OpenTerrainGeneratorLayerSpec
@@ -10,7 +9,6 @@ import hohserg.dimensional.layers.{CCWorld, CCWorldServer}
 import net.minecraft.world.DimensionType
 import net.minecraftforge.common.DimensionManager
 
-import java.io.File
 import java.util
 
 case class OpenTerrainGeneratorLayer(_realStartCubeY: Int, spec: OpenTerrainGeneratorLayerSpec, originalWorld: CCWorld) extends DimensionalLayer {
@@ -18,15 +16,7 @@ case class OpenTerrainGeneratorLayer(_realStartCubeY: Int, spec: OpenTerrainGene
   override type Spec = OpenTerrainGeneratorLayerSpec
   override type G = OpenTerrainGeneratorGenerator
 
-  lazy val presetConfig: DimensionConfig = {
-    val r = new DimensionConfig(
-      spec.presetName,
-      0, false,
-      WorldConfig.fromDisk(new File(OTG.getEngine.getOTGRootFolder.getAbsolutePath + "/worlds/" + spec.presetName))
-    )
-    spec.seedOverride.map(_.toString).foreach(r.Seed = _)
-    r
-  }
+  lazy val presetConfig: DimensionConfig = spec.toOTGConfigServer
 
   override lazy val dimensionType: DimensionType = {
     val reservedIds: util.HashMap[Integer, String] = OTG.getEngine.getModPackConfigManager.getReservedDimIds
