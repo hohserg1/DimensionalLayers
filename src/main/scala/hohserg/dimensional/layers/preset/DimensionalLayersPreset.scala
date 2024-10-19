@@ -41,6 +41,7 @@ object DimensionalLayersPreset {
       .filter(_.nonEmpty)
       .orElse(Try(Configuration.defaultPreset).filter(_.nonEmpty))
       .map(Serialization.gson.fromJson(_, classOf[DimensionalLayersPreset]))
+      .filter(_ != null)
     match {
       case Failure(exception) =>
         handleError(settings, exception)
