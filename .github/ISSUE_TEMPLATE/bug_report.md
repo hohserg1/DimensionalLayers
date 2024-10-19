@@ -12,6 +12,10 @@ List of mods which required for reproduce bug.
 
 **World customization preset**
 
+**World seed**
+
+**Teleport command to problematic coordinates**
+
 **Describe the bug**
 A clear and concise description of what the bug is.
 
