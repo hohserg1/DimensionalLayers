@@ -28,6 +28,7 @@ class GuiSettingsLayer(parent: GuiSetupDimensionalLayersPreset, val layer: OpenT
 
     addElement(new OTGConfigPanel(this))
 
+    addLink("Wiki", "https://openterraingen.fandom.com/wiki/GUI_and_Commands", RelativeCoord.alignRight(-10 - fr.getStringWidth("Wiki")), RelativeCoord.verticalCenterMax(0))
   }
 
   override def onSelected(item: GuiBlocksList.DrawableBlock): Unit = ???
