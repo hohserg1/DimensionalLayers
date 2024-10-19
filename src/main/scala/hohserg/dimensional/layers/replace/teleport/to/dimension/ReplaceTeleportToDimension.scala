@@ -8,14 +8,14 @@ import net.minecraft.init.Blocks
 import net.minecraft.util.math.{BlockPos, MathHelper}
 import net.minecraftforge.event.entity.EntityTravelToDimensionEvent
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import net.minecraftforge.fml.common.eventhandler.{EventPriority, SubscribeEvent}
 
 import scala.math.{abs, min}
 
 @EventBusSubscriber
 object ReplaceTeleportToDimension {
 
-  @SubscribeEvent
+  @SubscribeEvent(priority = EventPriority.HIGH)
   def changeLayerInsteadOfDimension(e: EntityTravelToDimensionEvent): Unit = {
     val entity = e.getEntity
     entity.world match {
@@ -71,7 +71,7 @@ object ReplaceTeleportToDimension {
   }
 
   private def isTopBlockValid(fineY: Int, nearestTargetLayer: DimensionalLayer): Boolean =
-    fineY != 0 && fineY != nearestTargetLayer.bounds.virtualStartBlockY && fineY != nearestTargetLayer.bounds.virtualEndBlockY
+    fineY != 0 && fineY != nearestTargetLayer.bounds.virtualStartBlockY && fineY != nearestTargetLayer.bounds.virtualEndBlockY + 1
 
 
   def clampCoord(v: Double, world: CCWorldServer): Double =
