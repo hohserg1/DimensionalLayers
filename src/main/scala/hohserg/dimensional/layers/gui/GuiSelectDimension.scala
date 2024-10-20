@@ -3,11 +3,9 @@ package hohserg.dimensional.layers.gui
 import com.google.common.cache.LoadingCache
 import hohserg.dimensional.layers.gui.GuiSelectDimension.DrawableDim
 import hohserg.dimensional.layers.gui.IconUtils._
+import hohserg.dimensional.layers.preset.DimensionalLayersPreset
 import net.minecraft.world.DimensionType
-import net.minecraftforge.common.DimensionManager
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
-
-import scala.collection.JavaConverters._
 
 @SideOnly(Side.CLIENT)
 abstract class GuiSelectDimension(parent: GuiBase,
@@ -26,7 +24,7 @@ object GuiSelectDimension {
   final val itemWidth = IconUtils.width
 
 
-  lazy val allDimensions: Seq[DrawableDim] = DimensionManager.getRegisteredDimensions.keySet().asScala.map(DrawableDim).toIndexedSeq
+  lazy val allDimensions: Seq[DrawableDim] = DimensionalLayersPreset.availableDims.map(DrawableDim).toIndexedSeq
 
   val dimLinesByLen: LoadingCache[Integer, Seq[GuiTileList.GuiTileLine[DrawableDim]]] = GuiTileList.createLinesCache(allDimensions, itemWidth)
 
