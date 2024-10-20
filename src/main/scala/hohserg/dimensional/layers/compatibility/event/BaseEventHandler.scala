@@ -29,6 +29,8 @@ class BaseEventHandler[E <: Event](modidSet: Set[String]) {
 
   def handle(e: E): Unit = {
     initListeners(e)
+    if (listeners.isEmpty)
+      MinecraftForge.EVENT_BUS.unregister(this)
   }
 
   def post(fakeEvent: E): Unit = {

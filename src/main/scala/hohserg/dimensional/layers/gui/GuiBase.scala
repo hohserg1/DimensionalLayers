@@ -1,9 +1,11 @@
 package hohserg.dimensional.layers.gui
 
+import hohserg.dimensional.layers.Main
 import hohserg.dimensional.layers.gui.GuiClickableButton.Handler
 import hohserg.dimensional.layers.gui.RelativeCoord.{alignLeft, alignTop}
 import net.minecraft.client.gui.{FontRenderer, GuiScreen}
 import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.util.text.TextFormatting
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 import scala.collection.mutable.ListBuffer
@@ -20,6 +22,9 @@ class GuiBase(val parent: GuiScreen) extends GuiScreen {
 
   protected def show(nextGuiByParent: this.type => GuiScreen): Handler =
     () => mc.displayGuiScreen(nextGuiByParent(this))
+
+  protected def showWarning(msg: String, desc: String): Handler =
+    () => Main.sided.printSimpleError(msg, desc)
 
   private var elementId = 0
 
@@ -65,6 +70,26 @@ class GuiBase(val parent: GuiScreen) extends GuiScreen {
     drawScreenPostListeners += {
       (_, _, _) => drawString(fontRenderer, text, x.absoluteCoord(0, 0, width, height), y.absoluteCoord(0, 0, width, height), color)
     }
+  }
+
+  def addLink(text: String, link: String, x: RelativeCoord, y: RelativeCoord): Unit = {
+    addLabel(TextFormatting.UNDERLINE + text, x, y, 0xFF5555FF)
+    mouseClickedListeners += {
+      (mouseX, mouseY, _) =>
+        val currX = x.absoluteCoord(0, 0, width, height)
+        val currY = y.absoluteCoord(0, 0, width, height)
+        if (currX <= mouseX && mouseX <= currX + fr.getStringWidth(text) &&
+          currY <= mouseY && mouseY <= currY + fr.FONT_HEIGHT
+        ) {
+          val guiConfirmOpenLink = new GuiAcceptOpenLink(this, link)
+          guiConfirmOpenLink.disableSecurityWarning()
+          mc.displayGuiScreen(guiConfirmOpenLink)
+        }
+    }
+  }
+
+  override def confirmClicked(result: Boolean, id: Int): Unit = {
+    super.confirmClicked(result, 31102009)
   }
 
   def addCenteredLabel(text: String, x: RelativeCoord, y: RelativeCoord, color: Int): Unit = {

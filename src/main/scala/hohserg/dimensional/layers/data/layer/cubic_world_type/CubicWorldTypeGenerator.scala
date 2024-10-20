@@ -4,6 +4,7 @@ import hohserg.dimensional.layers.CCWorldServer
 import hohserg.dimensional.layers.data.layer.base.DimensionalGenerator
 import hohserg.dimensional.layers.worldgen.proxy.ProxyCube
 import hohserg.dimensional.layers.worldgen.proxy.server.ProxyWorldServer
+import hohserg.dimensional.layers.worldgen.proxy.server.ProxyWorldServer.createLayerWorldInfo
 import io.github.opencubicchunks.cubicchunks.api.world.ICube
 import io.github.opencubicchunks.cubicchunks.api.worldgen.CubePrimer
 import net.minecraft.entity.EnumCreatureType
@@ -15,7 +16,12 @@ import java.util
 class CubicWorldTypeGenerator(original: CCWorldServer, val layer: CubicWorldTypeLayer) extends DimensionalGenerator {
   override type L = CubicWorldTypeLayer
 
-  override val proxyWorld = ProxyWorldServer(original, layer, this)
+  override val proxyWorld = new ProxyWorldServer(
+    original,
+    layer,
+    this,
+    createLayerWorldInfo(original, layer.spec.seedOverride, layer.spec.cubicWorldType, layer.spec.worldTypePreset)
+  )
 
   val generator = spec.cubicWorldType.createCubeGenerator(proxyWorld)
 

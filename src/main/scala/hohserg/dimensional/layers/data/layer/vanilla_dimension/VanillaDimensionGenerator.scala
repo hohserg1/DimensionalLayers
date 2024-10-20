@@ -3,6 +3,7 @@ package hohserg.dimensional.layers.data.layer.vanilla_dimension
 import com.google.common.cache.{CacheBuilder, CacheLoader, LoadingCache}
 import hohserg.dimensional.layers.data.layer.base.{BiomeGeneratorHelper, DimensionalGenerator}
 import hohserg.dimensional.layers.worldgen.proxy.server.ProxyWorldServer
+import hohserg.dimensional.layers.worldgen.proxy.server.ProxyWorldServer.createLayerWorldInfo
 import hohserg.dimensional.layers.{CCWorldServer, Main}
 import io.github.opencubicchunks.cubicchunks.api.util.Coords
 import io.github.opencubicchunks.cubicchunks.api.world.ICube
@@ -24,10 +25,14 @@ class VanillaDimensionGenerator(original: CCWorldServer, val layer: VanillaDimen
   override type L = VanillaDimensionLayer
   override type BiomeContext = Array[Biome]
 
-  override val proxyWorld = ProxyWorldServer(original, layer, this)
+  override val proxyWorld = new ProxyWorldServer(
+    original,
+    layer,
+    this,
+    createLayerWorldInfo(original, layer.spec.seedOverride, layer.spec.worldType, layer.spec.worldTypePreset)
+  )
   private val provider: WorldProvider = proxyWorld.provider
   val vanillaGenerator: IChunkGenerator = provider.createChunkGenerator()
-  var optimizationHack: Boolean = false
   var biomes: Array[Biome] = _
 
   val lastChunks: LoadingCache[(Int, Int), Chunk] =

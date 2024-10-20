@@ -1,6 +1,7 @@
 package hohserg.dimensional.layers.worldgen.proxy.server
 
-import hohserg.dimensional.layers.Main
+import hohserg.dimensional.layers.CCWorldServer
+import hohserg.dimensional.layers.data.layer.base.DimensionalLayer
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.datafix.DataFixesManager
 import net.minecraft.world.chunk.Chunk
@@ -11,7 +12,7 @@ import net.minecraft.world.{World, WorldProvider}
 
 import java.io.File
 
-class FakeSaveHandler(val loadWorldInfo: WorldInfo) extends ISaveHandler {
+class FakeSaveHandler(original: CCWorldServer, layer: DimensionalLayer, val loadWorldInfo: WorldInfo) extends ISaveHandler {
 
   override def checkSessionLock(): Unit = ()
 
@@ -37,11 +38,7 @@ class FakeSaveHandler(val loadWorldInfo: WorldInfo) extends ISaveHandler {
 
   override def flush(): Unit = ???
 
-  override lazy val getWorldDirectory: File = {
-    val r = new File("./" + Main.modid + "/fake_save_handle/")
-    r.mkdirs()
-    r
-  }
+  override def getWorldDirectory: File = layer.fakeSaveLocation
 
   lazy val mapDataDir: File = {
     val r = new File(getWorldDirectory, "data")

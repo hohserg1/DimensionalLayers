@@ -4,6 +4,7 @@ import com.google.gson.JsonParseException
 import hohserg.dimensional.layers.data.LayerMap
 import hohserg.dimensional.layers.data.layer.base.Layer
 import hohserg.dimensional.layers.preset.DimensionalLayersPreset.IllegalPresetException
+import hohserg.dimensional.layers.preset.spec.{DimensionLayerSpec, LayerSpec, SolidLayerSpec}
 import hohserg.dimensional.layers.{CCWorld, Configuration, Main}
 import io.github.opencubicchunks.cubicchunks.api.util.IntRange
 import net.minecraft.init.{Biomes, Blocks}
@@ -40,6 +41,7 @@ object DimensionalLayersPreset {
       .filter(_.nonEmpty)
       .orElse(Try(Configuration.defaultPreset).filter(_.nonEmpty))
       .map(Serialization.gson.fromJson(_, classOf[DimensionalLayersPreset]))
+      .filter(_ != null)
     match {
       case Failure(exception) =>
         handleError(settings, exception)
@@ -51,9 +53,15 @@ object DimensionalLayersPreset {
   def isNotVanillaDim(dimensionType: DimensionType): Boolean =
     dimensionType != DimensionType.OVERWORLD && dimensionType != DimensionType.NETHER && dimensionType != DimensionType.THE_END
 
+  lazy val availableDims: Seq[DimensionType] = DimensionManager.getRegisteredDimensions.asScala.toSeq
+    .collect { case (dimType, realUsedIds) if !realUsedIds.isEmpty && Try(DimensionManager.createProviderFor(dimType.getId)).isSuccess => dimType }
+
 
   lazy val mixedPresetTop: List[DimensionLayerSpec] =
-    DimensionManager.getRegisteredDimensions.keySet().asScala.filter(isNotVanillaDim).map(DimensionLayerSpec(_)).toList
+    availableDims
+      .filter(isNotVanillaDim)
+      .map(DimensionLayerSpec(_))
+      .toList
 
   def mixedPreset =
     DimensionalLayersPreset(

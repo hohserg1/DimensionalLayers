@@ -5,10 +5,15 @@ import hohserg.dimensional.layers.gui.settings.GuiFakeCreateWorld
 import hohserg.dimensional.layers.preset.{DimensionalLayersPreset, Serialization}
 import hohserg.dimensional.layers.sided.CommonLogic
 import net.minecraft.client.Minecraft
+import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.Mod.{EventBusSubscriber, EventHandler}
 import net.minecraftforge.fml.common.event.{FMLInitializationEvent, FMLPostInitializationEvent, FMLPreInitializationEvent, FMLServerStoppedEvent}
-import net.minecraftforge.fml.common.{Mod, SidedProxy}
+import net.minecraftforge.fml.common.eventhandler.{EventPriority, SubscribeEvent}
+import net.minecraftforge.fml.common.{Loader, Mod, SidedProxy}
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
+import org.apache.commons.io.FileUtils
+
+import java.io.File
 
 @Mod(modid = Main.modid, name = Main.name, modLanguage = "scala")
 @EventBusSubscriber
@@ -21,6 +26,10 @@ object Main {
 
   @SidedProxy(clientSide = "hohserg.dimensional.layers.sided.ClientLogic", serverSide = "hohserg.dimensional.layers.sided.ServerLogic")
   var sided: CommonLogic = _
+
+  final val otgModid = "openterraingenerator"
+
+  lazy val otgPresent = Loader.isModLoaded(otgModid)
 
   @EventHandler
   def preInit(e: FMLPreInitializationEvent): Unit = {
@@ -47,5 +56,12 @@ object Main {
   @EventHandler
   def serverStopped(e: FMLServerStoppedEvent): Unit = {
     println("serverStopped")
+  }
+
+  @SubscribeEvent(priority = EventPriority.LOW)
+  def unmarkDLWorldFromOTG(e: WorldEvent.Save): Unit = {
+    if (e.getWorld.getWorldType == DimensionalLayersWorldType) {
+      FileUtils.deleteDirectory(new File(e.getWorld.getSaveHandler.getWorldDirectory, "OpenTerrainGenerator"))
+    }
   }
 }

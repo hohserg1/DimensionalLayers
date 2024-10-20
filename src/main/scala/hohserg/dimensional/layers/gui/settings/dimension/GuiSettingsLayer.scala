@@ -7,15 +7,13 @@ import hohserg.dimensional.layers.gui._
 import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
 import hohserg.dimensional.layers.gui.settings.dimension.GuiSettingsLayer._
 import hohserg.dimensional.layers.gui.settings.{GuiBaseSettingsLayer, GuiFakeCreateWorld}
-import hohserg.dimensional.layers.preset.{DimensionLayerSpec, LayerSpec}
-import hohserg.dimensional.layers.{Main, clamp}
+import hohserg.dimensional.layers.preset.spec.{DimensionLayerSpec, LayerSpec}
+import hohserg.dimensional.layers.{Main, clamp, toLongSeed}
 import io.github.opencubicchunks.cubicchunks.api.world.ICubicWorldType
 import net.minecraft.client.resources.I18n
 import net.minecraft.util.ResourceLocation
 import net.minecraft.world.WorldType
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
-
-import scala.util.Try
 
 @SideOnly(Side.CLIENT)
 object GuiSettingsLayer {
@@ -28,6 +26,7 @@ object GuiSettingsLayer {
       .filter(_ != null)
       .filter(_.canBeCreated)
       .filter(!_.isInstanceOf[ICubicWorldType])
+      .filter(_.getName != "OTG")
 
   class CyclicValueHolder[A](init: A, possible: Seq[A])(implicit gui: GuiBaseSettings)
     extends ValueHolder[Int](possible.indexOf(init), _ % possible.size) {
@@ -53,7 +52,7 @@ class GuiSettingsLayer(parent: GuiSetupDimensionalLayersPreset, index: Int, laye
   override def buildLayerSpec(): LayerSpec =
     DimensionLayerSpec(
       layer.dimensionType,
-      Some(seedOverrideH.get).filter(_.nonEmpty).map(toLongSeed),
+      toLongSeed(seedOverrideH.get),
       topOffset.get,
       bottomOffset.get,
       worldTypeH.getA,
@@ -91,9 +90,6 @@ class GuiSettingsLayer(parent: GuiSetupDimensionalLayersPreset, index: Int, laye
       guiFakeCreateWorld.chunkProviderSettingsJson = ""
     }))
   }
-
-  def toLongSeed(str: String): Long =
-    Try(str.toLong).filter(_ != 0).getOrElse(str.hashCode.toLong)
 
   override def drawScreenPre(mouseX: Int, mouseY: Int, partialTicks: Float): Unit = {
     super.drawScreenPre(mouseX, mouseY, partialTicks)

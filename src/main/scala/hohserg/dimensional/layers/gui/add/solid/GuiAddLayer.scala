@@ -2,7 +2,7 @@ package hohserg.dimensional.layers.gui.add.solid
 
 import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
 import hohserg.dimensional.layers.gui.settings.solid
-import hohserg.dimensional.layers.preset.SolidLayerSpec
+import hohserg.dimensional.layers.preset.spec.SolidLayerSpec
 import net.minecraft.init.Blocks
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 

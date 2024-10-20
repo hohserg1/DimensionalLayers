@@ -2,6 +2,7 @@ package hohserg.dimensional.layers.preset
 
 import com.google.gson._
 import com.google.gson.stream.MalformedJsonException
+import hohserg.dimensional.layers.preset.spec._
 import net.minecraft.block.properties.IProperty
 import net.minecraft.block.state.IBlockState
 import net.minecraft.command.CommandBase
@@ -24,6 +25,7 @@ object Serialization {
     val builder = new GsonBuilder
     builder
       .registerSerializer(optionSerializer[Long])
+      .registerSerializer(optionSerializer[String])
       .registerSerializer(mapSerializer)
       .registerMapper[DimensionType, String](_.getName, DimensionType.byName)
       .registerMapper[WorldType, String](_.getName, WorldType.byName)
@@ -35,9 +37,27 @@ object Serialization {
       .registerSerializer(dimensionLayerSpecSerializer, hierarchic = false)
       .registerSerializer(solidLayerSpecSerializer, hierarchic = false)
       .registerSerializer(cubicWorldTypeLayerSpecSerializer, hierarchic = false)
+      .registerSerializer(openTerrainGeneratorLayerSpecSpecSerializer, hierarchic = false)
 
     builder.create()
   }
+
+  def openTerrainGeneratorLayerSpecSpecSerializer: JsonSerializer[OpenTerrainGeneratorLayerSpec] with JsonDeserializer[OpenTerrainGeneratorLayerSpec] =
+    new JsonSerializer[OpenTerrainGeneratorLayerSpec] with JsonDeserializer[OpenTerrainGeneratorLayerSpec] {
+      override def serialize(src: OpenTerrainGeneratorLayerSpec, typeOfSrc: Type, context: JsonSerializationContext): JsonElement =
+        context.serialize(ListMap(
+          "presetName" -> src.presetName,
+          putOrElse("configYml", src.configYml, None)
+        ))
+
+      override def deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): OpenTerrainGeneratorLayerSpec = {
+        val jsonObject = json.getAsJsonObject
+        OpenTerrainGeneratorLayerSpec(
+          jsonObject.get("presetName").getAsString,
+          getOrElse(jsonObject, "configYml", None, context)
+        )
+      }
+    }
 
   def cubicWorldTypeLayerSpecSerializer: JsonSerializer[CubicWorldTypeLayerSpec] with JsonDeserializer[CubicWorldTypeLayerSpec] =
     new JsonSerializer[CubicWorldTypeLayerSpec] with JsonDeserializer[CubicWorldTypeLayerSpec] {
@@ -136,6 +156,9 @@ object Serialization {
 
         else if (jsonObject.has("cubicWorldType"))
           context.deserialize(jsonObject, classOf[CubicWorldTypeLayerSpec])
+
+        else if (jsonObject.has("presetName"))
+          context.deserialize(jsonObject, classOf[OpenTerrainGeneratorLayerSpec])
 
         else
           throw new MalformedJsonException("unknown layer type")

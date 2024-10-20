@@ -1,15 +1,15 @@
 package hohserg.dimensional.layers.data.layer.vanilla_dimension
 
-import hohserg.dimensional.layers.data.layer.base.{DimensionalGenerator, DimensionalLayer, DimensionalLayerBounds}
-import hohserg.dimensional.layers.preset.DimensionLayerSpec
+import hohserg.dimensional.layers.data.layer.base.{DimensionalLayer, DimensionalLayerBounds}
+import hohserg.dimensional.layers.preset.spec.DimensionLayerSpec
 import hohserg.dimensional.layers.{CCWorld, CCWorldServer}
 import net.minecraft.world.DimensionType
 
 case class VanillaDimensionLayer(_realStartCubeY: Int, spec: DimensionLayerSpec, originalWorld: CCWorld) extends DimensionalLayer {
   override type Spec = DimensionLayerSpec
-  override type G = DimensionalGenerator
+  override type G = VanillaDimensionGenerator
 
-  override def bounds: DimensionalLayerBounds = new DimensionalLayerBounds {
+  override val bounds: DimensionalLayerBounds = new DimensionalLayerBounds {
     override val realStartCubeY: Int = _realStartCubeY
     override val cubeHeight: Int = spec.height
     override val virtualStartCubeY: Int = spec.bottomOffset
@@ -20,6 +20,6 @@ case class VanillaDimensionLayer(_realStartCubeY: Int, spec: DimensionLayerSpec,
 
   override def dimensionType: DimensionType = spec.dimensionType
 
-  override def createGenerator(original: CCWorldServer): DimensionalGenerator = new VanillaDimensionGenerator(original, this)
+  override def createGenerator(original: CCWorldServer): VanillaDimensionGenerator = new VanillaDimensionGenerator(original, this)
 
 }

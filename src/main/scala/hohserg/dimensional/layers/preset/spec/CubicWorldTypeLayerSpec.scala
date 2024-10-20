@@ -1,43 +1,16 @@
-package hohserg.dimensional.layers.preset
+package hohserg.dimensional.layers.preset.spec
 
 import hohserg.dimensional.layers.CCWorld
-import hohserg.dimensional.layers.data.layer.base.Layer
 import hohserg.dimensional.layers.data.layer.cubic_world_type.CubicWorldTypeLayer
-import hohserg.dimensional.layers.data.layer.solid.SolidLayer
-import hohserg.dimensional.layers.data.layer.vanilla_dimension.VanillaDimensionLayer
-import hohserg.dimensional.layers.preset.CubicWorldTypeLayerSpec.dummyWorld
+import hohserg.dimensional.layers.gui.preset.list.{GuiCubicWorldTypeLayerEntry, GuiLayerEntry, GuiLayersList}
+import hohserg.dimensional.layers.preset.spec.CubicWorldTypeLayerSpec.dummyWorld
 import hohserg.dimensional.layers.worldgen.proxy.server.BaseWorldServer
 import io.github.opencubicchunks.cubicchunks.api.util.Coords
 import io.github.opencubicchunks.cubicchunks.api.world.ICubicWorldType
-import net.minecraft.block.state.IBlockState
-import net.minecraft.init.Biomes
-import net.minecraft.world._
-import net.minecraft.world.biome.Biome
 import net.minecraft.world.chunk.IChunkProvider
 import net.minecraft.world.storage.WorldInfo
-
-sealed trait LayerSpec {
-  def height: Int
-
-  def toLayer: (Int, this.type, CCWorld) => Layer
-
-  def toLayer(startFromCubeY: Int, original: CCWorld): Layer = toLayer(startFromCubeY, this, original)
-
-}
-
-case class DimensionLayerSpec(dimensionType: DimensionType,
-                              seedOverride: Option[Long] = None,
-                              topOffset: Int = 0, bottomOffset: Int = 0,
-                              worldType: WorldType = WorldType.DEFAULT, worldTypePreset: String = "") extends LayerSpec {
-
-  override val height: Int = 16 - topOffset - bottomOffset
-
-  override val toLayer = VanillaDimensionLayer
-}
-
-case class SolidLayerSpec(filler: IBlockState, height: Int, biome: Biome = Biomes.PLAINS) extends LayerSpec {
-  override val toLayer = SolidLayer
-}
+import net.minecraft.world._
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 case class CubicWorldTypeLayerSpec(cubicWorldType: WorldType with ICubicWorldType, worldTypePreset: String = "",
                                    dimensionType1: DimensionType = DimensionType.OVERWORLD,
@@ -60,6 +33,9 @@ case class CubicWorldTypeLayerSpec(cubicWorldType: WorldType with ICubicWorldTyp
     val (virtualStartCubeY, virtualEndCubeY) = rangeCube(GameType.SURVIVAL, isMapFeaturesEnabled = true)
     virtualEndCubeY - virtualStartCubeY + 1
   }
+
+  @SideOnly(Side.CLIENT)
+  override def toGuiLayerEntry(parent: GuiLayersList): GuiLayerEntry = new GuiCubicWorldTypeLayerEntry(parent, this)
 }
 
 object CubicWorldTypeLayerSpec {

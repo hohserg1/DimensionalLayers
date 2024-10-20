@@ -4,7 +4,7 @@ import hohserg.dimensional.layers.Main
 import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
 import hohserg.dimensional.layers.gui.preset.list.GuiLayerEntry._
 import hohserg.dimensional.layers.gui.{DrawableArea, GuiBase, IconUtils, RelativeCoord}
-import hohserg.dimensional.layers.preset.{CubicWorldTypeLayerSpec, DimensionLayerSpec, LayerSpec, SolidLayerSpec}
+import hohserg.dimensional.layers.preset.spec.LayerSpec
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
@@ -17,12 +17,6 @@ import java.awt.Rectangle
 
 @SideOnly(Side.CLIENT)
 object GuiLayerEntry {
-  def apply(parent: GuiLayersList, layer: LayerSpec): GuiLayerEntry =
-    layer match {
-      case spec: DimensionLayerSpec => new GuiDimensionLayerEntry(parent, spec)
-      case spec: SolidLayerSpec => new GuiSolidLayerEntry(parent, spec)
-      case spec: CubicWorldTypeLayerSpec => new GuiCubicWorldTypeLayerEntry(parent, spec)
-    }
 
   val texture = new ResourceLocation(Main.modid, "textures/gui/layer_entry.png")
 

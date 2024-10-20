@@ -6,6 +6,7 @@ import hohserg.dimensional.layers.gui.GuiBaseSettings.ValueHolder
 import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
 import hohserg.dimensional.layers.gui.{GuiScrollingListElement, IconUtils, StateComposite}
 import hohserg.dimensional.layers.preset._
+import hohserg.dimensional.layers.preset.spec.LayerSpec
 import net.minecraft.client.renderer.Tessellator
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
@@ -29,13 +30,13 @@ class GuiLayersList(val parent: GuiSetupDimensionalLayersPreset, settings: Strin
 
   val entries: mutable.Buffer[GuiLayerEntry] =
     fromPreset.layers
-      .map(GuiLayerEntry(this, _))
+      .map(_.toGuiLayerEntry(this))
       .toBuffer
 
   setScrollDistanceWithLimits(scrollDistance)
 
   def add(layer: LayerSpec): Unit = {
-    GuiLayerEntry(this, layer) +=: entries
+    layer.toGuiLayerEntry(this) +=: entries
   }
 
   def scrollUpOnce(): Unit = {

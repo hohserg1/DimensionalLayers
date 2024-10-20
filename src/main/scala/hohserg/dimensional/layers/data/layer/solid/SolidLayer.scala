@@ -1,7 +1,7 @@
 package hohserg.dimensional.layers.data.layer.solid
 
 import hohserg.dimensional.layers.data.layer.base.{Layer, LayerBounds}
-import hohserg.dimensional.layers.preset.SolidLayerSpec
+import hohserg.dimensional.layers.preset.spec.SolidLayerSpec
 import hohserg.dimensional.layers.{CCWorld, CCWorldServer}
 
 case class SolidLayer(_realStartCubeY: Int, spec: SolidLayerSpec, originalWorld: CCWorld) extends Layer {

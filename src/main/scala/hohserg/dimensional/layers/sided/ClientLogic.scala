@@ -14,14 +14,23 @@ class ClientLogic extends CommonLogic {
 
   override def printError(msg: String, context: String, e: Throwable): Unit = {
     super.printError(msg, context, e)
-    showErrorMsgClient(e, msg)
+    showErrorMsgClient(msg, e)
   }
 
-  private def showErrorMsgClient(exception: Throwable, title: String): Unit = {
+  override def printSimpleError(msg: String, dest: String): Unit = {
+    super.printSimpleError(msg, dest)
+    showErrorMsgClient(msg, dest)
+  }
+
+  private def showErrorMsgClient(title: String, exception: Throwable): Unit = {
+    showErrorMsgClient(title, exception.getMessage + "\nfull stacktrace in log")
+  }
+
+  private def showErrorMsgClient(title: String, desc: String): Unit = {
     Minecraft.getMinecraft.getToastGui.add(new SystemToast(
       SystemToast.Type.NARRATOR_TOGGLE,
       new TextComponentString(title),
-      new TextComponentString(exception.getMessage + "\nfull stacktrace in log")
+      new TextComponentString(desc)
     ))
   }
 

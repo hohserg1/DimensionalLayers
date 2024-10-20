@@ -5,8 +5,8 @@ import hohserg.dimensional.layers.Main
 import hohserg.dimensional.layers.gui.GuiSelectDimension.{DrawableDim, allDimensions, itemWidth}
 import hohserg.dimensional.layers.gui.settings.cubic.worldtype.GuiSelectCompatibleDimension.dimLinesByLenByCubicWorldType
 import hohserg.dimensional.layers.gui.{GuiSelectDimension, GuiTileList}
-import hohserg.dimensional.layers.preset.CubicWorldTypeLayerSpec
-import hohserg.dimensional.layers.preset.CubicWorldTypeLayerSpec._
+import hohserg.dimensional.layers.preset.spec.CubicWorldTypeLayerSpec
+import hohserg.dimensional.layers.preset.spec.CubicWorldTypeLayerSpec._
 import io.github.opencubicchunks.cubicchunks.api.world.ICubicWorldType
 import it.unimi.dsi.fastutil.ints.{Int2ObjectLinkedOpenHashMap, Int2ObjectMap, IntSortedSet}
 import net.minecraft.world.{DimensionType, WorldServer, WorldType}

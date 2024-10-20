@@ -16,9 +16,11 @@ trait LayerManager[SidedOriginalWorld <: CCWorld] {
 
   def getWorldData(world: SidedOriginalWorld): Option[WorldData] =
     if (haveWorldLayers(world))
-      Some(worldDataForRealDimension.getOrElseUpdate(world.provider.getDimension, new WorldData(world)))
+      Some(worldDataForRealDimension.getOrElseUpdate(world.provider.getDimension, createWorldData(world)))
     else
       None
+
+  protected def createWorldData(world: SidedOriginalWorld): WorldData = new WorldData(world)
 
   @SubscribeEvent
   def unloadWorld(e: WorldEvent.Unload): Unit = {

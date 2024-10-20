@@ -4,7 +4,7 @@ import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
 import hohserg.dimensional.layers.gui.settings.solid
 import hohserg.dimensional.layers.gui.settings.solid.GuiBlocksList.DrawableBlock
 import hohserg.dimensional.layers.gui.{GuiBase, IconUtils}
-import hohserg.dimensional.layers.preset.SolidLayerSpec
+import hohserg.dimensional.layers.preset.spec.SolidLayerSpec
 import net.minecraft.client.renderer.{GlStateManager, RenderHelper}
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 

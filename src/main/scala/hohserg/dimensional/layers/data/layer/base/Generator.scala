@@ -38,8 +38,9 @@ trait Generator {
 
 trait DimensionalGenerator extends Generator {
 
-  def proxyWorld: ProxyWorldServer
+  override type L <: DimensionalLayer
 
+  def proxyWorld: ProxyWorldServer
 }
 
 trait BiomeGeneratorHelper {
