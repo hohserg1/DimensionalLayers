@@ -25,6 +25,7 @@ object Serialization {
     val builder = new GsonBuilder
     builder
       .registerSerializer(optionSerializer[Long])
+      .registerSerializer(optionSerializer[String])
       .registerSerializer(mapSerializer)
       .registerMapper[DimensionType, String](_.getName, DimensionType.byName)
       .registerMapper[WorldType, String](_.getName, WorldType.byName)
@@ -46,14 +47,16 @@ object Serialization {
       override def serialize(src: OpenTerrainGeneratorLayerSpec, typeOfSrc: Type, context: JsonSerializationContext): JsonElement =
         context.serialize(ListMap(
           "presetName" -> src.presetName,
-          putOrElse("seedOverride", src.seedOverride, None)
+          putOrElse("seedOverride", src.seedOverride, None),
+          putOrElse("configYml", src.configYml, None)
         ))
 
       override def deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): OpenTerrainGeneratorLayerSpec = {
         val jsonObject = json.getAsJsonObject
         OpenTerrainGeneratorLayerSpec(
           jsonObject.get("presetName").getAsString,
-          getOrElse(jsonObject, "seedOverride", None, context)
+          getOrElse(jsonObject, "seedOverride", None, context),
+          getOrElse(jsonObject, "configYml", None, context)
         )
       }
     }
