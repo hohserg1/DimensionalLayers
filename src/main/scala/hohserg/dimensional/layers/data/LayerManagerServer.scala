@@ -2,9 +2,11 @@ package hohserg.dimensional.layers.data
 
 import com.pg85.otg.OTG
 import com.pg85.otg.configuration.dimensions.{DimensionConfig, DimensionsConfig}
+import hohserg.dimensional.layers.Main.otgModid
 import hohserg.dimensional.layers.data.layer.otg.OpenTerrainGeneratorLayer
 import hohserg.dimensional.layers.{CCWorldServer, Main}
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber
+import net.minecraftforge.fml.common.Optional
 
 import java.io.File
 import java.util
@@ -15,8 +17,14 @@ object LayerManagerServer extends LayerManager[CCWorldServer] {
 
   override protected def createWorldData(world: CCWorldServer): WorldData = {
     val r = super.createWorldData(world)
-    val otgLayers = r.layers
-      .collect { case (_, l: OpenTerrainGeneratorLayer) => l }
+    if (Main.otgPresent)
+      setupOTG(world, r)
+    r
+  }
+
+  @Optional.Method(modid = otgModid)
+  def setupOTG(world: CCWorldServer, data: WorldData): Unit = {
+    val otgLayers = data.layers.collect { case (_, l: OpenTerrainGeneratorLayer) => l }
     if (otgLayers.nonEmpty) {
       val firstLayer = otgLayers.head
       val fakeWorldFolder = new File(world.getSaveHandler.getWorldDirectory, Main.modid + "/fake_save_handler/otg/")
@@ -32,6 +40,5 @@ object LayerManagerServer extends LayerManager[CCWorldServer] {
 
       OTG.setDimensionsConfig(forgeWorldConfig)
     }
-    r
   }
 }

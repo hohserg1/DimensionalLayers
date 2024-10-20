@@ -27,7 +27,9 @@ object Main {
   @SidedProxy(clientSide = "hohserg.dimensional.layers.sided.ClientLogic", serverSide = "hohserg.dimensional.layers.sided.ServerLogic")
   var sided: CommonLogic = _
 
-  lazy val otgPresent = Loader.isModLoaded("openterraingenerator")
+  final val otgModid = "openterraingenerator"
+
+  lazy val otgPresent = Loader.isModLoaded(otgModid)
 
   @EventHandler
   def preInit(e: FMLPreInitializationEvent): Unit = {
