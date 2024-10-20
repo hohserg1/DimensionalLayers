@@ -1,4 +1,4 @@
-package hohserg.dimensional.layers.replace.teleport.to.dimension
+package hohserg.dimensional.layers.feature
 
 import hohserg.dimensional.layers.CCWorldServer
 import hohserg.dimensional.layers.data.LayerManagerServer
