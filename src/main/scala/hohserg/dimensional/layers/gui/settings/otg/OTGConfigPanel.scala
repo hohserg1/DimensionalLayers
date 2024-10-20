@@ -15,6 +15,8 @@ class OTGConfigPanel(parent: otg.GuiSettingsLayer) extends GuiElement {
 
   private val fakeParent = new OTGGuiDimensionList(fakeParent1)
   fakeParent.setWorldAndResolution(Minecraft.getMinecraft, parent.width, parent.height)
+  fakeParent.selectedDimension = parent.layer.toOTGConfigServer
+
   val settingsList = new OTGGuiDimensionSettingsList(fakeParent, 10, parent.height - 10, 10, parent.width - 110, Minecraft.getMinecraft) {
     override def applySettings(): Unit = {
       super.applySettings()
