@@ -2,18 +2,13 @@ package hohserg.dimensional.layers.gui.settings.otg
 
 import com.pg85.otg.configuration.dimensions.DimensionConfig
 import hohserg.dimensional.layers.gui.GuiBaseSettings.ValueHolder
-import hohserg.dimensional.layers.gui.GuiTileList.SelectHandler
 import hohserg.dimensional.layers.gui.RelativeCoord
 import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
 import hohserg.dimensional.layers.gui.settings.GuiBaseSettingsLayer
-import hohserg.dimensional.layers.gui.settings.solid.GuiBlocksList
 import hohserg.dimensional.layers.preset.spec.{LayerSpec, OpenTerrainGeneratorLayerSpec}
 
 class GuiSettingsLayer(parent: GuiSetupDimensionalLayersPreset, val layer: OpenTerrainGeneratorLayerSpec, index: Int)
-  extends GuiBaseSettingsLayer(parent, index)
-    with SelectHandler[GuiBlocksList.DrawableBlock] {
-
-  val seedOverrideH = new ValueHolder[String](layer.seedOverride.map(_.toString).getOrElse(""))
+  extends GuiBaseSettingsLayer(parent, index) {
 
   val configYmlH = new ValueHolder[String](layer.toOTGConfigServer.toYamlString)
 
@@ -22,7 +17,6 @@ class GuiSettingsLayer(parent: GuiSetupDimensionalLayersPreset, val layer: OpenT
     configYml = if (hasChanges) Some(configYmlH.get) else None
   )
 
-
   override def initGui(): Unit = {
     super.initGui()
 
@@ -30,6 +24,4 @@ class GuiSettingsLayer(parent: GuiSetupDimensionalLayersPreset, val layer: OpenT
 
     addLink("Wiki", "https://openterraingen.fandom.com/wiki/GUI_and_Commands", RelativeCoord.alignRight(-10 - fr.getStringWidth("Wiki")), RelativeCoord.verticalCenterMax(0))
   }
-
-  override def onSelected(item: GuiBlocksList.DrawableBlock): Unit = ???
 }

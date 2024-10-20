@@ -61,8 +61,3 @@ class GuiAddLayer(parent: GuiSetupDimensionalLayersPreset) extends GuiBase(paren
     drawCenteredString(fontRenderer, "Select a preset", this.width / 2, 16, 0xffFFffFF)
   }
 }
-
-object GuiAddLayer {
-
-
-}
