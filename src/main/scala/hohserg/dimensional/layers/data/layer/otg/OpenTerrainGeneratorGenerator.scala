@@ -24,7 +24,7 @@ import scala.collection.JavaConverters._
 
 class OpenTerrainGeneratorGenerator(original: CCWorldServer, val layer: OpenTerrainGeneratorLayer) extends DimensionalGenerator with BiomeGeneratorHelper {
   override type L = OpenTerrainGeneratorLayer
-  override type BiomeContext = Array[Biome]
+  override type BiomeContext = Array[Byte]
 
   override val proxyWorld = new ProxyWorldServer(
     original,
@@ -35,7 +35,7 @@ class OpenTerrainGeneratorGenerator(original: CCWorldServer, val layer: OpenTerr
 
   private val provider: WorldProvider = proxyWorld.provider
   val vanillaGenerator: IChunkGenerator = provider.createChunkGenerator()
-  var biomes: Array[Biome] = _
+  var biomes: Array[Biome] = new Array[Biome](16 * 16)
 
   val lastChunks: LoadingCache[(Int, Int), Chunk] =
     CacheBuilder.newBuilder()
@@ -66,20 +66,13 @@ class OpenTerrainGeneratorGenerator(original: CCWorldServer, val layer: OpenTerr
       } primer.setBlockState(x, y, z, block)
     }
 
-
-    if (biomes == null)
-      biomes = new Array[Biome](16 * 16)
-    val rawBiomes = chunk.getBiomeArray
-    for (i <- rawBiomes.indices) {
-      biomes(i) = Biome.getBiome(rawBiomes(i), Biomes.DEFAULT)
-    }
-    generateBiomes(primer, biomes)
+    generateBiomes(primer, chunk.getBiomeArray)
 
     primer
   }
 
-  override protected def calcBiome(localBiomeX: Int, localBiomeY: Int, localBiomeZ: Int, biomes: Array[Biome]): Biome =
-    biomes((localBiomeX << 2) & 15 | ((localBiomeZ << 2) & 15) << 4)
+  override protected def calcBiome(localBiomeX: Int, localBiomeY: Int, localBiomeZ: Int, rawBiomes: Array[Byte]): Biome =
+    Biome.getBiome(rawBiomes((localBiomeX << 2) & 15 | ((localBiomeZ << 2) & 15) << 4), Biomes.DEFAULT)
 
   override def populateCube(cube: ICube): Unit = {
     try {
