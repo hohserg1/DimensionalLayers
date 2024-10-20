@@ -46,4 +46,11 @@ package object layers {
         .getOrElse(Failure(new NoSuchElementException(msg)))
   }
 
+  def toLongSeed(str: String): Option[Long] =
+    if (str.isEmpty)
+      None
+    else
+      Some(Try(str.toLong)
+        .filter(_ != 0)
+        .getOrElse(str.hashCode.toLong))
 }

@@ -11,6 +11,7 @@ import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
 import hohserg.dimensional.layers.gui.settings.cubic.worldtype.GuiSettingsLayer.dimensionTypeArea
 import hohserg.dimensional.layers.gui.settings.{GuiBaseSettingsLayer, GuiFakeCreateWorld}
 import hohserg.dimensional.layers.preset.spec.{CubicWorldTypeLayerSpec, LayerSpec}
+import hohserg.dimensional.layers.toLongSeed
 import net.minecraft.client.resources.I18n
 import net.minecraft.world.DimensionType
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}

@@ -5,8 +5,6 @@ import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
 import hohserg.dimensional.layers.preset.spec.LayerSpec
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
-import scala.util.Try
-
 @SideOnly(Side.CLIENT)
 abstract class GuiBaseSettingsLayer(parent: GuiSetupDimensionalLayersPreset, index: Int) extends GuiBaseSettings(parent) {
 
@@ -15,14 +13,5 @@ abstract class GuiBaseSettingsLayer(parent: GuiSetupDimensionalLayersPreset, ind
   override def done(): Unit = {
     parent.layersList.entries.update(index, buildLayerSpec().toGuiLayerEntry(parent.layersList))
     super.done()
-  }
-
-  def toLongSeed(str: String): Option[Long] = {
-    if (str.isEmpty)
-      None
-    else
-      Some(Try(str.toLong)
-        .filter(_ != 0)
-        .getOrElse(str.hashCode.toLong))
   }
 }

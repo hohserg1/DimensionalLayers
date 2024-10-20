@@ -5,7 +5,7 @@ import com.pg85.otg.forge.OTGPlugin
 import hohserg.dimensional.layers.data.layer.base.{BiomeGeneratorHelper, DimensionalGenerator}
 import hohserg.dimensional.layers.worldgen.proxy.server.ProxyWorldServer
 import hohserg.dimensional.layers.worldgen.proxy.server.ProxyWorldServer.createLayerWorldInfo
-import hohserg.dimensional.layers.{CCWorldServer, Main}
+import hohserg.dimensional.layers.{CCWorldServer, Main, toLongSeed}
 import io.github.opencubicchunks.cubicchunks.api.world.ICube
 import io.github.opencubicchunks.cubicchunks.api.worldgen.CubePrimer
 import io.github.opencubicchunks.cubicchunks.core.asm.mixin.core.common.IGameRegistry
@@ -30,7 +30,7 @@ class OpenTerrainGeneratorGenerator(original: CCWorldServer, val layer: OpenTerr
     original,
     layer,
     this,
-    createLayerWorldInfo(original, layer.spec.seedOverride, OTGPlugin.OtgWorldType, "OpenTerrainGenerator")
+    createLayerWorldInfo(original, toLongSeed(layer.spec.toOTGConfigServer.Seed), OTGPlugin.OtgWorldType, "OpenTerrainGenerator")
   )
 
   private val provider: WorldProvider = proxyWorld.provider

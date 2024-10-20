@@ -12,7 +12,7 @@ import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 import java.io.File
 
-case class OpenTerrainGeneratorLayerSpec(presetName: String, seedOverride: Option[Long] = None, configYml: Option[String] = None) extends LayerSpec {
+case class OpenTerrainGeneratorLayerSpec(presetName: String, configYml: Option[String] = None) extends LayerSpec {
   if (!Main.otgPresent)
     throw new IllegalStateException("Attempt to use OTG layer with no OTG in modpack. Install OTG and try again")
 
@@ -24,17 +24,14 @@ case class OpenTerrainGeneratorLayerSpec(presetName: String, seedOverride: Optio
   override def toGuiLayerEntry(parent: GuiLayersList): GuiLayerEntry = new GuiOpenTerrainGeneratorLayerEntry(parent, this)
 
   @Optional.Method(modid = otgModid)
-  def toOTGConfig[A <: DimensionConfigBase](fromYamlString: String => A, defaultFactory: (String, Int, Boolean, WorldConfig) => A): A = {
-    val r = configYml
+  def toOTGConfig[A <: DimensionConfigBase](fromYamlString: String => A, defaultFactory: (String, Int, Boolean, WorldConfig) => A): A =
+    configYml
       .map(fromYamlString)
       .getOrElse(defaultFactory(
         presetName,
         0, false,
         WorldConfig.fromDisk(new File(OTG.getEngine.getOTGRootFolder.getAbsolutePath + "/worlds/" + presetName))
       ))
-    seedOverride.map(_.toString).foreach(r.Seed = _)
-    r
-  }
 
   @Optional.Method(modid = otgModid)
   def toOTGConfigServer: DimensionConfig = toOTGConfig(

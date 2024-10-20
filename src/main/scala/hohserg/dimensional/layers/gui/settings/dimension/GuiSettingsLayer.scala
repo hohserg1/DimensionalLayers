@@ -8,7 +8,7 @@ import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
 import hohserg.dimensional.layers.gui.settings.dimension.GuiSettingsLayer._
 import hohserg.dimensional.layers.gui.settings.{GuiBaseSettingsLayer, GuiFakeCreateWorld}
 import hohserg.dimensional.layers.preset.spec.{DimensionLayerSpec, LayerSpec}
-import hohserg.dimensional.layers.{Main, clamp}
+import hohserg.dimensional.layers.{Main, clamp, toLongSeed}
 import io.github.opencubicchunks.cubicchunks.api.world.ICubicWorldType
 import net.minecraft.client.resources.I18n
 import net.minecraft.util.ResourceLocation

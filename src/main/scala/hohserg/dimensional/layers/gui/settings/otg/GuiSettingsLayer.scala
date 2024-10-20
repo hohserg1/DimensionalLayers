@@ -1,6 +1,5 @@
 package hohserg.dimensional.layers.gui.settings.otg
 
-import com.pg85.otg.configuration.dimensions.DimensionConfig
 import hohserg.dimensional.layers.gui.GuiBaseSettings.ValueHolder
 import hohserg.dimensional.layers.gui.RelativeCoord
 import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
@@ -13,7 +12,6 @@ class GuiSettingsLayer(parent: GuiSetupDimensionalLayersPreset, val layer: OpenT
   val configYmlH = new ValueHolder[String](layer.toOTGConfigServer.toYamlString)
 
   override def buildLayerSpec(): LayerSpec = layer.copy(
-    seedOverride = toLongSeed(DimensionConfig.fromYamlString(configYmlH.get).Seed),
     configYml = if (hasChanges) Some(configYmlH.get) else None
   )
 
