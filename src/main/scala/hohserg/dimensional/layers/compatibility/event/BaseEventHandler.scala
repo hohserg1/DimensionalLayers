@@ -1,6 +1,5 @@
 package hohserg.dimensional.layers.compatibility.event
 
-import hohserg.dimensional.layers.compatibility.event.mixin.{AccessorASMEventHandler, AccessorEventBus}
 import hohserg.dimensional.layers.data.layer.base.{DimensionalLayer, DimensionalLayerBounds}
 import hohserg.dimensional.layers.data.{LayerManager, LayerManagerClient}
 import hohserg.dimensional.layers.worldgen.proxy.ShiftedBlockPos
@@ -21,8 +20,8 @@ class BaseEventHandler[E <: Event](modidSet: Set[String]) {
 
   private def initListeners(e: E): Unit = {
     if (listeners == null) {
-      listeners = e.getListenerList.getListeners(MinecraftForge.EVENT_BUS.asInstanceOf[AccessorEventBus].getBusID)
-        .collect { case asm: ASMEventHandler if modidSet.contains(asm.asInstanceOf[AccessorASMEventHandler].getOwner.getModId) => asm }
+      listeners = e.getListenerList.getListeners(AccessorEvents.busID.get(MinecraftForge.EVENT_BUS))
+        .collect { case asm: ASMEventHandler if modidSet.contains(AccessorEvents.owner.get(asm).getModId) => asm }
     }
   }
 

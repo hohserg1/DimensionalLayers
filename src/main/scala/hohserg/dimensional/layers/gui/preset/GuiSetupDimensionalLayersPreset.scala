@@ -3,7 +3,7 @@ package hohserg.dimensional.layers.gui.preset
 import hohserg.dimensional.layers.Main
 import hohserg.dimensional.layers.gui.add._
 import hohserg.dimensional.layers.gui.preset.list.GuiLayersList
-import hohserg.dimensional.layers.gui.{GuiBase, GuiClickableButton}
+import hohserg.dimensional.layers.gui.{AccessorGuiScrollingList, GuiBase, GuiClickableButton}
 import net.minecraft.client.gui.GuiCreateWorld
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
@@ -56,7 +56,7 @@ class GuiSetupDimensionalLayersPreset(parent: GuiCreateWorld) extends GuiBase(pa
   }
 
   def initFromJson(preset: String): Unit = {
-    layersList = addElement(new GuiLayersList(this, preset, if (layersList == null) 0 else layersList.accessor.getScrollDistance))
+    layersList = addElement(new GuiLayersList(this, preset, if (layersList == null) 0 else AccessorGuiScrollingList.scrollDistance.get(layersList)))
   }
 
   override def drawScreenPre(mouseX: Int, mouseY: Int, partialTicks: Float): Unit = {

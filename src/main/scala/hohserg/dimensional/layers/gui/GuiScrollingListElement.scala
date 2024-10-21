@@ -1,6 +1,5 @@
 package hohserg.dimensional.layers.gui
 
-import hohserg.dimensional.layers.gui.mixin.AccessorGuiScrollingList
 import net.minecraft.client.Minecraft
 import net.minecraftforge.fml.client.GuiScrollingList
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
@@ -13,11 +12,9 @@ abstract class GuiScrollingListElement(x: Int, y: Int, w: Int, h: Int, entryHeig
   )
     with GuiElement {
 
-  val accessor = this.asInstanceOf[AccessorGuiScrollingList]
-
   def setScrollDistanceWithLimits(v: Float): Unit = {
-    accessor.setScrollDistance(v)
-    accessor.invokeApplyScrollLimits()
+    AccessorGuiScrollingList.scrollDistance.set(this, v)
+    AccessorGuiScrollingList.applyScrollLimits(this)
   }
 
   def scrollToElement(index: Int): Unit = {

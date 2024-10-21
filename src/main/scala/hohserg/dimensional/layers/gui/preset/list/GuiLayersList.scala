@@ -4,7 +4,7 @@ import hohserg.dimensional.layers.clamp
 import hohserg.dimensional.layers.data.LayerMap
 import hohserg.dimensional.layers.gui.GuiBaseSettings.ValueHolder
 import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
-import hohserg.dimensional.layers.gui.{GuiScrollingListElement, IconUtils, StateComposite}
+import hohserg.dimensional.layers.gui.{AccessorGuiScrollingList, GuiScrollingListElement, IconUtils, StateComposite}
 import hohserg.dimensional.layers.preset._
 import hohserg.dimensional.layers.preset.spec.LayerSpec
 import net.minecraft.client.renderer.Tessellator
@@ -40,11 +40,11 @@ class GuiLayersList(val parent: GuiSetupDimensionalLayersPreset, settings: Strin
   }
 
   def scrollUpOnce(): Unit = {
-    setScrollDistanceWithLimits(accessor.getScrollDistance - this.slotHeight)
+    setScrollDistanceWithLimits(AccessorGuiScrollingList.scrollDistance.get(this) - this.slotHeight)
   }
 
   def scrollDownOnce(): Unit = {
-    setScrollDistanceWithLimits(accessor.getScrollDistance + this.slotHeight)
+    setScrollDistanceWithLimits(AccessorGuiScrollingList.scrollDistance.get(this) + this.slotHeight)
   }
 
   def toSettings: String = Try(DimensionalLayersPreset(entries.map(_.layer).toList, startCubeY.get).toSettings).getOrElse("")
@@ -67,7 +67,7 @@ class GuiLayersList(val parent: GuiSetupDimensionalLayersPreset, settings: Strin
   override def drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float): Unit = {
     super.drawScreen(mouseX, mouseY, partialTicks)
 
-    val baseY = top + 4 - accessor.getScrollDistance.toInt
+    val baseY = top + 4 - AccessorGuiScrollingList.scrollDistance.get(this).toInt
     startCubeYField.y = baseY + entries.size * this.slotHeight - 11
     startCubeYField.drawTextBox()
   }
