@@ -24,14 +24,17 @@ case class OpenTerrainGeneratorLayerSpec(presetName: String, configYml: Option[S
   override def toGuiLayerEntry(parent: GuiLayersList): GuiLayerEntry = new GuiOpenTerrainGeneratorLayerEntry(parent, this)
 
   @Optional.Method(modid = otgModid)
-  def toOTGConfig[A <: DimensionConfigBase](fromYamlString: String => A, defaultFactory: (String, Int, Boolean, WorldConfig) => A): A =
-    configYml
+  def toOTGConfig[A <: DimensionConfigBase](fromYamlString: String => A, defaultFactory: (String, Int, Boolean, WorldConfig) => A): A = {
+    val r = configYml
       .map(fromYamlString)
       .getOrElse(defaultFactory(
         presetName,
-        0, false,
+        -1, false,
         WorldConfig.fromDisk(new File(OTG.getEngine.getOTGRootFolder.getAbsolutePath + "/worlds/" + presetName))
       ))
+    r.DimensionId = -1
+    r
+  }
 
   @Optional.Method(modid = otgModid)
   def toOTGConfigServer: DimensionConfig = toOTGConfig(
