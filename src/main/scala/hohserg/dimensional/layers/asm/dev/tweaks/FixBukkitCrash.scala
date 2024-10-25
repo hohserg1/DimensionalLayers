@@ -11,11 +11,11 @@ object FixBukkitCrash {
 
   @Hook(targetMethod = "newChannel")
   @OnMethodCall(value = "values", shift = Shift.INSTEAD)
-  def filterSides(networkRegistry: NetworkRegistry, name: String, handlers: ChannelHandler*): Array[Side] =
+  def filterSides(networkRegistry: NetworkRegistry, name: String, handlers: Array[ChannelHandler]): Array[Side] =
     Array(Side.CLIENT, Side.SERVER)
 
   @Hook(targetMethod = "newChannel")
   @OnMethodCall(value = "values", shift = Shift.INSTEAD)
-  def filterSides(networkRegistry: NetworkRegistry, container: ModContainer, name: String, handlers: ChannelHandler*): Array[Side] =
+  def filterSides(networkRegistry: NetworkRegistry, container: ModContainer, name: String, handlers: Array[ChannelHandler]): Array[Side] =
     Array(Side.CLIENT, Side.SERVER)
 }
