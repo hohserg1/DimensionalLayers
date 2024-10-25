@@ -2,6 +2,7 @@ package hohserg.dimensional.layers.data.layer.otg
 
 import com.google.common.cache.{CacheBuilder, CacheLoader, LoadingCache}
 import com.pg85.otg.forge.OTGPlugin
+import com.pg85.otg.forge.dimensions.OTGDimensionManager
 import hohserg.dimensional.layers.data.layer.base.{BiomeGeneratorHelper, DimensionalGenerator}
 import hohserg.dimensional.layers.worldgen.proxy.server.ProxyWorldServer
 import hohserg.dimensional.layers.worldgen.proxy.server.ProxyWorldServer.createLayerWorldInfo
@@ -34,6 +35,7 @@ class OpenTerrainGeneratorGenerator(original: CCWorldServer, val layer: OpenTerr
   )
 
   private val provider: WorldProvider = proxyWorld.provider
+  OTGDimensionManager.ApplyGameRulesToWorld(proxyWorld, layer.presetConfig)
   val vanillaGenerator: IChunkGenerator = provider.createChunkGenerator()
   var biomes: Array[Biome] = new Array[Biome](16 * 16)
 
