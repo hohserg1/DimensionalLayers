@@ -65,6 +65,7 @@ object ReplaceTeleportToDimension {
                   entity.setLocationAndAngles(x, y, z, 90, 0)
               }
 
+            entity.timeUntilPortal = entity.getPortalCooldown
             setLocation(newX + 0.5, newY, newZ + 0.5)
             //val teleporter = entity.asInstanceOf[ILastUsedTeleporter].getLastUsedTeleporter
             //teleporter.placeEntity(world, entity, entity.rotationYaw)
