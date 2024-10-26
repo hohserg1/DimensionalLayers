@@ -58,11 +58,11 @@ object ReplaceTeleportToDimension {
                 case player: EntityPlayerMP =>
                   val prevInvulnerableDimensionChange = player.invulnerableDimensionChange
                   player.invulnerableDimensionChange = true
-                  player.connection.setPlayerLocation(x, y, z, 90, 0)
+                  player.connection.setPlayerLocation(x, y, z, player.rotationYaw, player.rotationPitch)
                   player.invulnerableDimensionChange = prevInvulnerableDimensionChange
 
                 case _ =>
-                  entity.setLocationAndAngles(x, y, z, 90, 0)
+                  entity.setLocationAndAngles(x, y, z, entity.rotationYaw, entity.rotationPitch)
               }
 
             entity.timeUntilPortal = entity.getPortalCooldown
