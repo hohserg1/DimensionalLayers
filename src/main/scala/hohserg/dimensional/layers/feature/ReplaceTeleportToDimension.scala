@@ -56,7 +56,11 @@ object ReplaceTeleportToDimension {
             def setLocation(x: Double, y: Double, z: Double): Unit =
               entity match {
                 case player: EntityPlayerMP =>
+                  val prevInvulnerableDimensionChange = player.invulnerableDimensionChange
+                  player.invulnerableDimensionChange = true
                   player.connection.setPlayerLocation(x, y, z, 90, 0)
+                  player.invulnerableDimensionChange = prevInvulnerableDimensionChange
+
                 case _ =>
                   entity.setLocationAndAngles(x, y, z, 90, 0)
               }
