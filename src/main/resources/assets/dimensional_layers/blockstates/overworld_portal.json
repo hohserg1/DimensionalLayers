@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "axis=z": {
+      "model": "dimensional_layers:overworld_portal_x"
+    },
+    "axis=x": {
+      "model": "dimensional_layers:overworld_portal_z"
+    }
+  }
+}
