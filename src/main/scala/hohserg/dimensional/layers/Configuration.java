@@ -19,6 +19,15 @@ public class Configuration {
     @Config.Comment("if true, default selected world type will be dimlayers at new world creation gui")
     public static boolean worldTypeByDefault = true;
 
+    @Config.Comment({
+            "Power of two.",
+            "The world is divided to square areas with width of 2^portalFastTravelPrecision.",
+            "Portal will teleport to layer with alignment to center of a related area.",
+            "Teleportation back will return to the same area.",
+            "So areas is linked and its possible to build a portal rooms"
+    })
+    public static int portalFastTravelPrecision = 5;
+
     @Config.Comment("its optional features which can improve compatibility with some mods")
     public static CompatibilityFeatures compatibility_features = new CompatibilityFeatures();
 

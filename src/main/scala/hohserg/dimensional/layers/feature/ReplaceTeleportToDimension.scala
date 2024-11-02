@@ -1,8 +1,8 @@
 package hohserg.dimensional.layers.feature
 
-import hohserg.dimensional.layers.CCWorldServer
 import hohserg.dimensional.layers.data.LayerManagerServer
 import hohserg.dimensional.layers.data.layer.base.DimensionalLayer
+import hohserg.dimensional.layers.{CCWorldServer, Configuration}
 import net.minecraft.entity.player.EntityPlayerMP
 import net.minecraft.init.Blocks
 import net.minecraft.util.math.{BlockPos, MathHelper}
@@ -34,8 +34,16 @@ object ReplaceTeleportToDimension {
             val targetMovementFactor: Double = movementFactorOfLayer(nearestTargetLayer)
 
             val moveFactor = currentMovementFactor / targetMovementFactor
-            val newX = clampCoord(entity.posX * moveFactor, world).toInt >> 2 << 2
-            val newZ = clampCoord(entity.posZ * moveFactor, world).toInt >> 2 << 2
+
+            val precision = Configuration.portalFastTravelPrecision
+
+            val toCenterShift = 2 << (precision - 2)
+
+            val fromX = entity.posX.toInt >> precision << precision
+            val fromZ = entity.posZ.toInt >> precision << precision
+
+            val newX = (clampCoord(fromX * moveFactor, world).toInt >> precision << precision) + toCenterShift
+            val newZ = (clampCoord(fromZ * moveFactor, world).toInt >> precision << precision) + toCenterShift
 
             val midY = nearestTargetLayer.bounds.realStartBlockY + (nearestTargetLayer.bounds.realEndBlockY - nearestTargetLayer.bounds.realStartBlockY) / 2
             val fineY = nearestTargetLayer.generator.proxyWorld.getHeight(newX, newZ)
@@ -56,10 +64,8 @@ object ReplaceTeleportToDimension {
             def setLocation(x: Double, y: Double, z: Double): Unit =
               entity match {
                 case player: EntityPlayerMP =>
-                  val prevInvulnerableDimensionChange = player.invulnerableDimensionChange
                   player.invulnerableDimensionChange = true
                   player.connection.setPlayerLocation(x, y, z, player.rotationYaw, player.rotationPitch)
-                  player.invulnerableDimensionChange = prevInvulnerableDimensionChange
 
                 case _ =>
                   entity.setLocationAndAngles(x, y, z, entity.rotationYaw, entity.rotationPitch)
