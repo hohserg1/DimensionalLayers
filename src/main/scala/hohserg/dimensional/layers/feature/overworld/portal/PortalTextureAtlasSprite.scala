@@ -1,7 +1,7 @@
 package hohserg.dimensional.layers.feature.overworld.portal
 
 import com.google.common.collect.ImmutableList
-import hohserg.dimensional.layers.Main
+import hohserg.dimensional.layers.{Main, RichIntColor}
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.texture.TextureAtlasSprite
 import net.minecraft.client.resources.IResourceManager
@@ -31,7 +31,8 @@ class PortalTextureAtlasSprite extends TextureAtlasSprite(Main.modid + ":blocks/
       val vanillaPixels = vanillaPortal.getFrameTextureData(i)(0)
       for (p <- first.indices) {
         val color = vanillaPixels(p)
-        first(p) = HueRotation.purpleToGreen.apply(color)
+        val alpha = (color.getAlpha * 0.7).toInt
+        first(p) = HueRotation.purpleToGreen.apply(color).withAlpha(alpha)
       }
       framesTextureData.add(pixels)
     }

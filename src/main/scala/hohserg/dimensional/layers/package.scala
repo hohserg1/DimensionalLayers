@@ -53,4 +53,13 @@ package object layers {
       Some(Try(str.toLong)
         .filter(_ != 0)
         .getOrElse(str.hashCode.toLong))
+
+  implicit class RichIntColor(val color: Int) extends AnyVal {
+    def clearedAlpha: Int = color & 0x00FFffFF
+
+    def withAlpha(a: Int): Int = clearedAlpha | (a << 24)
+
+    def getAlpha: Int = (color >> 24) & 0xff
+  }
+
 }
