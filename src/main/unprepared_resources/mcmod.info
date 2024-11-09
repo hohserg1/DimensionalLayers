@@ -14,7 +14,8 @@
     "logoFile": "logo.png",
     "screenshots": [],
     "dependencies": [
-      "cubicchunks"
+      "cubicchunks",
+      "hooklib"
     ]
   }
 ]
