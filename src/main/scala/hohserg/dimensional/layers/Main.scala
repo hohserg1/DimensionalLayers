@@ -4,12 +4,15 @@ import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
 import hohserg.dimensional.layers.gui.settings.GuiFakeCreateWorld
 import hohserg.dimensional.layers.preset.{DimensionalLayersPreset, Serialization}
 import hohserg.dimensional.layers.sided.CommonLogic
+import logictechcorp.netherex.world.WorldProviderNetherEx
 import net.minecraft.client.Minecraft
+import net.minecraft.world.DimensionType
+import net.minecraftforge.common.DimensionManager
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.Mod.{EventBusSubscriber, EventHandler}
 import net.minecraftforge.fml.common.event.{FMLInitializationEvent, FMLPostInitializationEvent, FMLPreInitializationEvent, FMLServerStoppedEvent}
 import net.minecraftforge.fml.common.eventhandler.{EventPriority, SubscribeEvent}
-import net.minecraftforge.fml.common.{Loader, Mod, SidedProxy}
+import net.minecraftforge.fml.common.{Loader, Mod, Optional, SidedProxy}
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import org.apache.commons.io.FileUtils
 
@@ -65,5 +68,13 @@ object Main {
     if (e.getWorld.getWorldType == DimensionalLayersWorldType) {
       FileUtils.deleteDirectory(new File(e.getWorld.getSaveHandler.getWorldDirectory, "OpenTerrainGenerator"))
     }
+  }
+
+  @Optional.Method(modid = netherexModid)
+  @EventHandler
+  def registerNetherExDimType(e: FMLPostInitializationEvent): Unit = {
+    DimensionManager.unregisterDimension(-1)
+    val nether = DimensionType.register("NetherEx", "_nether", -1, classOf[WorldProviderNetherEx], false)
+    DimensionManager.registerDimension(-1, nether)
   }
 }
