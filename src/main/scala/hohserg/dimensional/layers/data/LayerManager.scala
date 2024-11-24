@@ -1,6 +1,7 @@
 package hohserg.dimensional.layers.data
 
 import hohserg.dimensional.layers.{CCWorld, DimensionalLayersWorldType}
+import net.minecraft.world.World
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -14,9 +15,9 @@ trait LayerManager[SidedOriginalWorld <: CCWorld] {
     world.getWorldInfo.getTerrainType == DimensionalLayersWorldType && DimensionalLayersWorldType.hasCubicGeneratorForWorld(world)
   }
 
-  def getWorldData(world: SidedOriginalWorld): Option[WorldData] =
-    if (haveWorldLayers(world))
-      Some(worldDataForRealDimension.getOrElseUpdate(world.provider.getDimension, createWorldData(world)))
+  def getWorldData(world: World): Option[WorldData] =
+    if (haveWorldLayers(world.asInstanceOf[SidedOriginalWorld]))
+      Some(worldDataForRealDimension.getOrElseUpdate(world.provider.getDimension, createWorldData(world.asInstanceOf[SidedOriginalWorld])))
     else
       None
 
