@@ -7,7 +7,6 @@ import hohserg.dimensional.layers.sided.CommonLogic
 import logictechcorp.netherex.world.WorldProviderNetherEx
 import net.minecraft.client.Minecraft
 import net.minecraft.world.DimensionType
-import net.minecraftforge.common.DimensionManager
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.Mod.{EventBusSubscriber, EventHandler}
 import net.minecraftforge.fml.common.event.{FMLInitializationEvent, FMLPostInitializationEvent, FMLPreInitializationEvent, FMLServerStoppedEvent}
@@ -72,9 +71,7 @@ object Main {
 
   @Optional.Method(modid = netherexModid)
   @EventHandler
-  def registerNetherExDimType(e: FMLPostInitializationEvent): Unit = {
-    DimensionManager.unregisterDimension(-1)
-    val nether = DimensionType.register("NetherEx", "_nether", -1, classOf[WorldProviderNetherEx], false)
-    DimensionManager.registerDimension(-1, nether)
+  def registerNetherExDimType(e: FMLInitializationEvent): Unit = {
+    DimensionType.register("NetherEx", "_nether", -1, classOf[WorldProviderNetherEx], false)
   }
 }
