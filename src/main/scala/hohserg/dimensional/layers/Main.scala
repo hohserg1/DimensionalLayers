@@ -28,8 +28,10 @@ object Main {
   var sided: CommonLogic = _
 
   final val otgModid = "openterraingenerator"
+  final val netherexModid = "netherex"
 
   lazy val otgPresent = Loader.isModLoaded(otgModid)
+  lazy val netherexPresent = Loader.isModLoaded(netherexModid)
 
   @EventHandler
   def preInit(e: FMLPreInitializationEvent): Unit = {

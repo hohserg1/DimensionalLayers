@@ -1,5 +1,6 @@
 package hohserg.dimensional.layers.data.layer.vanilla_dimension
 
+import hohserg.dimensional.layers.Main.netherexPresent
 import hohserg.dimensional.layers.data.layer.base.{DimensionalLayer, DimensionalLayerBounds}
 import hohserg.dimensional.layers.preset.spec.DimensionLayerSpec
 import hohserg.dimensional.layers.{CCWorld, CCWorldServer}
@@ -18,7 +19,11 @@ case class VanillaDimensionLayer(_realStartCubeY: Int, spec: DimensionLayerSpec,
 
   override def isCubic: Boolean = false
 
-  override def dimensionType: DimensionType = spec.dimensionType
+  override def dimensionType: DimensionType =
+    if (netherexPresent && spec.dimensionType == DimensionType.NETHER)
+      DimensionType.byName("_nether")
+    else
+      spec.dimensionType
 
   override def createGenerator(original: CCWorldServer): VanillaDimensionGenerator = new VanillaDimensionGenerator(original, this)
 
