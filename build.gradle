@@ -7,12 +7,8 @@ idea {
 }
 buildscript {
     repositories {
-        flatDir {
-            dir 'libs_gradle'
-        }
         mavenCentral()
         maven { url = 'https://maven.minecraftforge.net/' }
-        maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
     }
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:5.1.48'
@@ -114,8 +110,8 @@ dependencies {
 
     compileOnly fg.deobf("abc:Geographicraft-1.12.2:0.9.8.5")
 
-    implementation fg.deobf("abc:OpenTerrainGenerator:1.12.2-v9.5-R2")
-    implementation fg.deobf("abc:OTG:Core")
+    compileOnly fg.deobf("abc:OpenTerrainGenerator:1.12.2-v9.5-R2")
+    compileOnly fg.deobf("abc:OTG:Core")
 
 
     implementation fg.deobf("abc:TConstruct-1.12.2:2.13.0.183")
@@ -123,8 +119,10 @@ dependencies {
 
     implementation fg.deobf("abc:NetherEx-1.12.2:2.2.5")
     implementation fg.deobf("abc:LibraryEx-1.12.2:1.2.2")
+    implementation fg.deobf("abc:night-config-core:3.6.0")
+    implementation fg.deobf("abc:night-config-json:3.6.0")
 
-    implementation fg.deobf("abc:BiomesOPlenty-1.12.2:7.0.1.2445")
+    compileOnly fg.deobf("abc:BiomesOPlenty-1.12.2:7.0.1.2445")
 
 }
 
