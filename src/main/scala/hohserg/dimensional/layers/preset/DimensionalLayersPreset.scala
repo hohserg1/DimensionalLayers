@@ -9,9 +9,7 @@ import hohserg.dimensional.layers.{CCWorld, Configuration, Main}
 import io.github.opencubicchunks.cubicchunks.api.util.IntRange
 import net.minecraft.init.{Biomes, Blocks}
 import net.minecraft.world.DimensionType
-import net.minecraftforge.common.DimensionManager
 
-import scala.collection.JavaConverters._
 import scala.util.{Failure, Success, Try}
 
 case class DimensionalLayersPreset(layers: List[LayerSpec], startCubeY: Int = 0) {
@@ -53,9 +51,7 @@ object DimensionalLayersPreset {
   def isNotVanillaDim(dimensionType: DimensionType): Boolean =
     dimensionType != DimensionType.OVERWORLD && dimensionType != DimensionType.NETHER && dimensionType != DimensionType.THE_END
 
-  lazy val availableDims: Seq[DimensionType] = DimensionManager.getRegisteredDimensions.asScala.toSeq
-    .collect { case (dimType, realUsedIds) if !realUsedIds.isEmpty && Try(DimensionManager.createProviderFor(dimType.getId)).isSuccess => dimType }
-
+  lazy val availableDims: Seq[DimensionType] = DimensionType.values().toSeq.filter(dt => Try(dt.createDimension()).isSuccess)
 
   lazy val mixedPresetTop: List[DimensionLayerSpec] =
     availableDims
