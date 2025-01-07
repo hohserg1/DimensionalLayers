@@ -134,6 +134,8 @@ trait ProxyWorldCommon {
         .getOrElse(0)
     )
 
+  override def getHeight: Int = layer.bounds.realEndBlockY - layer.bounds.realStartBlockY
+
   override def getBiome(pos: BlockPos): Biome = {
     val r = original.getBiome(layer.bounds.shift(pos).clamp)
     if (r == null)
