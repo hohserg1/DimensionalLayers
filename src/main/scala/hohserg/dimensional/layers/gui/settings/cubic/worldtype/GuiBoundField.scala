@@ -9,6 +9,7 @@ import net.minecraft.client.renderer.{GlStateManager, Tessellator}
 import org.lwjgl.opengl.GL11
 
 import java.awt.Rectangle
+import scala.util.Try
 
 class GuiBoundField(x: Int, value: ValueHolder[Int], isMax: Boolean)
                    (implicit gui: GuiBase)
@@ -53,5 +54,15 @@ class GuiBoundField(x: Int, value: ValueHolder[Int], isMax: Boolean)
     super.drawTextBox()
 
     drawString(fontRenderer, label, x - fontRenderer.getStringWidth(label) - 24, y, 0xffa0a0a0)
+  }
+
+  override def setText(textIn: String): Unit = {
+    if (isFocused)
+      Try(textIn.toInt).foreach { nv =>
+        value.set(nv)
+        updateVisual(nv)
+      }
+    else
+      super.setText(textIn)
   }
 }
