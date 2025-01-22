@@ -161,3 +161,12 @@ processResources {
         expand "version": version, 'mcversion': '1.12.2'
     }
 }
+
+task ideaCopyResources {
+    doLast {
+        copy {
+            from 'src/main/resources'
+            into 'out/production/DimensionalLayers3.main'
+        }
+    }
+}
