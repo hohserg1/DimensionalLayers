@@ -66,6 +66,8 @@ object Serialization {
           "cubicWorldType" -> src.cubicWorldType,
           putOrElse("worldTypePreset", src.worldTypePreset, ""),
           putOrElse("dimensionType1", src.dimensionType1, DimensionType.OVERWORLD),
+          putOrElse("minCubeY", src.minCubeY, 0),
+          putOrElse("maxCubeY", src.maxCubeY, 32),
           putOrElse("seedOverride", src.seedOverride, None)
         ))
 
@@ -75,6 +77,8 @@ object Serialization {
           context.deserialize(jsonObject.get("cubicWorldType"), classOf[WorldType]),
           getOrElse(jsonObject, "worldTypePreset", "", context),
           getOrElse(jsonObject, "dimensionType1", DimensionType.OVERWORLD, context),
+          getOrElse(jsonObject, "minCubeY", 0, context),
+          getOrElse(jsonObject, "maxCubeY", 32, context),
           getOrElse(jsonObject, "seedOverride", None, context)
         )
       }

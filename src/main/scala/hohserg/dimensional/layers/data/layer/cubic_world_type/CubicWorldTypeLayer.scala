@@ -11,7 +11,7 @@ case class CubicWorldTypeLayer(_realStartCubeY: Int, spec: CubicWorldTypeLayerSp
 
   override val bounds: DimensionalLayerBounds = new DimensionalLayerBounds {
     override val realStartCubeY: Int = _realStartCubeY
-    override val (virtualStartCubeY, virtualEndCubeY) = spec.rangeCube(originalWorld)
+    override val (virtualStartCubeY, virtualEndCubeY) = spec.minCubeY -> spec.maxCubeY
     override val cubeHeight: Int = virtualEndCubeY - virtualStartCubeY + 1
   }
 

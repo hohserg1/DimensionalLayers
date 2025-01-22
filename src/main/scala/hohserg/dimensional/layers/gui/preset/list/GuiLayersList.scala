@@ -4,7 +4,7 @@ import hohserg.dimensional.layers.clamp
 import hohserg.dimensional.layers.data.LayerMap
 import hohserg.dimensional.layers.gui.GuiBaseSettings.ValueHolder
 import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
-import hohserg.dimensional.layers.gui.{AccessorGuiScrollingList, GuiScrollingListElement, IconUtils, StateComposite}
+import hohserg.dimensional.layers.gui._
 import hohserg.dimensional.layers.preset._
 import hohserg.dimensional.layers.preset.spec.LayerSpec
 import net.minecraft.client.renderer.Tessellator
@@ -26,7 +26,7 @@ class GuiLayersList(val parent: GuiSetupDimensionalLayersPreset, settings: Strin
     override def onStateChanged(): Unit = ()
   })
 
-  val startCubeYField = new GuiStartCubeYField(10 + IconUtils.width + 11, 10 + parent.height - 30, startCubeY)(parent)
+  val startCubeYField = new GuiCubeYField(10 + IconUtils.width + 11, 10 + parent.height - 30, startCubeY)(parent)
 
   val entries: mutable.Buffer[GuiLayerEntry] =
     fromPreset.layers

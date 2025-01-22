@@ -1,7 +1,8 @@
 package hohserg.dimensional.layers.gui.settings.dimension
 
 import hohserg.dimensional.layers.gui.GuiBaseSettings.ValueHolder
-import hohserg.dimensional.layers.gui.settings.dimension.GuiSettingsLayer.{gridCellSize, gridLeft, texture}
+import hohserg.dimensional.layers.gui.settings.GuiBaseSettingsLayer.texture
+import hohserg.dimensional.layers.gui.settings.dimension.GuiSettingsLayer.{gridCellSize, gridLeft}
 import hohserg.dimensional.layers.gui.{DrawableArea, GuiBase, GuiNumericField}
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats

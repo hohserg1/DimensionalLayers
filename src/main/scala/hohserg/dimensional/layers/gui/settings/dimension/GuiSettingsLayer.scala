@@ -5,21 +5,20 @@ import hohserg.dimensional.layers.gui.IconUtils._
 import hohserg.dimensional.layers.gui.RelativeCoord.{alignLeft, alignTop}
 import hohserg.dimensional.layers.gui._
 import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
+import hohserg.dimensional.layers.gui.settings.GuiBaseSettingsLayer.texture
 import hohserg.dimensional.layers.gui.settings.dimension.GuiSettingsLayer._
 import hohserg.dimensional.layers.gui.settings.{GuiBaseSettingsLayer, GuiFakeCreateWorld}
 import hohserg.dimensional.layers.preset.spec.{DimensionLayerSpec, LayerSpec}
-import hohserg.dimensional.layers.{Main, clamp, toLongSeed}
+import hohserg.dimensional.layers.{clamp, toLongSeed}
 import io.github.opencubicchunks.cubicchunks.api.world.ICubicWorldType
 import net.minecraft.client.resources.I18n
-import net.minecraft.util.ResourceLocation
 import net.minecraft.world.WorldType
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 @SideOnly(Side.CLIENT)
 object GuiSettingsLayer {
-  val texture = new ResourceLocation(Main.modid, "textures/gui/dimension_settings.png")
   val gridCellSize = 13
-  val gridLeft = width + 10 * 2 + 70
+  val gridLeft = IconUtils.width + 10 * 2 + 70
 
   lazy val possibleWorldTypes =
     WorldType.WORLD_TYPES
@@ -94,12 +93,12 @@ class GuiSettingsLayer(parent: GuiSetupDimensionalLayersPreset, index: Int, laye
   override def drawScreenPre(mouseX: Int, mouseY: Int, partialTicks: Float): Unit = {
     super.drawScreenPre(mouseX, mouseY, partialTicks)
     drawLogo(layer.dimensionType, 10, 10)
-    drawLayerGrid(mouseX, mouseY)
+    drawLayerGrid()
   }
 
   def gridTop = height / 2 - 209 / 2
 
-  def drawLayerGrid(mouseX: Int, mouseY: Int): Unit = {
+  def drawLayerGrid(): Unit = {
     val firstEnabled = 0 + topOffset.get
     val lastEnabled = 15 - bottomOffset.get
 
