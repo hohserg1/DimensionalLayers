@@ -9,7 +9,7 @@ import hohserg.dimensional.layers.gui.IconUtils._
 import hohserg.dimensional.layers.gui.RelativeCoord.{alignLeft, alignTop}
 import hohserg.dimensional.layers.gui._
 import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
-import hohserg.dimensional.layers.gui.settings.GuiBaseSettingsLayer.texture
+import hohserg.dimensional.layers.gui.settings.GuiBaseSettingsLayer._
 import hohserg.dimensional.layers.gui.settings.cubic.worldtype.GuiSettingsLayer.dimensionTypeArea
 import hohserg.dimensional.layers.gui.settings.{GuiBaseSettingsLayer, GuiFakeCreateWorld}
 import hohserg.dimensional.layers.preset.spec.{CubicWorldTypeLayerSpec, LayerSpec}
@@ -79,7 +79,6 @@ class GuiSettingsLayer(parent: GuiSetupDimensionalLayersPreset, val layer: Cubic
 
   var gridLeft = IconUtils.width + 120
   val gridTop = 10
-  val gridCellSize = 13
 
   def drawLayerGrid(): Unit = {
     mc.getTextureManager.bindTexture(texture)
@@ -194,10 +193,6 @@ class GuiSettingsLayer(parent: GuiSetupDimensionalLayersPreset, val layer: Cubic
 
   def drawPoints(y: Int): Unit = {
     drawTexturedModalRect(gridLeft + 1, gridTop + 1 + y * gridCellSize + 1, 15, 40, 12, 12)
-  }
-
-  override def drawScreenPost(mouseX: Int, mouseY: Int, partialTicks: Float): Unit = {
-    super.drawScreenPost(mouseX, mouseY, partialTicks)
   }
 
   override def mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int): Unit = {

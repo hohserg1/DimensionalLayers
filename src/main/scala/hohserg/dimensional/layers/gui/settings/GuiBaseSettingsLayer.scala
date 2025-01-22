@@ -20,4 +20,5 @@ abstract class GuiBaseSettingsLayer(parent: GuiSetupDimensionalLayersPreset, ind
 
 object GuiBaseSettingsLayer {
   val texture = new ResourceLocation(Main.modid, "textures/gui/dimension_settings.png")
+  val gridCellSize = 13
 }

@@ -5,7 +5,7 @@ import hohserg.dimensional.layers.gui.IconUtils._
 import hohserg.dimensional.layers.gui.RelativeCoord.{alignLeft, alignTop}
 import hohserg.dimensional.layers.gui._
 import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
-import hohserg.dimensional.layers.gui.settings.GuiBaseSettingsLayer.texture
+import hohserg.dimensional.layers.gui.settings.GuiBaseSettingsLayer._
 import hohserg.dimensional.layers.gui.settings.dimension.GuiSettingsLayer._
 import hohserg.dimensional.layers.gui.settings.{GuiBaseSettingsLayer, GuiFakeCreateWorld}
 import hohserg.dimensional.layers.preset.spec.{DimensionLayerSpec, LayerSpec}
@@ -17,7 +17,6 @@ import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 @SideOnly(Side.CLIENT)
 object GuiSettingsLayer {
-  val gridCellSize = 13
   val gridLeft = IconUtils.width + 10 * 2 + 70
 
   lazy val possibleWorldTypes =
