@@ -11,7 +11,7 @@ import net.minecraftforge.event.entity.player.BonemealEvent
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber
 import net.minecraftforge.fml.common.eventhandler.{Event, SubscribeEvent}
 
-import scala.collection.JavaConverters.iterableAsScalaIterableConverter
+import scala.jdk.CollectionConverters.*
 
 @EventBusSubscriber
 object PortalIgnition {
@@ -48,11 +48,13 @@ object PortalIgnition {
     tryZ(e.getWorld, e.getPos, internalHeight, e)
   }
 
-  def isAreaEmpty(world: World, from: BlockPos, to: BlockPos): Boolean =
+  def isAreaEmpty(world: World, from: BlockPos, to: BlockPos): Boolean = {
     isAreaFine(world, from, to, _ == Blocks.AIR)
+  }
 
-  def isAreaFine(world: World, from: BlockPos, to: BlockPos, isSuitable: Block => Boolean): Boolean =
+  def isAreaFine(world: World, from: BlockPos, to: BlockPos, isSuitable: Block => Boolean): Boolean = {
     BlockPos.getAllInBoxMutable(from, to).asScala.forall(p => isSuitable(world.getBlockState(p).getBlock))
+  }
 
   def tryAxis(positive: EnumFacing, negative: EnumFacing, world: World, clickedPos: BlockPos, internalHeight: Int, e: BonemealEvent): Boolean = {
     val east = (0 to 23).takeWhile(i => world.isAirBlock(clickedPos.down().offset(positive, i))).last
@@ -88,8 +90,9 @@ object PortalIgnition {
         val portal = BlockOverworldPortal.getDefaultState.withProperty(AXIS, positive.getAxis)
         BlockPos.getAllInBoxMutable(from, to).asScala.foreach(p => world.setBlockState(p, portal, 2))
 
-        def randomTallGrass(): IBlockState =
+        def randomTallGrass(): IBlockState = {
           Blocks.TALLGRASS.getDefaultState.withProperty(BlockTallGrass.TYPE, BlockTallGrass.EnumType.values()(world.rand.nextInt(BlockTallGrass.EnumType.values().length)))
+        }
 
         def growGrass(p: BlockPos): Unit = {
           val fromState = world.getBlockState(p)
@@ -118,9 +121,11 @@ object PortalIgnition {
     false
   }
 
-  def tryX(world: World, clickedPos: BlockPos, internalHeight: Int, e: BonemealEvent): Boolean =
+  def tryX(world: World, clickedPos: BlockPos, internalHeight: Int, e: BonemealEvent): Boolean = {
     tryAxis(EnumFacing.EAST, EnumFacing.WEST, world, clickedPos, internalHeight, e)
+  }
 
-  def tryZ(world: World, clickedPos: BlockPos, internalHeight: Int, e: BonemealEvent): Boolean =
+  def tryZ(world: World, clickedPos: BlockPos, internalHeight: Int, e: BonemealEvent): Boolean = {
     tryAxis(EnumFacing.SOUTH, EnumFacing.NORTH, world, clickedPos, internalHeight, e)
+  }
 }

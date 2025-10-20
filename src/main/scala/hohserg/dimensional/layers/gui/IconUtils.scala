@@ -1,6 +1,5 @@
 package hohserg.dimensional.layers.gui
 
-import hohserg.dimensional.layers.preset.spec.OpenTerrainGeneratorLayerSpec
 import hohserg.dimensional.layers.{Main, Memoized}
 import io.github.opencubicchunks.cubicchunks.api.world.ICubicWorldType
 import net.minecraft.client.Minecraft
@@ -17,9 +16,13 @@ object IconUtils {
 
   final val width = 64
 
-  def drawLogo[A](v: A, x: Int, y: Int, w: Int = width)(implicit getTexture: A => ResourceLocation): Unit = {
+  trait TextureLocator[A] {
+    extension (a: A) def getTexture: ResourceLocation
+  }
+
+  def drawLogo[A: TextureLocator](v: A, x: Int, y: Int, w: Int = width): Unit = {
     val tess = Tessellator.getInstance()
-    Minecraft.getMinecraft.getTextureManager.bindTexture(getTexture(v))
+    Minecraft.getMinecraft.getTextureManager.bindTexture(v.getTexture)
 
     val buffer: BufferBuilder = tess.getBuffer
     buffer.begin(7, DefaultVertexFormats.POSITION_TEX)
@@ -31,15 +34,12 @@ object IconUtils {
     tess.draw()
   }
 
-  implicit val getBackgroundForDimensionType: DimensionType => ResourceLocation =
-    Memoized(regularTexture(_.getName, "textures/gui/dimension_layers_background/"))
+  given TextureLocator[DimensionType] = toLocator(Memoized(regularTexture(_.getName, "textures/gui/dimension_layers_background/")))
 
-  implicit val getBackgroundForCubicWorldType: WorldType with ICubicWorldType => ResourceLocation =
-    Memoized(regularTexture(_.getName, "textures/gui/cubic_world_type_layers_background/"))
+  given TextureLocator[WorldType & ICubicWorldType] = toLocator(Memoized(regularTexture(_.getName, "textures/gui/cubic_world_type_layers_background/")))
 
-  implicit val getBackgroundForOTGPreset: OpenTerrainGeneratorLayerSpec => ResourceLocation = {
-    val r = new ResourceLocation(Main.modid, "textures/gui/otg.png")
-    _ => r
+  private def toLocator[A](f: A => ResourceLocation): TextureLocator[A] = new TextureLocator {
+    extension (a: A) override def getTexture: ResourceLocation = f(a)
   }
 
   private def regularTexture[A](getName: A => String, basePath: String): A => ResourceLocation =

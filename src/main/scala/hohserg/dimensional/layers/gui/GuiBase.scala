@@ -1,7 +1,6 @@
 package hohserg.dimensional.layers.gui
 
 import hohserg.dimensional.layers.Main
-import hohserg.dimensional.layers.gui.GuiClickableButton.Handler
 import hohserg.dimensional.layers.gui.RelativeCoord.{alignLeft, alignTop}
 import net.minecraft.client.gui.{FontRenderer, GuiScreen}
 import net.minecraft.client.renderer.GlStateManager
@@ -73,7 +72,7 @@ class GuiBase(val parent: GuiScreen) extends GuiScreen {
   }
 
   def addLink(text: String, link: String, x: RelativeCoord, y: RelativeCoord): Unit = {
-    addLabel(TextFormatting.UNDERLINE + text, x, y, 0xFF5555FF)
+    addLabel(TextFormatting.UNDERLINE.toString + text, x, y, 0xFF5555FF)
     mouseClickedListeners += {
       (mouseX, mouseY, _) =>
         val currX = x.absoluteCoord(0, 0, width, height)
@@ -107,10 +106,15 @@ class GuiBase(val parent: GuiScreen) extends GuiScreen {
   }
 
   def drawScreenPost(mouseX: Int, mouseY: Int, partialTicks: Float): Unit = {
-    drawScreenPostListeners.foreach(_ (mouseX, mouseY, partialTicks))
+    drawScreenPostListeners.foreach(_(mouseX, mouseY, partialTicks))
   }
 
+  var absMouseX: Int = 0
+  var absMouseY: Int = 0
+
   override final def drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float): Unit = {
+    absMouseX = mouseX
+    absMouseY = mouseY
     drawScreenPre(mouseX, mouseY, partialTicks)
     super.drawScreen(mouseX, mouseY, partialTicks)
     GlStateManager.color(1, 1, 1, 1)
@@ -119,23 +123,22 @@ class GuiBase(val parent: GuiScreen) extends GuiScreen {
 
   override def handleMouseInput(): Unit = {
     super.handleMouseInput()
-    val (mouseX, mouseY) = MouseUtils.getMousePos
-    handleMouseInputListeners.foreach(_ (mouseX, mouseY))
+    handleMouseInputListeners.foreach(_(absMouseX, absMouseY))
   }
 
   override def mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int): Unit = {
     super.mouseClicked(mouseX, mouseY, mouseButton)
-    mouseClickedListeners.foreach(_ (mouseX, mouseY, mouseButton))
+    mouseClickedListeners.foreach(_(mouseX, mouseY, mouseButton))
   }
 
   override def mouseClickMove(mouseX: Int, mouseY: Int, clickedMouseButton: Int, timeSinceLastClick: Long): Unit = {
     super.mouseClickMove(mouseX, mouseY, clickedMouseButton, timeSinceLastClick)
-    mouseClickMoveListeners.foreach(_ (mouseX, mouseY, clickedMouseButton))
+    mouseClickMoveListeners.foreach(_(mouseX, mouseY, clickedMouseButton))
   }
 
   override def mouseReleased(mouseX: Int, mouseY: Int, mouseButton: Int): Unit = {
     super.mouseReleased(mouseX, mouseY, mouseButton)
-    mouseReleasedListeners.foreach(_ (mouseX, mouseY, mouseButton))
+    mouseReleasedListeners.foreach(_(mouseX, mouseY, mouseButton))
   }
 
   override def keyTyped(typedChar: Char, keyCode: Int): Unit = {
@@ -144,9 +147,7 @@ class GuiBase(val parent: GuiScreen) extends GuiScreen {
       if (this.mc.currentScreen == null)
         this.mc.setIngameFocus()
     } else {
-      keyTypedListeners.foreach(_ (typedChar, keyCode))
-
-
+      keyTypedListeners.foreach(_(typedChar, keyCode))
     }
   }
 }

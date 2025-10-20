@@ -3,8 +3,8 @@
     "modid": "dimensional_layers",
     "name": "DimensionalLayers",
     "description": "Cubix Chunks addon. Allow you to generate all dimensions in one!",
-    "version": "${version}",
-    "mcversion": "${mcversion}",
+    "version": "${mod_version}",
+    "mcversion": "1.12.2",
     "url": "https://www.curseforge.com/minecraft/mc-mods/dimensional-layers",
     "updateUrl": "",
     "authorList": [

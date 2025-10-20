@@ -1,6 +1,7 @@
 package hohserg.dimensional.layers.feature.overworld.portal
 
 import com.google.common.collect.ImmutableList
+import hohserg.dimensional.layers.lens.TextureAtlasSpriteLens
 import hohserg.dimensional.layers.{Main, RichIntColor}
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.texture.TextureAtlasSprite
@@ -37,7 +38,7 @@ class PortalTextureAtlasSprite extends TextureAtlasSprite(Main.modid + ":blocks/
       framesTextureData.add(pixels)
     }
 
-    animationMetadata = vanillaPortal.animationMetadata
+    TextureAtlasSpriteLens.animationMetadata.set(this, TextureAtlasSpriteLens.animationMetadata.get(vanillaPortal))
 
     false
   }

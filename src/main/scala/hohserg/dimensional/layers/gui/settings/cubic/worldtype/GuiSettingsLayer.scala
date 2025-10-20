@@ -1,15 +1,15 @@
 package hohserg.dimensional.layers.gui.settings.cubic.worldtype
 
 import hohserg.dimensional.layers.data.LayerMap
+import hohserg.dimensional.layers.gui.*
 import hohserg.dimensional.layers.gui.DrawableArea.Container
 import hohserg.dimensional.layers.gui.GuiBaseSettings.ValueHolder
 import hohserg.dimensional.layers.gui.GuiSelectDimension.DrawableDim
 import hohserg.dimensional.layers.gui.GuiTileList.SelectHandler
-import hohserg.dimensional.layers.gui.IconUtils._
+import hohserg.dimensional.layers.gui.IconUtils.*
 import hohserg.dimensional.layers.gui.RelativeCoord.{alignLeft, alignTop}
-import hohserg.dimensional.layers.gui._
 import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
-import hohserg.dimensional.layers.gui.settings.GuiBaseSettingsLayer._
+import hohserg.dimensional.layers.gui.settings.GuiBaseSettingsLayer.*
 import hohserg.dimensional.layers.gui.settings.cubic.worldtype.GuiSettingsLayer.dimensionTypeArea
 import hohserg.dimensional.layers.gui.settings.{GuiBaseSettingsLayer, GuiFakeCreateWorld}
 import hohserg.dimensional.layers.preset.spec.{CubicWorldTypeLayerSpec, LayerSpec}
@@ -31,7 +31,7 @@ class GuiSettingsLayer(parent: GuiSetupDimensionalLayersPreset, val layer: Cubic
   val minCubeY: ValueHolder[Int] = new ValueHolder[Int](layer.minCubeY, clamp(_, LayerMap.minCubeY, math.min(LayerMap.maxCubeY, maxCubeY.get)))
   val maxCubeY: ValueHolder[Int] = new ValueHolder[Int](layer.maxCubeY, clamp(_, math.max(LayerMap.minCubeY, minCubeY.get), LayerMap.maxCubeY))
 
-  override def buildLayerSpec(): LayerSpec =
+  override def buildLayerSpec(): LayerSpec = {
     CubicWorldTypeLayerSpec(
       layer.cubicWorldType,
       worldTypePresetH.get,
@@ -40,11 +40,12 @@ class GuiSettingsLayer(parent: GuiSetupDimensionalLayersPreset, val layer: Cubic
       maxCubeY.get,
       toLongSeed(seedOverrideH.get)
     )
+  }
 
-  var maxCubeYField: GuiBoundField = _
-  var minCubeYField: GuiBoundField = _
+  var maxCubeYField: GuiBoundField = null
+  var minCubeYField: GuiBoundField = null
 
-  private val guiFakeCreateWorld = new GuiFakeCreateWorld(this, layer.worldTypePreset)
+  private val guiFakeCreateWorld = new GuiFakeCreateWorld(this, worldTypePresetH, layer.worldTypePreset)
 
   override def initGui(): Unit = {
     super.initGui()

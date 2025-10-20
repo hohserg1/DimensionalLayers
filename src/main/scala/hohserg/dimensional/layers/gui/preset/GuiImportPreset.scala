@@ -39,7 +39,7 @@ class GuiImportPreset(parent: GuiSetupDimensionalLayersPreset) extends GuiBaseSe
 
   def beautify(): Unit = {
     val gson = new GsonBuilder().setPrettyPrinting().create()
-    Try(new JsonParser().parse(presetJson.get))
+    Try(JsonParser.parseString(presetJson.get))
       .map(gson.toJson)
       .foreach(presetJson.set)
   }
@@ -47,7 +47,7 @@ class GuiImportPreset(parent: GuiSetupDimensionalLayersPreset) extends GuiBaseSe
 
 @SideOnly(Side.CLIENT)
 object GuiImportPreset {
-  def export(parent: GuiSetupDimensionalLayersPreset): () => Unit = () => {
+  def exportPreset(parent: GuiSetupDimensionalLayersPreset): () => Unit = () => {
     GuiScreen.setClipboardString(parent.layersList.toSettings)
     parent.exportButton.displayString = "Copied!"
   }

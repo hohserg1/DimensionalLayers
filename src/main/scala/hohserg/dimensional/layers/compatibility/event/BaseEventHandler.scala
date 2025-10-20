@@ -14,14 +14,14 @@ import scala.util.Try
 
 
 class BaseEventHandler[E <: Event](modidSet: Set[String]) {
-  private var listeners: Array[ASMEventHandler] = _
+  private var listeners: Array[ASMEventHandler] = null
 
   def isClient = false
 
   private def initListeners(e: E): Unit = {
     if (listeners == null) {
       listeners = e.getListenerList.getListeners(AccessorEvents.busID.get(MinecraftForge.EVENT_BUS))
-        .collect { case asm: ASMEventHandler if modidSet.contains(AccessorEvents.owner.get(asm).getModId) => asm }
+                   .collect { case asm: ASMEventHandler if modidSet.contains(AccessorEvents.owner.get(asm).getModId) => asm }
     }
   }
 
@@ -68,8 +68,9 @@ class BaseEventHandler[E <: Event](modidSet: Set[String]) {
 
   def handleHeightBasedEventClient(cubeY: Int, originalWorld: CCWorldClient, proxyEvent: => E,
                                    setup: (DimensionalLayer, ProxyWorldClient) => Unit,
-                                   clear: (DimensionalLayer, ProxyWorldClient) => Unit): Unit =
+                                   clear: (DimensionalLayer, ProxyWorldClient) => Unit): Unit = {
     handleHeightBasedEvent[ProxyWorldClient, CCWorldClient](LayerManagerClient, cubeY, originalWorld, proxyEvent, setup, clear, _.clientProxyWorld)
+  }
 
   def handleHeightBasedEvent[SidedProxyWorld <: CCWorld, SidedOriginalWorld <: CCWorld](layerManager: LayerManager[SidedOriginalWorld],
                                                                                         cubeY: Int, originalWorld: SidedOriginalWorld,

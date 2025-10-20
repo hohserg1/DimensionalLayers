@@ -8,9 +8,9 @@ import io.github.opencubicchunks.cubicchunks.api.world.{ICube, ICubeProvider}
 import net.minecraft.world.chunk.{Chunk, IChunkProvider}
 
 trait ProxyChunkProviderCommon {
-  this: IChunkProvider with ICubeProvider =>
+  this: IChunkProvider & ICubeProvider =>
 
-  def proxy: CCWorld with ProxyWorldCommon
+  def proxy: CCWorld & ProxyWorldCommon
 
   def original: CCWorld
 

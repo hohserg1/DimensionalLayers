@@ -27,12 +27,10 @@ object Main {
   //-Dlegacy.debugClassLoading=true -Dlegacy.debugClassLoadingSave=true
 
   @SidedProxy(clientSide = "hohserg.dimensional.layers.sided.ClientLogic", serverSide = "hohserg.dimensional.layers.sided.ServerLogic")
-  var sided: CommonLogic = _
+  var sided: CommonLogic = null
 
-  final val otgModid = "openterraingenerator"
   final val netherexModid = "netherex"
 
-  lazy val otgPresent = Loader.isModLoaded(otgModid)
   lazy val netherexPresent = Loader.isModLoaded(netherexModid)
 
   @EventHandler
@@ -51,22 +49,15 @@ object Main {
     println(
       DimensionalLayersWorldType.getName,
       DimensionalLayersPreset.mixedPresetTop,
-      Serialization.gson
+      Serialization
     )
-    new GuiSetupDimensionalLayersPreset(new GuiFakeCreateWorld(null, ""))
+    new GuiSetupDimensionalLayersPreset(new GuiFakeCreateWorld(null, null, ""))
       .setWorldAndResolution(Minecraft.getMinecraft, Minecraft.getMinecraft.displayWidth, Minecraft.getMinecraft.displayHeight)
   }
 
   @EventHandler
   def serverStopped(e: FMLServerStoppedEvent): Unit = {
     println("serverStopped")
-  }
-
-  @SubscribeEvent(priority = EventPriority.LOW)
-  def unmarkDLWorldFromOTG(e: WorldEvent.Save): Unit = {
-    if (e.getWorld.getWorldType == DimensionalLayersWorldType) {
-      FileUtils.deleteDirectory(new File(e.getWorld.getSaveHandler.getWorldDirectory, "OpenTerrainGenerator"))
-    }
   }
 
   @Optional.Method(modid = netherexModid)

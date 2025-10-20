@@ -1,6 +1,7 @@
 package hohserg.dimensional.layers.data.layer.base
 
 import com.google.common.collect.ImmutableList
+import hohserg.dimensional.layers.preset.spec.LayerSpec
 import hohserg.dimensional.layers.worldgen.proxy.server.ProxyWorldServer
 import io.github.opencubicchunks.cubicchunks.api.world.ICube
 import io.github.opencubicchunks.cubicchunks.api.worldgen.CubePrimer
@@ -15,10 +16,6 @@ trait Generator {
 
   def layer: L
 
-  def bounds: L#Bounds = layer.bounds
-
-  def spec: L#Spec = layer.spec
-
   def needGenerateTotalColumn: Boolean = false
 
   def generateCube(cubeX: Int, cubeY: Int, cubeZ: Int, primer: CubePrimer): CubePrimer
@@ -27,8 +24,9 @@ trait Generator {
 
   def recreateStructures(cube: ICube): Unit
 
-  def getPossibleCreatures(creatureType: EnumCreatureType, realPos: BlockPos): util.List[Biome.SpawnListEntry] =
+  def getPossibleCreatures(creatureType: EnumCreatureType, realPos: BlockPos): util.List[Biome.SpawnListEntry] = {
     Option(getPossibleCreaturesNullable(creatureType, realPos)).getOrElse(ImmutableList.of())
+  }
 
   def getPossibleCreaturesNullable(creatureType: EnumCreatureType, realPos: BlockPos): util.List[Biome.SpawnListEntry]
 
@@ -37,7 +35,6 @@ trait Generator {
 }
 
 trait DimensionalGenerator extends Generator {
-
   override type L <: DimensionalLayer
 
   def proxyWorld: ProxyWorldServer

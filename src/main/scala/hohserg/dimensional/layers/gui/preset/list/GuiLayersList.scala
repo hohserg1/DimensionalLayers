@@ -20,13 +20,13 @@ class GuiLayersList(val parent: GuiSetupDimensionalLayersPreset, settings: Strin
 
   private val fromPreset: DimensionalLayersPreset = DimensionalLayersPreset.fromJson(settings)
 
-  val startCubeY: ValueHolder[Int] = new ValueHolder[Int](fromPreset.startCubeY, clamp(_, LayerMap.minCubeY, LayerMap.maxCubeY))(new StateComposite {
-    override val state = new ListBuffer[ValueHolder[_]]
+  val startCubeY: ValueHolder[Int] = new ValueHolder[Int](fromPreset.startCubeY, clamp(_, LayerMap.minCubeY, LayerMap.maxCubeY))(using new StateComposite {
+    override val state = new ListBuffer[ValueHolder[?]]
 
     override def onStateChanged(): Unit = ()
   })
 
-  val startCubeYField = new GuiCubeYField(10 + IconUtils.width + 11, 10 + parent.height - 30, startCubeY)(parent)
+  val startCubeYField = new GuiCubeYField(10 + IconUtils.width + 11, 10 + parent.height - 30, startCubeY)(using parent)
 
   val entries: mutable.Buffer[GuiLayerEntry] =
     fromPreset.layers

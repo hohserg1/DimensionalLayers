@@ -72,7 +72,7 @@ class BaseWorldClient(netHandler: NetHandlerPlayClient, info: WorldInfo, dimensi
 
   override def makeFireworks(p_92088_1_ : Double, p_92088_3_ : Double, p_92088_5_ : Double, p_92088_7_ : Double, p_92088_9_ : Double, p_92088_11_ : Double, p_92088_13_ : NBTTagCompound): Unit = ???
 
-  override def sendPacketToServer(p_184135_1_ : Packet[_]): Unit = ???
+  override def sendPacketToServer(p_184135_1_ : Packet[?]): Unit = ???
 
   override def setWorldScoreboard(p_96443_1_ : Scoreboard): Unit = ???
 

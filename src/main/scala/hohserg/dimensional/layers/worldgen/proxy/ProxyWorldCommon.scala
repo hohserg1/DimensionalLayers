@@ -1,7 +1,7 @@
 package hohserg.dimensional.layers.worldgen.proxy
 
-import com.pg85.otg.util.helpers.ReflectionHelper
 import hohserg.dimensional.layers.data.layer.base.DimensionalLayer
+import hohserg.dimensional.layers.lens.WorldLens
 import hohserg.dimensional.layers.{CCWorld, Main}
 import io.github.opencubicchunks.cubicchunks.api.util.Coords
 import io.github.opencubicchunks.cubicchunks.api.world.{ICube, ICubeProvider, ICubicWorld}
@@ -15,14 +15,15 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.world.biome.Biome
 import net.minecraft.world.chunk.{Chunk, IChunkProvider}
 import net.minecraft.world.storage.loot.LootTableManager
-import net.minecraft.world.{DimensionType, World, WorldLens}
+import net.minecraft.world.{DimensionType, World}
 
 import scala.collection.mutable
+import scala.annotation.nowarn
 
 trait ProxyWorldCommon {
-  this: World with ICubicWorld =>
+  this: World & ICubicWorld =>
 
-  type ProxyChunkProvider <: IChunkProvider with ICubeProvider
+  type ProxyChunkProvider <: IChunkProvider & ICubeProvider
 
   def original: CCWorld
 
@@ -35,20 +36,21 @@ trait ProxyWorldCommon {
   override def createChunkProvider(): IChunkProvider = proxyChunkProvider
 
   def initWorld(): Unit = {
-    if (provider.getClass.getName == "com.pg85.otg.forge.dimensions.OTGWorldProvider") {
-      ReflectionHelper.setValueInFieldOfType(provider, classOf[DimensionType], layer.dimensionType)
-    }
+    //todo: remake otg compat
+    //if (provider.getClass.getName == "com.pg85.otg.forge.dimensions.OTGWorldProvider") {
+    //  com.pg85.otg.util.helpers.ReflectionHelper.setValueInFieldOfType(provider, classOf[DimensionType], layer.dimensionType)
+    //}
     provider.setWorld(this)
     provider.setDimension(layer.dimensionType.getId)
 
-    WorldLens.setChunkProvider(this, proxyChunkProvider)
+    WorldLens.chunkProvider.set(this, proxyChunkProvider)
 
-    WorldLens.setLootTable(this, new LootTableManager(null))
+    WorldLens.lootTable.set(this, new LootTableManager(null))
   }
 
   def bounds = layer.bounds
 
-  override def getSeed: Long = worldInfo.getSeed
+  override def getSeed: Long = WorldLens.worldInfo.get(this).getSeed
 
   override def isCubicWorld: Boolean = layer.isCubic
 
@@ -152,6 +154,7 @@ trait ProxyWorldCommon {
   override def canBlockSeeSky(pos: BlockPos): Boolean =
     original.canBlockSeeSky(layer.bounds.shift(pos))
 
+  @nowarn("msg=deprecated")
   override def getChunksLowestHorizon(x: Int, z: Int): Int =
     original.getChunksLowestHorizon(x, z)
 

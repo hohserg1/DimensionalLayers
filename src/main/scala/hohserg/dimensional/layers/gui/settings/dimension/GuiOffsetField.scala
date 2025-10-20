@@ -1,8 +1,8 @@
 package hohserg.dimensional.layers.gui.settings.dimension
 
 import hohserg.dimensional.layers.gui.GuiBaseSettings.ValueHolder
-import hohserg.dimensional.layers.gui.settings.GuiBaseSettingsLayer.texture
-import hohserg.dimensional.layers.gui.settings.dimension.GuiSettingsLayer.{gridCellSize, gridLeft}
+import hohserg.dimensional.layers.gui.settings.GuiBaseSettingsLayer._
+import hohserg.dimensional.layers.gui.settings.dimension.GuiSettingsLayer.gridLeft
 import hohserg.dimensional.layers.gui.{DrawableArea, GuiBase, GuiNumericField}
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
@@ -68,6 +68,7 @@ class GuiOffsetField(gridTop: Int, value: ValueHolder[Int], topPair: GuiOffsetFi
 
     super.drawTextBox()
 
+    val fontRenderer = Minecraft.getMinecraft.fontRenderer
     drawString(fontRenderer, label, x - fontRenderer.getStringWidth(label) - 24, y, 0xffa0a0a0)
     drawString(fontRenderer, "(cubes)", x + fontRenderer.getStringWidth("99") + 2, y, 0xffa0a0a0)
   }
@@ -81,7 +82,7 @@ class GuiOffsetField(gridTop: Int, value: ValueHolder[Int], topPair: GuiOffsetFi
   private var clickedY: Option[Int] = None
 
   override def mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int): Boolean = {
-    if (area.isHovering && (isTop || !topPair.area.isHovering(topPair))) {
+    if (area.isHovering && (isTop || !topPair.area.isHovering(using topPair))) {
       clickedY = Some(mouseY)
       setFocused(false)
       true

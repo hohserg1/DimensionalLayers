@@ -8,7 +8,7 @@ import java.util.function.Predicate
 
 trait FakeCubicWorldCommon extends ICubicWorld {
 
-  override def testForCubes(cubePos: CubePos, cubePos1: CubePos, predicate: Predicate[_ >: ICube]): Boolean = false
+  override def testForCubes(cubePos: CubePos, cubePos1: CubePos, predicate: Predicate[? >: ICube]): Boolean = false
 
   override def getEffectiveHeight(i: Int, i1: Int): Int = 0
 

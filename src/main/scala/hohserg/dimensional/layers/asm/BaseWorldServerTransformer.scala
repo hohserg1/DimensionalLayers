@@ -1,11 +1,11 @@
 package hohserg.dimensional.layers.asm
 
 import net.minecraft.launchwrapper.IClassTransformer
-import org.objectweb.asm.Opcodes._
-import org.objectweb.asm.tree._
+import org.objectweb.asm.Opcodes.*
+import org.objectweb.asm.tree.*
 import org.objectweb.asm.{ClassReader, ClassWriter, Label}
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters.*
 
 class BaseWorldServerTransformer extends IClassTransformer {
   override def transform(name: String, transformedName: String, basicClass: Array[Byte]): Array[Byte] = {

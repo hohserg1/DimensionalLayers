@@ -1,5 +1,6 @@
 package hohserg.dimensional.layers.feature.overworld.portal
 
+import hohserg.dimensional.layers.lens.EntityLens
 import net.minecraft.block.BlockPortal.AXIS
 import net.minecraft.block.state.IBlockState
 import net.minecraft.block.state.pattern.BlockPattern
@@ -39,30 +40,33 @@ object BlockOverworldPortal extends BlockPortal {
       return
 
     if (worldIn.isRemote) {
-      entityIn.inPortal = true
+      EntityLens.inPortal.set(entityIn, true)
       return
     }
 
     if (entityIn.timeUntilPortal > 0) {
       entityIn.timeUntilPortal = entityIn.getPortalCooldown
     } else {
-      entityIn.portalCounter += 2
-      if (entityIn.portalCounter > entityIn.getMaxInPortalTime * 3) {
+      EntityLens.portalCounter.set(entityIn, 2 + EntityLens.portalCounter.get(entityIn))
+      if (EntityLens.portalCounter.get(entityIn) > entityIn.getMaxInPortalTime * 3) {
         entityIn.timeUntilPortal = entityIn.getPortalCooldown
-        entityIn.portalCounter = 0
+        EntityLens.portalCounter.set(entityIn, 0)
         entityIn.changeDimension(0)
       }
     }
   }
 
-  def isValidNeighbor(block: Block): Boolean =
+  def isValidNeighbor(block: Block): Boolean = {
     block == this || block == Blocks.STONE || block == Blocks.DIRT || block == Blocks.GRASS
+  }
 
   override def neighborChanged(state: IBlockState, worldIn: World, pos: BlockPos, blockIn: Block, fromPos: BlockPos): Unit = {
     val facing = state.getValue(AXIS) match {
       case EnumFacing.Axis.X =>
         EnumFacing.EAST
       case EnumFacing.Axis.Z =>
+        EnumFacing.NORTH
+      case EnumFacing.Axis.Y =>
         EnumFacing.NORTH
     }
 

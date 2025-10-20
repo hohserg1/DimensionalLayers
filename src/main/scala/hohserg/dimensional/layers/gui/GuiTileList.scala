@@ -7,6 +7,8 @@ import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.Tessellator
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
+import scala.util.boundary
+import scala.util.boundary.break
 
 @SideOnly(Side.CLIENT)
 object GuiTileList {
@@ -15,14 +17,15 @@ object GuiTileList {
     def onSelected(item: A): Unit
   }
 
-  def createLinesCache[A <: Drawable](allItems: Seq[A], itemWidth: Int): LoadingCache[Integer, Seq[GuiTileLine[A]]] =
+  def createLinesCache[A <: Drawable](allItems: Seq[A], itemWidth: Int): LoadingCache[Integer, Seq[GuiTileLine[A]]] = {
     CacheBuilder.newBuilder()
-      .maximumSize(4)
-      .build(new CacheLoader[Integer, Seq[GuiTileLine[A]]] {
-        override def load(len: Integer): Seq[GuiTileLine[A]] = {
-          allItems.sliding(len, len).map(new GuiTileLine(_, itemWidth)).toIndexedSeq
-        }
-      })
+                .maximumSize(4)
+                .build(new CacheLoader[Integer, Seq[GuiTileLine[A]]] {
+                  override def load(len: Integer): Seq[GuiTileLine[A]] = {
+                    allItems.sliding(len, len).map(new GuiTileLine(_, itemWidth)).toIndexedSeq
+                  }
+                })
+  }
 
   class GuiTileLine[A <: Drawable](val line: Seq[A], itemWidth: Int) {
 
@@ -62,19 +65,17 @@ object GuiTileList {
     }
 
     def clicked(): Option[(Int, A)] = {
-      for (horizontalIndex <- line.indices) {
+      line.indices.find { horizontalIndex =>
         val x = minX + horizontalIndex * slotWidth(itemWidth) + border
         val y = minY + border
-        if (isHovering(x, y, x + itemWidth, y + itemWidth)) {
-          return Some(horizontalIndex, line(horizontalIndex))
-        }
-      }
-      None
+        isHovering(x, y, x + itemWidth, y + itemWidth)
+      }.map(horizontalIndex => horizontalIndex -> line(horizontalIndex))
     }
 
-    private def isHovering(minX: Int, minY: Int, maxX: Int, maxY: Int) =
+    private def isHovering(minX: Int, minY: Int, maxX: Int, maxY: Int) = {
       minX <= mouseX && mouseX < maxX &&
         minY <= mouseY && mouseY < maxY
+    }
   }
 
   val border = 4
@@ -83,7 +84,7 @@ object GuiTileList {
 }
 
 @SideOnly(Side.CLIENT)
-class GuiTileList[A <: Drawable](val parent: GuiScreen with SelectHandler[A],
+class GuiTileList[A <: Drawable](val parent: GuiScreen & SelectHandler[A],
                                  x: Int, y: Int,
                                  availableWidth: Int, height: Int,
                                  itemWidth: Int,
@@ -106,7 +107,7 @@ class GuiTileList[A <: Drawable](val parent: GuiScreen with SelectHandler[A],
     g.drawHoveringText
   }
 
-  override def elementClicked(verticalIndex: Int, doubleClick: Boolean): Unit =
+  override def elementClicked(verticalIndex: Int, doubleClick: Boolean): Unit = {
     if (lines.indices contains verticalIndex)
       lines(verticalIndex).clicked() match {
         case Some((horizontalIndex, element)) =>
@@ -114,6 +115,7 @@ class GuiTileList[A <: Drawable](val parent: GuiScreen with SelectHandler[A],
           parent.onSelected(element)
         case None =>
       }
+  }
 
   override def isSelected(index: Int): Boolean = false
 
@@ -141,15 +143,16 @@ class GuiTileList[A <: Drawable](val parent: GuiScreen with SelectHandler[A],
   }
 
   def select(item: A): Unit = {
-    for ((line, verticalIndex) <- lines.zipWithIndex) {
-      for ((i, horizontalIndex) <- line.line.zipWithIndex) {
-        if (i == item) {
-          selection = Some((verticalIndex, horizontalIndex, item))
-          scrollToElement(verticalIndex)
-          return
+    boundary:
+      for ((line, verticalIndex) <- lines.zipWithIndex) {
+        for ((i, horizontalIndex) <- line.line.zipWithIndex) {
+          if (i == item) {
+            selection = Some((verticalIndex, horizontalIndex, item))
+            scrollToElement(verticalIndex)
+            break()
+          }
         }
       }
-    }
   }
 
   override def draw: Option[(Int, Int, Float) => Unit] = Some(drawScreen)

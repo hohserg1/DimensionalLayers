@@ -8,7 +8,7 @@ object CompatEventsHandler {
 
   def register(configs: Map[Array[String], EventHandlerFactory]): Unit =
     configs.foreach { case (triggeredMods, handlerFactory) =>
-      val modidSet = Set(triggeredMods: _*)
+      val modidSet = Set(triggeredMods*)
       if (modidSet.nonEmpty) {
         MinecraftForge.EVENT_BUS.register(handlerFactory(modidSet))
       }

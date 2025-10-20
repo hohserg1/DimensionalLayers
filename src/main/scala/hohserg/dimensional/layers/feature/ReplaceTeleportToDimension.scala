@@ -2,6 +2,7 @@ package hohserg.dimensional.layers.feature
 
 import hohserg.dimensional.layers.data.LayerManagerServer
 import hohserg.dimensional.layers.data.layer.base.DimensionalLayer
+import hohserg.dimensional.layers.lens.EntityPlayerMPLens
 import hohserg.dimensional.layers.{CCWorldServer, Configuration}
 import net.minecraft.entity.player.EntityPlayerMP
 import net.minecraft.init.Blocks
@@ -64,7 +65,7 @@ object ReplaceTeleportToDimension {
             def setLocation(x: Double, y: Double, z: Double): Unit =
               entity match {
                 case player: EntityPlayerMP =>
-                  player.invulnerableDimensionChange = true
+                  EntityPlayerMPLens.invulnerableDimensionChange.set(player, true)
                   player.connection.setPlayerLocation(x, y, z, player.rotationYaw, player.rotationPitch)
 
                 case _ =>

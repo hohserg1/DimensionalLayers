@@ -8,6 +8,7 @@ import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
 import hohserg.dimensional.layers.gui.settings.GuiBaseSettingsLayer
 import hohserg.dimensional.layers.gui.settings.solid.GuiBlocksList.DrawableBlock
 import hohserg.dimensional.layers.gui.{GuiNumericField, GuiScrollingListElement}
+import hohserg.dimensional.layers.lens.BiomeLens
 import hohserg.dimensional.layers.preset.spec.{LayerSpec, SolidLayerSpec}
 import net.minecraft.block.state.IBlockState
 import net.minecraft.client.renderer.Tessellator
@@ -15,7 +16,7 @@ import net.minecraft.world.biome.Biome
 import net.minecraftforge.fml.common.registry.ForgeRegistries
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
-import scala.collection.JavaConverters.{collectionAsScalaIterableConverter, mapAsScalaMapConverter}
+import scala.jdk.CollectionConverters.*
 
 @SideOnly(Side.CLIENT)
 class GuiSettingsLayer(parent: GuiSetupDimensionalLayersPreset, layer: SolidLayerSpec, index: Int)
@@ -64,15 +65,16 @@ class GuiSettingsLayer(parent: GuiSetupDimensionalLayersPreset, layer: SolidLaye
           biomeH.set(possibles(index))
       }
 
-      override def isSelected(index: Int): Boolean =
+      override def isSelected(index: Int): Boolean = {
         selected == index
+      }
 
       override def drawBackground(): Unit = ()
 
       override def drawSlot(index: Int, right: Int, top: Int, height: Int, tess: Tessellator): Unit = {
         if (possibles.indices contains index) {
           val biome = possibles(index)
-          fontRenderer.drawString(biome.biomeName, left + 2, top, 0xffff00ff)
+          fontRenderer.drawString(BiomeLens.biomeName.get(biome), left + 2, top, 0xffff00ff)
         }
       }
     })

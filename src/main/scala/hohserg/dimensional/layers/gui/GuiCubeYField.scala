@@ -12,9 +12,7 @@ class GuiCubeYField(x: Int, y: Int, value: ValueHolder[Int])
                    (implicit gui: GuiBase)
   extends GuiNumericField[Int](x, y, LayerMap.minCubeY.toString.length, value, _.toInt) {
 
-  setValidator(new Predicate[String] {
-    override def apply(input: String): Boolean = input.isEmpty || input == "-" || Try(input.toInt).isSuccess
-  })
+  setValidator((input: String) => input.isEmpty || input == "-" || Try(input.toInt).isSuccess)
 
   override def setFocused(isFocusedIn: Boolean): Unit = {
     super.setFocused(isFocusedIn)

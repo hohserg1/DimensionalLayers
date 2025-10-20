@@ -12,7 +12,7 @@ import net.minecraft.world.DimensionType
 
 import scala.util.{Failure, Success, Try}
 
-case class DimensionalLayersPreset(layers: List[LayerSpec], startCubeY: Int = 0) {
+case class DimensionalLayersPreset(layers: List[LayerSpec], startCubeY: Int = 0)  {
 
   if (layers.isEmpty)
     throw new IllegalPresetException("no layers available in preset, need to add at least one")
@@ -30,7 +30,7 @@ case class DimensionalLayersPreset(layers: List[LayerSpec], startCubeY: Int = 0)
 
   private def range(lastFreeCubic: Int, height: Int) = IntRange.of(lastFreeCubic, lastFreeCubic + height - 1)
 
-  def toSettings: String = Serialization.gson.toJson(this)
+  def toSettings: String = Serialization.toJson(this)
 }
 
 object DimensionalLayersPreset {
@@ -38,7 +38,7 @@ object DimensionalLayersPreset {
     Try(settings)
       .filter(_.nonEmpty)
       .orElse(Try(Configuration.defaultPreset).filter(_.nonEmpty))
-      .map(Serialization.gson.fromJson(_, classOf[DimensionalLayersPreset]))
+      .map(Serialization.fromJson)
       .filter(_ != null)
     match {
       case Failure(exception) =>

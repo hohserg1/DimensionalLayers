@@ -1,6 +1,6 @@
 package hohserg.dimensional.layers.worldgen.proxy.server
 
-import hohserg.dimensional.layers.CCWorldServer
+import hohserg.dimensional.layers.*
 import hohserg.dimensional.layers.data.layer.base.DimensionalLayer
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.datafix.DataFixesManager

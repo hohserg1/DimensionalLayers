@@ -2,7 +2,6 @@ package hohserg.dimensional.layers.gui.preset.list
 
 import hohserg.dimensional.layers.Main
 import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
-import hohserg.dimensional.layers.gui.preset.list.GuiLayerEntry._
 import hohserg.dimensional.layers.gui.{DrawableArea, GuiBase, IconUtils, RelativeCoord}
 import hohserg.dimensional.layers.preset.spec.LayerSpec
 import net.minecraft.client.Minecraft
@@ -14,48 +13,42 @@ import org.lwjgl.opengl.GL11
 
 import java.awt.Rectangle
 
+val texture = new ResourceLocation(Main.modid, "textures/gui/layer_entry.png")
 
-@SideOnly(Side.CLIENT)
-object GuiLayerEntry {
+val moveUp = DrawableArea(
+  RelativeCoord.alignLeft(IconUtils.width + 11), RelativeCoord.alignTop(4),
+  RelativeCoord.alignLeft(IconUtils.width + 11 + 26), RelativeCoord.alignTop(4 + 16),
+  new Rectangle(2, 2, 26, 16)
+)
+val moveDown = DrawableArea(
+  RelativeCoord.alignLeft(IconUtils.width + 11), RelativeCoord.alignBottom(-4 - 16),
+  RelativeCoord.alignLeft(IconUtils.width + 11 + 26), RelativeCoord.alignBottom(-4),
+  new Rectangle(2, 20, 26, 16)
+)
+val remove = DrawableArea(
+  RelativeCoord.alignRight(-4 - 13), RelativeCoord.verticalCenterMin(12),
+  RelativeCoord.alignRight(-4), RelativeCoord.verticalCenterMax(12),
+  new Rectangle(2, 38, 13, 12)
+)
 
-  val texture = new ResourceLocation(Main.modid, "textures/gui/layer_entry.png")
+val background = DrawableArea(
+  RelativeCoord.alignLeft(0), RelativeCoord.alignTop(0),
+  RelativeCoord.alignRight(0), RelativeCoord.alignBottom(0),
+  new Rectangle(0, 0, 1, 1)
+)
 
-  val moveUp = DrawableArea(
-    RelativeCoord.alignLeft(IconUtils.width + 11), RelativeCoord.alignTop(4),
-    RelativeCoord.alignLeft(IconUtils.width + 11 + 26), RelativeCoord.alignTop(4 + 16),
-    new Rectangle(2, 2, 26, 16)
-  )
-  val moveDown = DrawableArea(
-    RelativeCoord.alignLeft(IconUtils.width + 11), RelativeCoord.alignBottom(-4 - 16),
-    RelativeCoord.alignLeft(IconUtils.width + 11 + 26), RelativeCoord.alignBottom(-4),
-    new Rectangle(2, 20, 26, 16)
-  )
-  val remove = DrawableArea(
-    RelativeCoord.alignRight(-4 - 13), RelativeCoord.verticalCenterMin(12),
-    RelativeCoord.alignRight(-4), RelativeCoord.verticalCenterMax(12),
-    new Rectangle(2, 38, 13, 12)
-  )
+val rulers = DrawableArea(
+  RelativeCoord.alignLeft(IconUtils.width + 2), RelativeCoord.alignTop(-3),
+  RelativeCoord.alignLeft(IconUtils.width + 2 + 7), RelativeCoord.alignBottom(2),
+  new Rectangle(150, 0, 7, 73),
+  sameHoveringUV = true
+)
 
-  val background = DrawableArea(
-    RelativeCoord.alignLeft(0), RelativeCoord.alignTop(0),
-    RelativeCoord.alignRight(0), RelativeCoord.alignBottom(0),
-    new Rectangle(0, 0, 1, 1)
-  )
-
-  val rulers = DrawableArea(
-    RelativeCoord.alignLeft(IconUtils.width + 2), RelativeCoord.alignTop(-3),
-    RelativeCoord.alignLeft(IconUtils.width + 2 + 7), RelativeCoord.alignBottom(2),
-    new Rectangle(150, 0, 7, 73),
-    sameHoveringUV = true
-  )
-
-  val settings = DrawableArea(
-    RelativeCoord.alignRight(-20 - 40), RelativeCoord.verticalCenterMin(20),
-    RelativeCoord.alignRight(-40), RelativeCoord.verticalCenterMax(20),
-    new Rectangle(2, 52, 20, 20)
-  )
-
-}
+val settings = DrawableArea(
+  RelativeCoord.alignRight(-20 - 40), RelativeCoord.verticalCenterMin(20),
+  RelativeCoord.alignRight(-40), RelativeCoord.verticalCenterMax(20),
+  new Rectangle(2, 52, 20, 20)
+)
 
 @SideOnly(Side.CLIENT)
 trait GuiLayerEntry extends DrawableArea.Container {
@@ -74,18 +67,18 @@ trait GuiLayerEntry extends DrawableArea.Container {
   var minY: Int = 0
   var maxX: Int = 0
   var maxY: Int = 0
-  var mouseX: Int = 0
-  var mouseY: Int = 0
+  var absMouseX: Int = 0
+  var absMouseY: Int = 0
 
   def drawEntry(index: Int, minX: Int, minY: Int, maxX: Int, maxY: Int, mouseX: Int, mouseY: Int): Unit = {
     this.minX = minX
     this.minY = minY
     this.maxX = maxX
     this.maxY = maxY
-    this.mouseX = mouseX
-    this.mouseY = mouseY
+    this.absMouseX = mouseX
+    this.absMouseY = mouseY
 
-    mc.getTextureManager.bindTexture(GuiLayerEntry.texture)
+    mc.getTextureManager.bindTexture(texture)
 
     val tess = Tessellator.getInstance()
     val buffer = tess.getBuffer
@@ -153,9 +146,11 @@ trait GuiLayerEntry extends DrawableArea.Container {
     }
   }
 
-  private def isNotLast(index: Int) =
+  private def isNotLast(index: Int) = {
     index != parent.entries.size - 1
+  }
 
-  private def isNotFirst(index: Int) =
+  private def isNotFirst(index: Int) = {
     index != 0
+  }
 }

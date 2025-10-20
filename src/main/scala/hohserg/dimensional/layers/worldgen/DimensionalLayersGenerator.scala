@@ -15,9 +15,9 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.world.biome.Biome
 import net.minecraft.world.chunk.Chunk
 
-import java.{util => ju}
-import scala.collection.JavaConverters._
+import java.util as ju
 import scala.collection.mutable
+import scala.jdk.CollectionConverters.*
 
 class DimensionalLayersGenerator(original: CCWorldServer) extends ICubeGenerator {
   val worldData = LayerManagerServer.getWorldData(original).getOrElse(throw new IllegalArgumentException("not a layered world: " + original))
@@ -103,23 +103,26 @@ class DimensionalLayersGenerator(original: CCWorldServer) extends ICubeGenerator
 
   override def generateColumn(chunk: Chunk): Unit = ()
 
-  override def recreateStructures(cube: ICube): Unit =
+  override def recreateStructures(cube: ICube): Unit = {
     layerAtCubeY.get(cube.getY).foreach {
       layer =>
         layer.generator.recreateStructures(cube)
     }
+  }
 
   override def recreateStructures(chunk: Chunk): Unit = ()
 
-  override def getPossibleCreatures(enumCreatureType: EnumCreatureType, blockPos: BlockPos): ju.List[Biome.SpawnListEntry] =
+  override def getPossibleCreatures(enumCreatureType: EnumCreatureType, blockPos: BlockPos): ju.List[Biome.SpawnListEntry] = {
     layerAtCubeY.get(Coords.blockToCube(blockPos.getY))
-      .map(layer => layer.generator.getPossibleCreatures(enumCreatureType, blockPos))
-      .getOrElse(ImmutableList.of())
+                .map(layer => layer.generator.getPossibleCreatures(enumCreatureType, blockPos))
+                .getOrElse(ImmutableList.of())
+  }
 
-  override def getClosestStructure(name: String, blockPos: BlockPos, findUnexplored: Boolean): BlockPos =
+  override def getClosestStructure(name: String, blockPos: BlockPos, findUnexplored: Boolean): BlockPos = {
     layerAtCubeY.get(Coords.blockToCube(blockPos.getY))
-      .flatMap(layer => layer.generator.getNearestStructurePos(name, blockPos, findUnexplored))
-      .orNull
+                .flatMap(layer => layer.generator.getNearestStructurePos(name, blockPos, findUnexplored))
+                .orNull
+  }
 
   override def generateCube(cubeX: Int, cubeY: Int, cubeZ: Int): CubePrimer = generateCube(cubeX, cubeY, cubeZ, new CubePrimer())
 }

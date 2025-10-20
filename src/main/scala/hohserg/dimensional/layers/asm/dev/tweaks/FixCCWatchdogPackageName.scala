@@ -8,7 +8,7 @@ object FixCCWatchdogPackageName {
 
   @Hook
   @OnBegin
-  def getPackageName(ch: CompatHandler, clazz: Class[_]): ReturnSolve[String] =
+  def getPackageName(ch: CompatHandler, clazz: Class[?]): ReturnSolve[String] =
     if (clazz.getCanonicalName == null) {
       val name = clazz.getName
       val dot = name.lastIndexOf('.')

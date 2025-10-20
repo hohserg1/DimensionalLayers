@@ -4,7 +4,7 @@ import hohserg.dimensional.layers.gui.GuiTileList.SelectHandler
 import hohserg.dimensional.layers.gui.settings.solid.GuiBlocksList
 import net.minecraft.block.Block
 
-class GuiBlockSelector(parent: GuiBase with SelectHandler[GuiBlocksList.DrawableBlock], selected: Option[Block]) extends GuiBase(parent) with SelectHandler[GuiBlocksList.DrawableBlock] {
+class GuiBlockSelector(parent: GuiBase & SelectHandler[GuiBlocksList.DrawableBlock], selected: Option[Block]) extends GuiBase(parent) with SelectHandler[GuiBlocksList.DrawableBlock] {
 
   override def initGui(): Unit = {
     super.initGui()

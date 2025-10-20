@@ -9,7 +9,7 @@ import scala.collection.mutable
 
 trait LayerManager[SidedOriginalWorld <: CCWorld] {
 
-  private val worldDataForRealDimension = new mutable.OpenHashMap[Int, WorldData]()
+  private val worldDataForRealDimension = new mutable.HashMap[Int, WorldData]()
 
   def haveWorldLayers(world: SidedOriginalWorld): Boolean = {
     world.getWorldInfo.getTerrainType == DimensionalLayersWorldType && DimensionalLayersWorldType.hasCubicGeneratorForWorld(world)

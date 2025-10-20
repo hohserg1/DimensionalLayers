@@ -19,7 +19,7 @@ import net.minecraft.world.gen.IChunkGenerator
 import java.util
 import java.util.Random
 import java.util.concurrent.TimeUnit
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters.*
 
 class VanillaDimensionGenerator(original: CCWorldServer, val layer: VanillaDimensionLayer) extends DimensionalGenerator with BiomeGeneratorHelper {
   override type L = VanillaDimensionLayer
@@ -33,19 +33,19 @@ class VanillaDimensionGenerator(original: CCWorldServer, val layer: VanillaDimen
   )
   private val provider: WorldProvider = proxyWorld.provider
   val vanillaGenerator: IChunkGenerator = provider.createChunkGenerator()
-  var biomes: Array[Biome] = _
+  var biomes: Array[Biome] = null
 
   val lastChunks: LoadingCache[(Int, Int), Chunk] =
     CacheBuilder.newBuilder()
-      .maximumSize(200)
-      .expireAfterAccess(60, TimeUnit.SECONDS)
-      .build(new CacheLoader[(Int, Int), Chunk] {
-        override def load(key: (Int, Int)): Chunk = {
-          val r = vanillaGenerator.generateChunk(key._1, key._2)
-          r.onLoad()
-          r
-        }
-      })
+                .maximumSize(200)
+                .expireAfterAccess(60, TimeUnit.SECONDS)
+                .build(new CacheLoader[(Int, Int), Chunk] {
+                  override def load(key: (Int, Int)): Chunk = {
+                    val r = vanillaGenerator.generateChunk(key._1, key._2)
+                    r.onLoad()
+                    r
+                  }
+                })
 
   override def needGenerateTotalColumn: Boolean = true
 
@@ -53,7 +53,7 @@ class VanillaDimensionGenerator(original: CCWorldServer, val layer: VanillaDimen
     val chunk = lastChunks.get(cubeX -> cubeZ)
 
     //took from io.github.opencubicchunks.cubicchunks.core.asm.mixin.core.common.MixinChunk_Cubes#init_getStorage
-    val index = ((cubeY - bounds.realStartCubeY + spec.bottomOffset) & 15) - Coords.blockToCube(proxyWorld.getMinHeight)
+    val index = ((cubeY - layer.bounds.realStartCubeY + layer.spec.bottomOffset) & 15) - Coords.blockToCube(proxyWorld.getMinHeight)
 
     val storage = chunk.getBlockStorageArray()(index)
     if (storage != null && !storage.isEmpty) {
@@ -71,8 +71,9 @@ class VanillaDimensionGenerator(original: CCWorldServer, val layer: VanillaDimen
     primer
   }
 
-  override protected def calcBiome(localBiomeX: Int, localBiomeY: Int, localBiomeZ: Int, biomes: Array[Biome]): Biome =
+  override protected def calcBiome(localBiomeX: Int, localBiomeY: Int, localBiomeZ: Int, biomes: Array[Biome]): Biome = {
     biomes((localBiomeX << 2) & 15 | ((localBiomeZ << 2) & 15) << 4)
+  }
 
   override def populateCube(cube: ICube): Unit = {
     try {
@@ -105,12 +106,15 @@ class VanillaDimensionGenerator(original: CCWorldServer, val layer: VanillaDimen
     }
   }
 
-  override def getPossibleCreaturesNullable(creatureType: EnumCreatureType, realPos: BlockPos): util.List[Biome.SpawnListEntry] =
-    vanillaGenerator.getPossibleCreatures(creatureType, bounds.markShifted(realPos).unshift)
+  override def getPossibleCreaturesNullable(creatureType: EnumCreatureType, realPos: BlockPos): util.List[Biome.SpawnListEntry] = {
+    vanillaGenerator.getPossibleCreatures(creatureType, layer.bounds.markShifted(realPos).unshift)
+  }
 
-  override def recreateStructures(cube: ICube): Unit =
+  override def recreateStructures(cube: ICube): Unit = {
     vanillaGenerator.recreateStructures(proxyWorld.getChunk(cube.getX, cube.getZ), cube.getX, cube.getZ)
+  }
 
-  override def getNearestStructurePos(name: String, blockPos: BlockPos, findUnexplored: Boolean): Option[BlockPos] =
+  override def getNearestStructurePos(name: String, blockPos: BlockPos, findUnexplored: Boolean): Option[BlockPos] = {
     Option(vanillaGenerator.getNearestStructurePos(original, name, blockPos, findUnexplored))
+  }
 }

@@ -8,7 +8,7 @@ import scala.collection.mutable.ListBuffer
 @SideOnly(Side.CLIENT)
 trait StateComposite {
 
-  def state: ListBuffer[ValueHolder[_]]
+  def state: ListBuffer[ValueHolder[?]]
 
   def onStateChanged(): Unit
 

@@ -1,9 +1,11 @@
 package hohserg.dimensional.layers.gui.preset
 
 import hohserg.dimensional.layers.Main
-import hohserg.dimensional.layers.gui.add._
+import hohserg.dimensional.layers.gui.add.*
 import hohserg.dimensional.layers.gui.preset.list.GuiLayersList
 import hohserg.dimensional.layers.gui.{AccessorGuiScrollingList, GuiBase, GuiClickableButton}
+import hohserg.dimensional.layers.lens.GuiCreateWorldLens
+import hohserg.dimensional.layers.preset.CubicWorldTypeHelper
 import net.minecraft.client.gui.GuiCreateWorld
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
@@ -11,14 +13,14 @@ import java.util.Random
 
 @SideOnly(Side.CLIENT)
 class GuiSetupDimensionalLayersPreset(parent: GuiCreateWorld) extends GuiBase(parent) {
-  var layersList: GuiLayersList = _
-  var exportButton: GuiClickableButton = _
-  var importButton: GuiClickableButton = _
-  var doneButton: GuiClickableButton = _
+  var layersList: GuiLayersList = null
+  var exportButton: GuiClickableButton = null
+  var importButton: GuiClickableButton = null
+  var doneButton: GuiClickableButton = null
 
   override protected def back(): Unit = {
-    if (parent.worldSeed.isEmpty)
-      parent.worldSeed = new Random().nextLong.toString
+    if (GuiCreateWorldLens.worldSeed.get(parent).isEmpty)
+      GuiCreateWorldLens.worldSeed.set(parent, new Random().nextLong.toString)
     super.back()
   }
 
@@ -37,20 +39,22 @@ class GuiSetupDimensionalLayersPreset(parent: GuiCreateWorld) extends GuiBase(pa
     addButton(new GuiClickableButton(width - 150 - 10, 10 + 20 + 10 + 20 + 1, 150, 20, "Add solid layer")(show(new solid.GuiAddLayer(_))))
 
     addButton(new GuiClickableButton(width - 150 - 10, 10 + 20 + 10 + 20 + 1 + 20 + 1, 150, 20, "Add cubic world type layer")(
-      if (cubic.worldtype.GuiAddLayer.possibleWorldTypes.nonEmpty)
+      if (CubicWorldTypeHelper.possibleWorldTypes.nonEmpty)
         show(new cubic.worldtype.GuiAddLayer(_))
       else
         showWarning("Need to install", "CubicWorldGen or smth like")
     ))
+    /*
     addButton(new GuiClickableButton(width - 150 - 10, 10 + 20 + 10 + 20 + 1 + 20 + 1 + 20 + 1, 150, 20, "Add OTG layer")(
       if (Main.otgPresent)
         show(new otg.GuiAddLayer(_))
       else
         showWarning("Need to install", "Open Terrain Generator")
     ))
+     */
 
     importButton = addButton(new GuiClickableButton(width - 110 - 10, height - 30, 110, 20, "Import preset")(show(new GuiImportPreset(_))))
-    exportButton = addButton(new GuiClickableButton(width - 110 - 10, height - 30 - 20 - 1, 110, 20, "Export preset")(GuiImportPreset.export(this)))
+    exportButton = addButton(new GuiClickableButton(width - 110 - 10, height - 30 - 20 - 1, 110, 20, "Export preset")(GuiImportPreset.exportPreset(this)))
 
     initFromJson(if (layersList == null) parent.chunkProviderSettingsJson else layersList.toSettings)
   }

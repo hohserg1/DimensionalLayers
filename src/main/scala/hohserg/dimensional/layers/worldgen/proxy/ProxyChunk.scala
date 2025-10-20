@@ -13,7 +13,9 @@ import net.minecraft.world.chunk.Chunk
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage
 import net.minecraft.world.{EnumSkyBlock, World}
 
-class ProxyChunk(proxy: CCWorld with ProxyWorldCommon, original: Chunk, layerBounds: DimensionalLayerBounds) extends Chunk(original.getWorld, original.x, original.z) {
+import scala.util.boundary, boundary.break
+
+class ProxyChunk(proxy: CCWorld & ProxyWorldCommon, original: Chunk, layerBounds: DimensionalLayerBounds) extends Chunk(original.getWorld, original.x, original.z) {
   val column = original.asInstanceOf[IColumn]
 
   override def getBlockState(pos: BlockPos): IBlockState =
@@ -42,13 +44,9 @@ class ProxyChunk(proxy: CCWorld with ProxyWorldCommon, original: Chunk, layerBou
   override def getHeightValue(x: Int, z: Int): Int = proxy.asInstanceOf[World].getHeight(x, z)
 
   override def getTopFilledSegment: Int = {
-    for (i <- layerBounds.realEndCubeY to layerBounds.realStartCubeY by -1) {
-      val cube = original.asInstanceOf[IColumn].getCube(i)
-      if (!cube.isEmpty) {
-        return Coords.cubeToMinBlock(i + layerBounds.virtualStartCubeY)
-      }
-    }
-    0
+    (layerBounds.realEndCubeY to layerBounds.realStartCubeY by -1)
+      .find(!original.asInstanceOf[IColumn].getCube(_).isEmpty)
+      .getOrElse(0)
   }
 
   override def getLightFor(`type`: EnumSkyBlock, pos: BlockPos): Int =

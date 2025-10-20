@@ -1,12 +1,12 @@
 package hohserg.dimensional.layers.gui.settings.dimension
 
+import hohserg.dimensional.layers.gui.*
 import hohserg.dimensional.layers.gui.GuiBaseSettings.ValueHolder
-import hohserg.dimensional.layers.gui.IconUtils._
+import hohserg.dimensional.layers.gui.IconUtils.*
 import hohserg.dimensional.layers.gui.RelativeCoord.{alignLeft, alignTop}
-import hohserg.dimensional.layers.gui._
 import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
-import hohserg.dimensional.layers.gui.settings.GuiBaseSettingsLayer._
-import hohserg.dimensional.layers.gui.settings.dimension.GuiSettingsLayer._
+import hohserg.dimensional.layers.gui.settings.GuiBaseSettingsLayer.*
+import hohserg.dimensional.layers.gui.settings.dimension.GuiSettingsLayer.{CyclicValueHolder, gridLeft, possibleWorldTypes}
 import hohserg.dimensional.layers.gui.settings.{GuiBaseSettingsLayer, GuiFakeCreateWorld}
 import hohserg.dimensional.layers.preset.spec.{DimensionLayerSpec, LayerSpec}
 import hohserg.dimensional.layers.{clamp, toLongSeed}
@@ -21,10 +21,11 @@ object GuiSettingsLayer {
 
   lazy val possibleWorldTypes =
     WorldType.WORLD_TYPES
-      .filter(_ != null)
-      .filter(_.canBeCreated)
-      .filter(!_.isInstanceOf[ICubicWorldType])
-      .filter(_.getName != "OTG")
+             .filter(_ != null)
+             .filter(_.canBeCreated)
+             .filter(!_.isInstanceOf[ICubicWorldType])
+             .filter(_.getName != "OTG")
+             .toSeq
 
   class CyclicValueHolder[A](init: A, possible: Seq[A])(implicit gui: GuiBaseSettings)
     extends ValueHolder[Int](possible.indexOf(init), _ % possible.size) {
@@ -47,7 +48,7 @@ class GuiSettingsLayer(parent: GuiSetupDimensionalLayersPreset, index: Int, laye
   val worldTypeH = new CyclicValueHolder[WorldType](layer.worldType, possibleWorldTypes)
   val worldTypePresetH = new ValueHolder[String](layer.worldTypePreset)
 
-  override def buildLayerSpec(): LayerSpec =
+  override def buildLayerSpec(): LayerSpec = {
     DimensionLayerSpec(
       layer.dimensionType,
       toLongSeed(seedOverrideH.get),
@@ -56,13 +57,14 @@ class GuiSettingsLayer(parent: GuiSetupDimensionalLayersPreset, index: Int, laye
       worldTypeH.getA,
       worldTypePresetH.get
     )
+  }
 
-  var topOffsetField: GuiOffsetField = _
-  var bottomOffsetField: GuiOffsetField = _
-  var worldTypeButton: GuiClickableButton = _
-  var worldTypeCustomizationButton: GuiClickableButton = _
+  var topOffsetField: GuiOffsetField = null
+  var bottomOffsetField: GuiOffsetField = null
+  var worldTypeButton: GuiClickableButton = null
+  var worldTypeCustomizationButton: GuiClickableButton = null
 
-  private val guiFakeCreateWorld = new GuiFakeCreateWorld(this, layer.worldTypePreset)
+  private val guiFakeCreateWorld = new GuiFakeCreateWorld(this, worldTypePresetH, layer.worldTypePreset)
 
   override def initGui(): Unit = {
     super.initGui()

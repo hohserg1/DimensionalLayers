@@ -1,6 +1,6 @@
 package hohserg.dimensional.layers.data.layer.cubic_world_type
 
-import hohserg.dimensional.layers.data.layer.base.{DimensionalLayer, DimensionalLayerBounds}
+import hohserg.dimensional.layers.data.layer.base.{DimensionalLayer, DimensionalLayerBounds, Generator}
 import hohserg.dimensional.layers.preset.spec.CubicWorldTypeLayerSpec
 import hohserg.dimensional.layers.{CCWorld, CCWorldServer}
 import net.minecraft.world.DimensionType
@@ -19,6 +19,6 @@ case class CubicWorldTypeLayer(_realStartCubeY: Int, spec: CubicWorldTypeLayerSp
 
   override def dimensionType: DimensionType = spec.dimensionType1
 
-  override def createGenerator(original: CCWorldServer): CubicWorldTypeGenerator = new CubicWorldTypeGenerator(original, this)
+  override protected def createGenerator(original: CCWorldServer): G = new CubicWorldTypeGenerator(original, this)
 
 }

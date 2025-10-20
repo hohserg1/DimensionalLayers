@@ -1,7 +1,8 @@
 package hohserg.dimensional.layers.data.layer.cubic_world_type
 
 import hohserg.dimensional.layers.CCWorldServer
-import hohserg.dimensional.layers.data.layer.base.DimensionalGenerator
+import hohserg.dimensional.layers.data.layer.base.{DimensionalGenerator, DimensionalLayerBounds}
+import hohserg.dimensional.layers.preset.spec.CubicWorldTypeLayerSpec
 import hohserg.dimensional.layers.worldgen.proxy.server.ProxyWorldServer
 import hohserg.dimensional.layers.worldgen.proxy.server.ProxyWorldServer.createLayerWorldInfo
 import hohserg.dimensional.layers.worldgen.proxy.{ProxyCube, ShiftedBlockPos}
@@ -23,17 +24,21 @@ class CubicWorldTypeGenerator(original: CCWorldServer, val layer: CubicWorldType
     createLayerWorldInfo(original, layer.spec.seedOverride, layer.spec.cubicWorldType, layer.spec.worldTypePreset)
   )
 
-  val generator = spec.cubicWorldType.createCubeGenerator(proxyWorld)
+  val generator = layer.spec.cubicWorldType.createCubeGenerator(proxyWorld)
 
-  override def generateCube(cubeX: Int, cubeY: Int, cubeZ: Int, primer: CubePrimer): CubePrimer =
+  override def generateCube(cubeX: Int, cubeY: Int, cubeZ: Int, primer: CubePrimer): CubePrimer = {
     generator.generateCube(cubeX, ShiftedBlockPos.unshiftCubeY(cubeY, layer.bounds), cubeZ, primer)
+  }
 
-  override def populateCube(cube: ICube): Unit =
-    generator.populate(new ProxyCube(cube, bounds, proxyWorld))
+  override def populateCube(cube: ICube): Unit = {
+    generator.populate(new ProxyCube(cube, layer.bounds, proxyWorld))
+  }
 
-  override def getPossibleCreaturesNullable(creatureType: EnumCreatureType, realPos: BlockPos): util.List[Biome.SpawnListEntry] =
+  override def getPossibleCreaturesNullable(creatureType: EnumCreatureType, realPos: BlockPos): util.List[Biome.SpawnListEntry] = {
     generator.getPossibleCreatures(creatureType, realPos)
+  }
 
-  override def recreateStructures(cube: ICube): Unit =
+  override def recreateStructures(cube: ICube): Unit = {
     generator.recreateStructures(cube)
+  }
 }

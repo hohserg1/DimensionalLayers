@@ -18,8 +18,8 @@ class SolidGenerator(val layer: SolidLayer) extends Generator with BiomeGenerato
       x <- 0 to 15
       y <- 0 to 15
       z <- 0 to 15
-    } primer.setBlockState(x, y, z, spec.filler)
-    generateBiomes(primer, spec.biome)
+    } primer.setBlockState(x, y, z, layer.spec.filler)
+    generateBiomes(primer, layer.spec.biome)
     primer
   }
 

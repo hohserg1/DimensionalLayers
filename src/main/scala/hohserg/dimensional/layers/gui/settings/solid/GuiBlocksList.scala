@@ -13,7 +13,7 @@ import net.minecraft.item.{Item, ItemStack}
 import net.minecraftforge.fml.common.registry.ForgeRegistries
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters.*
 
 
 @SideOnly(Side.CLIENT)
@@ -22,9 +22,9 @@ object GuiBlocksList {
   lazy val allBlocks: Seq[DrawableBlock] =
     DrawableBlock(Blocks.AIR) +:
       ForgeRegistries.BLOCKS.getValuesCollection.asScala
-        .filter(Item.getItemFromBlock(_) != Items.AIR)
-        .map(DrawableBlock)
-        .toIndexedSeq
+                     .filter(Item.getItemFromBlock(_) != Items.AIR)
+                     .map(DrawableBlock.apply)
+                     .toIndexedSeq
 
   val blockLinesByLen: LoadingCache[Integer, Seq[GuiTileList.GuiTileLine[DrawableBlock]]] = GuiTileList.createLinesCache(allBlocks, itemWidth)
 
@@ -40,7 +40,7 @@ object GuiBlocksList {
 }
 
 @SideOnly(Side.CLIENT)
-class GuiBlocksList(parent: GuiScreen with SelectHandler[GuiBlocksList.DrawableBlock], availableWidth: Int) extends GuiTileList(parent, 10, 10, parent.height - 20, availableWidth, itemWidth, blockLinesByLen)() {
+class GuiBlocksList(parent: GuiScreen & SelectHandler[GuiBlocksList.DrawableBlock], availableWidth: Int) extends GuiTileList(parent, 10, 10, parent.height - 20, availableWidth, itemWidth, blockLinesByLen)() {
   override def drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float): Unit = {
     RenderHelper.enableGUIStandardItemLighting()
     super.drawScreen(mouseX, mouseY, partialTicks)

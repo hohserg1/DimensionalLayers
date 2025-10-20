@@ -1,24 +1,17 @@
 package hohserg.dimensional.layers.gui.preset;
 
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiPageButtonList;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.util.ChatAllowedCharacters;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.input.Mouse;
+import com.google.common.base.*;
+import net.minecraft.client.*;
+import net.minecraft.client.gui.*;
+import net.minecraft.client.renderer.*;
+import net.minecraft.client.renderer.vertex.*;
+import net.minecraft.util.*;
+import net.minecraftforge.fml.relauncher.*;
+import org.lwjgl.input.*;
 
-import java.util.ArrayList;
+import java.util.*;
 
-import static net.minecraft.util.math.MathHelper.clamp;
+import static net.minecraft.util.math.MathHelper.*;
 
 //made by Draco18s
 //https://gist.github.com/Draco18s/2b02762b597e67a9b887aed241f25077

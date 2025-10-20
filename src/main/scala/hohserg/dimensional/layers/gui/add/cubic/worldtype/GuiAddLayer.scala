@@ -1,26 +1,12 @@
 package hohserg.dimensional.layers.gui.add.cubic.worldtype
 
-import hohserg.dimensional.layers.DimensionalLayersWorldType
-import hohserg.dimensional.layers.gui._
-import hohserg.dimensional.layers.gui.add.cubic.worldtype.GuiAddLayer.possibleWorldTypes
+import hohserg.dimensional.layers.gui.*
 import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
+import hohserg.dimensional.layers.preset.CubicWorldTypeHelper.possibleWorldTypes
 import hohserg.dimensional.layers.preset.spec.CubicWorldTypeLayerSpec
-import io.github.opencubicchunks.cubicchunks.api.world.ICubicWorldType
 import net.minecraft.client.renderer.Tessellator
-import net.minecraft.world.WorldType
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
-
-@SideOnly(Side.CLIENT)
-object GuiAddLayer {
-  lazy val possibleWorldTypes =
-    WorldType.WORLD_TYPES
-      .toIndexedSeq
-      .filter(_ != null)
-      .filter(_.canBeCreated)
-      .collect { case cubic: WorldType with ICubicWorldType => cubic }
-      .filter(_ != DimensionalLayersWorldType)
-}
 
 @SideOnly(Side.CLIENT)
 class GuiAddLayer(parent: GuiSetupDimensionalLayersPreset) extends GuiBase(parent) {
@@ -46,9 +32,8 @@ class GuiAddLayer(parent: GuiSetupDimensionalLayersPreset) extends GuiBase(paren
           val worldType = possibleWorldTypes(index)
           fontRenderer.drawString(makeWorldTypeLabel(worldType), left + 3, top + 1, 0xffff00ff)
 
-          val (mx, my) = MouseUtils.getMousePos
-          if (left <= mx && mx <= right &&
-            top <= my && my <= top + height) {
+          if (left <= mouseX && mouseX <= right &&
+            top <= mouseY && mouseY <= top + height) {
             drawHighlight(left + 2, top, right - left - 2, height)
           }
         }

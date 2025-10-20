@@ -53,6 +53,7 @@ class GuiBoundField(x: Int, value: ValueHolder[Int], isMax: Boolean)
 
     super.drawTextBox()
 
+    val fontRenderer = Minecraft.getMinecraft.fontRenderer
     drawString(fontRenderer, label, x - fontRenderer.getStringWidth(label) - 24, y, 0xffa0a0a0)
   }
 

@@ -12,7 +12,7 @@ class GuiBaseSettings(parent: GuiScreen) extends GuiBase(parent) with StateCompo
     back()
   }
 
-  var doneButton: GuiClickableButton = _
+  var doneButton: GuiClickableButton = null
 
   override def initGui(): Unit = {
     super.initGui()
@@ -24,7 +24,7 @@ class GuiBaseSettings(parent: GuiScreen) extends GuiBase(parent) with StateCompo
     })
   }
 
-  override val state = new ListBuffer[ValueHolder[_]]
+  override val state = new ListBuffer[ValueHolder[?]]
 
   def hasChanges: Boolean = state.exists(_.hasChanges)
 
@@ -43,7 +43,7 @@ object GuiBaseSettings {
 
     gui.state += this
 
-    private var controlElement: GuiEditableElement[A] = _
+    private var controlElement: GuiEditableElement[A] = null
 
     def initControlElement(e: GuiEditableElement[A]): Unit = {
       controlElement = e

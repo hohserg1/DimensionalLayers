@@ -1,5 +1,6 @@
 package hohserg.dimensional.layers.feature
 
+import hohserg.dimensional.layers.lens.GuiCreateWorldLens
 import hohserg.dimensional.layers.{Configuration, DimensionalLayersWorldType}
 import net.minecraft.client.gui.GuiCreateWorld
 import net.minecraftforge.client.event.GuiOpenEvent
@@ -17,8 +18,8 @@ object WorldTypeSelectedAsDefault {
     if (Configuration.worldTypeByDefault)
       event.getGui match {
         case guiCreateWorld: GuiCreateWorld =>
-          if (guiCreateWorld.worldSeed.isEmpty)
-            guiCreateWorld.selectedIndex = DimensionalLayersWorldType.getId
+          if (GuiCreateWorldLens.worldSeed.get(guiCreateWorld).isEmpty)
+            GuiCreateWorldLens.selectedIndex.set(guiCreateWorld, DimensionalLayersWorldType.getId)
         case _ =>
       }
   }

@@ -51,14 +51,17 @@ object LayerMap {
 
   private val nineOnes = 511
 
-  private def slice1Coord(shiftedCubeY: Int): Int =
+  private def slice1Coord(shiftedCubeY: Int): Int = {
     shiftedCubeY >> sliceExponent_1 & nineOnes
+  }
 
-  private def slice2Coord(shiftedCubeY: Int): Int =
+  private def slice2Coord(shiftedCubeY: Int): Int = {
     shiftedCubeY >> sliceExponent_2 & nineOnes
+  }
 
-  private def localCubeCoord(shiftedCubeY: Int): Int =
+  private def localCubeCoord(shiftedCubeY: Int): Int = {
     shiftedCubeY & nineOnes
+  }
 
   private def coords(cubeY: Int): (Int, Int, Int) = {
     val shiftedCubeY = cubeY + shift
@@ -96,7 +99,7 @@ object LayerMap {
       for (slice_1 <- fromFullSlice_1 to toFullSlice_1)
         slices(slice_1) = sliceEntry_1
 
-      def getOrInitSubslices(slice_1: Int): Array[Option[Slice2]] =
+      def getOrInitSubslices(slice_1: Int): Array[Option[Slice2]] = {
         slices(slice_1) match {
           case Some(subsliceBranch: Slice1Branch) => subsliceBranch.subslices
           case None =>
@@ -105,9 +108,12 @@ object LayerMap {
               subslices(i) = None
             slices(slice_1) = Some(new Slice1Branch(subslices))
             subslices
+          case Some(_: Slice1Solid) =>
+            throw new IllegalStateException("impossible case. need to report to author")
         }
+      }
 
-      def getOrInitSubcubes(subslices: Array[Option[Slice2]], slice_2: Int): Array[Option[Layer]] =
+      def getOrInitSubcubes(subslices: Array[Option[Slice2]], slice_2: Int): Array[Option[Layer]] = {
         subslices(slice_2) match {
           case Some(cubeBranch: Slice2Branch) => cubeBranch.cubes
           case None =>
@@ -116,7 +122,10 @@ object LayerMap {
               cubes(i) = None
             subslices(slice_2) = Some(new Slice2Branch(cubes))
             cubes
+          case Some(cubeSolid: Slice2Solid) =>
+            throw new IllegalStateException("impossible case. need to report to author")
         }
+      }
 
       if (fromSlice_2 > 0) {
         val subslices = getOrInitSubslices(fromSlice_1)

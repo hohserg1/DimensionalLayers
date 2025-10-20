@@ -17,42 +17,51 @@ import net.minecraft.world.{EnumSkyBlock, World}
 import net.minecraftforge.common.capabilities.{Capability, CapabilityDispatcher}
 
 import java.util
+import scala.annotation.nowarn
 
-class ProxyCube(original: ICube, layerBounds: DimensionalLayerBounds, proxyWorld: CCWorld with ProxyWorldCommon) extends BaseProxyCube {
+class ProxyCube(original: ICube, layerBounds: DimensionalLayerBounds, _proxyWorld: CCWorld & ProxyWorldCommon) extends BaseProxyCube {
 
-  override def proxyWorld(): World = proxyWorld
+  override def proxyWorld(): World = _proxyWorld
 
-  override def getBlockState(blockPos: BlockPos): IBlockState =
+  override def getBlockState(blockPos: BlockPos): IBlockState = {
     original.getBlockState(layerBounds.shift(blockPos))
+  }
 
-  override def setBlockState(blockPos: BlockPos, iBlockState: IBlockState): IBlockState =
+  override def setBlockState(blockPos: BlockPos, iBlockState: IBlockState): IBlockState = {
     original.setBlockState(layerBounds.shift(blockPos), iBlockState)
+  }
 
-  override def getBlockState(x: Int, y: Int, z: Int): IBlockState =
+  override def getBlockState(x: Int, y: Int, z: Int): IBlockState = {
     if (layerBounds.isInLayer(y))
       original.getBlockState(x, layerBounds.shiftBlockY(y), z)
     else
       Blocks.AIR.getDefaultState
+  }
 
-  override def getLightFor(enumSkyBlock: EnumSkyBlock, blockPos: BlockPos): Int =
+  override def getLightFor(enumSkyBlock: EnumSkyBlock, blockPos: BlockPos): Int = {
     layerBounds.executeInLayer(blockPos, original.getLightFor(enumSkyBlock, _), 0)
+  }
 
-  override def setLightFor(enumSkyBlock: EnumSkyBlock, blockPos: BlockPos, i: Int): Unit =
+  override def setLightFor(enumSkyBlock: EnumSkyBlock, blockPos: BlockPos, i: Int): Unit = {
     layerBounds.executeInLayer(blockPos, original.setLightFor(enumSkyBlock, _, i), ())
+  }
 
-  override def getTileEntity(pos: BlockPos, creationMode: Chunk.EnumCreateEntityType): TileEntity =
+  override def getTileEntity(pos: BlockPos, creationMode: Chunk.EnumCreateEntityType): TileEntity = {
     original.getTileEntity(layerBounds.shift(pos), creationMode)
+  }
 
   override def addTileEntity(tileEntity: TileEntity): Unit = {
     tileEntity.setPos(layerBounds.shift(tileEntity.getPos))
     original.addTileEntity(tileEntity)
   }
 
-  override def isEmpty: Boolean =
+  override def isEmpty: Boolean = {
     original.isEmpty
+  }
 
-  override def localAddressToBlockPos(i: Int): BlockPos =
+  override def localAddressToBlockPos(i: Int): BlockPos = {
     layerBounds.markShifted(original.localAddressToBlockPos(i))
+  }
 
   override def getX: Int = original.getX
 
@@ -77,8 +86,9 @@ class ProxyCube(original: ICube, layerBounds: DimensionalLayerBounds, proxyWorld
       original.addEntity(entity)
   }
 
-  override def removeEntity(entity: Entity): Boolean =
+  override def removeEntity(entity: Entity): Boolean = {
     original.removeEntity(entity)
+  }
 
   override def needsSaving(): Boolean = false
 
@@ -96,13 +106,16 @@ class ProxyCube(original: ICube, layerBounds: DimensionalLayerBounds, proxyWorld
 
   override def getBiome(blockPos: BlockPos): Biome = original.getBiome(layerBounds.shift(blockPos))
 
-  override def setBiome(x: Int, z: Int, biome: Biome): Unit = original.setBiome(x, z, biome)
+  @nowarn("msg=deprecated")
+  override def setBiome(x: Int, z: Int, biome: Biome): Unit = {
+    original.setBiome(x, z, biome)
+  }
 
   override def getCapabilities: CapabilityDispatcher = original.getCapabilities
 
   override def getForceLoadStatus: util.EnumSet[ICube.ForcedLoadReason] = original.getForceLoadStatus
 
-  override def hasCapability(capability: Capability[_], facing: EnumFacing): Boolean = original.hasCapability(capability, facing)
+  override def hasCapability(capability: Capability[?], facing: EnumFacing): Boolean = original.hasCapability(capability, facing)
 
   override def getCapability[T](capability: Capability[T], facing: EnumFacing): T = original.getCapability(capability, facing)
 

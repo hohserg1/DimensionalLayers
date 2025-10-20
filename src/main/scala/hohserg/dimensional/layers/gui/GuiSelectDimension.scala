@@ -24,7 +24,7 @@ object GuiSelectDimension {
   final val itemWidth = IconUtils.width
 
 
-  lazy val allDimensions: Seq[DrawableDim] = DimensionalLayersPreset.availableDims.map(DrawableDim).toIndexedSeq
+  lazy val allDimensions: Seq[DrawableDim] = DimensionalLayersPreset.availableDims.map(DrawableDim.apply).toIndexedSeq
 
   val dimLinesByLen: LoadingCache[Integer, Seq[GuiTileList.GuiTileLine[DrawableDim]]] = GuiTileList.createLinesCache(allDimensions, itemWidth)
 
