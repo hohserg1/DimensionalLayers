@@ -1,22 +1,30 @@
 package hohserg.dimensional.layers.gui.preset
 
-import hohserg.dimensional.layers.Main
 import hohserg.dimensional.layers.gui.add.*
-import hohserg.dimensional.layers.gui.preset.list.GuiLayersList
-import hohserg.dimensional.layers.gui.{AccessorGuiScrollingList, GuiBase, GuiClickableButton}
+import hohserg.dimensional.layers.gui.preset.list.{GuiLayersList, texture}
+import hohserg.dimensional.layers.gui.whole.world.GuiSelectRealDimensionForEdit
+import hohserg.dimensional.layers.gui.{GuiScrollingListLens, DrawableArea, GuiBase, GuiClickableButton, RelativeCoord}
 import hohserg.dimensional.layers.lens.GuiCreateWorldLens
 import hohserg.dimensional.layers.preset.CubicWorldTypeHelper
+import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiCreateWorld
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats
+import net.minecraft.client.renderer.{GlStateManager, Tessellator}
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
+import org.lwjgl.opengl.GL11
 
+import java.awt.Rectangle
 import java.util.Random
 
 @SideOnly(Side.CLIENT)
 class GuiSetupDimensionalLayersPreset(parent: GuiCreateWorld) extends GuiBase(parent) {
+  var currentRealDimension: Int = 0
+
   var layersList: GuiLayersList = null
   var exportButton: GuiClickableButton = null
   var importButton: GuiClickableButton = null
   var doneButton: GuiClickableButton = null
+  var changeRealDimensionButton: GuiChangeRealDimensionButton = null
 
   override protected def back(): Unit = {
     if (GuiCreateWorldLens.worldSeed.get(parent).isEmpty)
@@ -26,7 +34,6 @@ class GuiSetupDimensionalLayersPreset(parent: GuiCreateWorld) extends GuiBase(pa
 
   override def initGui(): Unit = {
     super.initGui()
-
     doneButton = addButton(new GuiClickableButton(width - 80 - 10, 10, 80, 20, "Done")(() => {
       parent.chunkProviderSettingsJson = layersList.toSettings
       back()
@@ -57,10 +64,12 @@ class GuiSetupDimensionalLayersPreset(parent: GuiCreateWorld) extends GuiBase(pa
     exportButton = addButton(new GuiClickableButton(width - 110 - 10, height - 30 - 20 - 1, 110, 20, "Export preset")(GuiImportPreset.exportPreset(this)))
 
     initFromJson(if (layersList == null) parent.chunkProviderSettingsJson else layersList.toSettings)
+
+    changeRealDimensionButton = addButton(new GuiChangeRealDimensionButton(width - 80 - 10 - 80 - 10, height - 10 - 33))
   }
 
   def initFromJson(preset: String): Unit = {
-    layersList = addElement(new GuiLayersList(this, preset, if (layersList == null) 0 else AccessorGuiScrollingList.scrollDistance.get(layersList)))
+    layersList = addElement(new GuiLayersList(this, preset, if (layersList == null) 0 else GuiScrollingListLens.scrollDistance.get(layersList)))
   }
 
   override def drawScreenPre(mouseX: Int, mouseY: Int, partialTicks: Float): Unit = {
@@ -68,5 +77,10 @@ class GuiSetupDimensionalLayersPreset(parent: GuiCreateWorld) extends GuiBase(pa
     val isValidPreset = layersList.entries.nonEmpty
     exportButton.enabled = isValidPreset
     doneButton.enabled = isValidPreset
+  }
+
+  override def drawScreenPost(mouseX: Int, mouseY: Int, partialTicks: Float): Unit = {
+    super.drawScreenPost(mouseX, mouseY, partialTicks)
+    changeRealDimensionButton.renderTooltip(mouseX, mouseY)
   }
 }

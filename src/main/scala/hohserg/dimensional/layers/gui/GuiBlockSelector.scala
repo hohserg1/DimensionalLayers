@@ -11,7 +11,7 @@ class GuiBlockSelector(parent: GuiBase & SelectHandler[GuiBlocksList.DrawableBlo
 
     addButton(new GuiClickableButton(width - 80 - 10, height - 30, 80, 20, "Cancel")(back))
 
-    val list = addElement(new GuiBlocksList(this, width - 210))
+    val list = addElement(new GuiBlocksList(this, 10, 10, width - 210, height - 20))
     selected.foreach(b => list.select(GuiBlocksList.DrawableBlock(b)))
   }
 

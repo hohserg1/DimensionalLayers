@@ -1,8 +1,7 @@
 package hohserg.dimensional.layers.gui.settings.dimension
 
 import hohserg.dimensional.layers.gui.GuiBaseSettings.ValueHolder
-import hohserg.dimensional.layers.gui.settings.GuiBaseSettingsLayer._
-import hohserg.dimensional.layers.gui.settings.dimension.GuiSettingsLayer.gridLeft
+import hohserg.dimensional.layers.gui.settings.GuiBaseSettingsLayer.*
 import hohserg.dimensional.layers.gui.{DrawableArea, GuiBase, GuiNumericField}
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
@@ -13,7 +12,7 @@ import org.lwjgl.opengl.GL11
 import java.awt.Rectangle
 
 @SideOnly(Side.CLIENT)
-class GuiOffsetField(gridTop: Int, value: ValueHolder[Int], topPair: GuiOffsetField)
+class GuiOffsetField(gridLeft: Int, gridTop: Int, value: ValueHolder[Int], topPair: GuiOffsetField)
                     (implicit gui: GuiBase)
   extends GuiNumericField[Int](gridLeft + 19, 0, 2, value, _.toInt, gui.fr.FONT_HEIGHT)
     with DrawableArea.Container {

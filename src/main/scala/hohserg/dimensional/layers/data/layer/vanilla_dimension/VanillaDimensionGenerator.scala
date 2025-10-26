@@ -62,7 +62,8 @@ class VanillaDimensionGenerator(original: CCWorldServer, val layer: VanillaDimen
         y <- 0 to 15
         z <- 0 to 15
         block = storage.get(x, y, z)
-      } primer.setBlockState(x, y, z, block)
+        block2 = layer.blockReplacements.getOrElse(block, block)
+      } primer.setBlockState(x, y, z, block2)
     }
 
     biomes = proxyWorld.getBiomeProvider.getBiomes(biomes, Coords.cubeToMinBlock(cubeX), Coords.cubeToMinBlock(cubeZ), 16, 16)

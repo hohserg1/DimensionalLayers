@@ -1,5 +1,6 @@
 package hohserg.dimensional.layers.gui
 
+import hohserg.dimensional.layers.gui.drawTexturedRect
 import hohserg.dimensional.layers.{Main, Memoized}
 import io.github.opencubicchunks.cubicchunks.api.world.ICubicWorldType
 import net.minecraft.client.Minecraft
@@ -21,17 +22,7 @@ object IconUtils {
   }
 
   def drawLogo[A: TextureLocator](v: A, x: Int, y: Int, w: Int = width): Unit = {
-    val tess = Tessellator.getInstance()
-    Minecraft.getMinecraft.getTextureManager.bindTexture(v.getTexture)
-
-    val buffer: BufferBuilder = tess.getBuffer
-    buffer.begin(7, DefaultVertexFormats.POSITION_TEX)
-    val z = -100
-    buffer.pos(x, y, z).tex(0, 0).endVertex()
-    buffer.pos(x, y + w, z).tex(0, 1).endVertex()
-    buffer.pos(x + w, y + w, z).tex(1, 1).endVertex()
-    buffer.pos(x + w, y, z).tex(1, 0).endVertex()
-    tess.draw()
+    drawTexturedRect(x, y, x + w, y + w, v.getTexture, 0, 0, 1, 1)
   }
 
   given TextureLocator[DimensionType] = toLocator(Memoized(regularTexture(_.getName, "textures/gui/dimension_layers_background/")))

@@ -6,8 +6,7 @@ import hohserg.dimensional.layers.gui.settings.solid.GuiBlocksList.{blockLinesBy
 import hohserg.dimensional.layers.gui.{Drawable, GuiTileList}
 import net.minecraft.block.Block
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiScreen
-import net.minecraft.client.renderer.RenderHelper
+import net.minecraft.client.renderer.{GlStateManager, RenderHelper}
 import net.minecraft.init.{Blocks, Items}
 import net.minecraft.item.{Item, ItemStack}
 import net.minecraftforge.fml.common.registry.ForgeRegistries
@@ -40,7 +39,8 @@ object GuiBlocksList {
 }
 
 @SideOnly(Side.CLIENT)
-class GuiBlocksList(parent: GuiScreen & SelectHandler[GuiBlocksList.DrawableBlock], availableWidth: Int) extends GuiTileList(parent, 10, 10, parent.height - 20, availableWidth, itemWidth, blockLinesByLen)() {
+class GuiBlocksList(parent: SelectHandler[GuiBlocksList.DrawableBlock], x: Int, y: Int, w: Int, h: Int)
+  extends GuiTileList(parent, x, y, w, h, itemWidth, blockLinesByLen)() {
   override def drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float): Unit = {
     RenderHelper.enableGUIStandardItemLighting()
     super.drawScreen(mouseX, mouseY, partialTicks)

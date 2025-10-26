@@ -6,18 +6,20 @@ import hohserg.dimensional.layers.gui.IconUtils.*
 import hohserg.dimensional.layers.gui.RelativeCoord.{alignLeft, alignTop}
 import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
 import hohserg.dimensional.layers.gui.settings.GuiBaseSettingsLayer.*
-import hohserg.dimensional.layers.gui.settings.dimension.GuiSettingsLayer.{CyclicValueHolder, gridLeft, possibleWorldTypes}
+import hohserg.dimensional.layers.gui.settings.additional.features.{AdditionalFeaturesList, addAdditionalFeaturesWidgets}
+import hohserg.dimensional.layers.gui.settings.dimension.GuiSettingsLayer.{CyclicValueHolder, possibleWorldTypes}
 import hohserg.dimensional.layers.gui.settings.{GuiBaseSettingsLayer, GuiFakeCreateWorld}
-import hohserg.dimensional.layers.preset.spec.{DimensionLayerSpec, LayerSpec}
+import hohserg.dimensional.layers.preset.spec.{AdditionalFeature, DimensionLayerSpec, LayerSpec}
 import hohserg.dimensional.layers.{clamp, toLongSeed}
 import io.github.opencubicchunks.cubicchunks.api.world.ICubicWorldType
 import net.minecraft.client.resources.I18n
 import net.minecraft.world.WorldType
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
+import java.awt.Rectangle
+
 @SideOnly(Side.CLIENT)
 object GuiSettingsLayer {
-  val gridLeft = IconUtils.width + 10 * 2 + 70
 
   lazy val possibleWorldTypes =
     WorldType.WORLD_TYPES
@@ -47,6 +49,7 @@ class GuiSettingsLayer(parent: GuiSetupDimensionalLayersPreset, index: Int, laye
   val bottomOffset: ValueHolder[Int] = new ValueHolder[Int](layer.bottomOffset, clamp(_, 0, 15 - topOffset.get))
   val worldTypeH = new CyclicValueHolder[WorldType](layer.worldType, possibleWorldTypes)
   val worldTypePresetH = new ValueHolder[String](layer.worldTypePreset)
+  val additionalFeaturesH = new ValueHolder[Seq[AdditionalFeature]](layer.additionalFeatures)
 
   override def buildLayerSpec(): LayerSpec = {
     DimensionLayerSpec(
@@ -55,9 +58,12 @@ class GuiSettingsLayer(parent: GuiSetupDimensionalLayersPreset, index: Int, laye
       topOffset.get,
       bottomOffset.get,
       worldTypeH.getA,
-      worldTypePresetH.get
+      worldTypePresetH.get,
+      additionalFeaturesH.get
     )
   }
+
+  var gridLeft: Int = IconUtils.width + 10 * 2 + 70 + 10
 
   var topOffsetField: GuiOffsetField = null
   var bottomOffsetField: GuiOffsetField = null
@@ -72,10 +78,19 @@ class GuiSettingsLayer(parent: GuiSetupDimensionalLayersPreset, index: Int, laye
     val seedOverrideField = addElement(new GuiTextFieldElement(width - 180, height / 2 - 20 - 20, 170, 20, seedOverrideH, identity))
     addCenteredLabel("seed override:", alignLeft(seedOverrideField.x + seedOverrideField.width / 2), alignTop(seedOverrideField.y - 13), 0xffa0a0a0)
 
-    addLabel(makeDimensionTypeLabel(layer.dimensionType), 10, IconUtils.width + 10 * 2, 0xffffffff)
+    val dimNameLabel = makeDimensionTypeLabel(layer.dimensionType)
+    val dimNameLabelX = math.max(10, 10 + IconUtils.width / 2 - fontRenderer.getStringWidth(dimNameLabel) / 2)
+    addLabel(dimNameLabel, dimNameLabelX, IconUtils.width + 10 * 2, 0xffffffff)
 
-    topOffsetField = addElement(new GuiOffsetField(gridTop, topOffset, null))
-    bottomOffsetField = addElement(new GuiOffsetField(gridTop, bottomOffset, topOffsetField))
+    gridLeft = {
+      val offset = 70 + 10
+      val left = IconUtils.width + 10 * 2 + offset
+      val right = seedOverrideField.x - offset
+      math.max(left, (right + left) / 2 - 14 / 2)
+    }
+
+    topOffsetField = addElement(new GuiOffsetField(gridLeft, gridTop, topOffset, null))
+    bottomOffsetField = addElement(new GuiOffsetField(gridLeft, gridTop, bottomOffset, topOffsetField))
 
 
     worldTypeCustomizationButton = addButton(new GuiClickableButton(width - 150 - 10, height / 2 - 5 + 20 + 1, 150, 20, I18n.format("selectWorld.customizeType"))(() => {
@@ -89,6 +104,8 @@ class GuiSettingsLayer(parent: GuiSetupDimensionalLayersPreset, index: Int, laye
       worldTypeCustomizationButton.visible = worldType.isCustomizable
       guiFakeCreateWorld.chunkProviderSettingsJson = ""
     }))
+
+    addAdditionalFeaturesWidgets(additionalFeaturesH,  top = math.max(IconUtils.width + 10 * 6 + 9, height - 100), bottom = height - 10)
   }
 
   override def drawScreenPre(mouseX: Int, mouseY: Int, partialTicks: Float): Unit = {

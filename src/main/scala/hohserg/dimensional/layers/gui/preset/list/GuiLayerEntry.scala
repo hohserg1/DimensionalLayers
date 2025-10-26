@@ -67,16 +67,12 @@ trait GuiLayerEntry extends DrawableArea.Container {
   var minY: Int = 0
   var maxX: Int = 0
   var maxY: Int = 0
-  var absMouseX: Int = 0
-  var absMouseY: Int = 0
 
   def drawEntry(index: Int, minX: Int, minY: Int, maxX: Int, maxY: Int, mouseX: Int, mouseY: Int): Unit = {
     this.minX = minX
     this.minY = minY
     this.maxX = maxX
     this.maxY = maxY
-    this.absMouseX = mouseX
-    this.absMouseY = mouseY
 
     mc.getTextureManager.bindTexture(texture)
 

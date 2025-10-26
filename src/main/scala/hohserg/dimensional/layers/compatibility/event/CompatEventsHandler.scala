@@ -1,6 +1,8 @@
 package hohserg.dimensional.layers.compatibility.event
 
 import hohserg.dimensional.layers.Configuration
+import hohserg.dimensional.layers.Configuration.CompatibilityFeatures.LayerRelatedEvents.EntityContext
+import net.minecraft.entity.player.EntityPlayer
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
@@ -17,8 +19,6 @@ object CompatEventsHandler {
 
   def init(): Unit = {
     val layer_related_events = Configuration.compatibility_features.layer_related_events
-
-    /*
     register(Map(
       layer_related_events.living_update_event.triggeredMods -> (new LivingUpdateEventHandler(_,
         layer_related_events.living_update_event.entityContext match {
@@ -26,7 +26,7 @@ object CompatEventsHandler {
           case EntityContext.any_entity => _ => true
         }
       ))
-    ))*/
+    ))
   }
 
   @SideOnly(Side.CLIENT)

@@ -1,35 +1,21 @@
 package hohserg.dimensional.layers.data
 
-import hohserg.dimensional.layers.{CCWorld, DimensionalLayersWorldType}
+import hohserg.dimensional.layers.CCWorld
 import net.minecraft.world.World
-import net.minecraftforge.event.world.WorldEvent
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
-import scala.collection.mutable
+trait LayerManager {
 
-trait LayerManager[SidedOriginalWorld <: CCWorld] {
+  def haveWorldLayers(world: World): Boolean
 
-  private val worldDataForRealDimension = new mutable.HashMap[Int, WorldData]()
+  def getWorldData(world: World): Option[WorldData]
 
-  def haveWorldLayers(world: SidedOriginalWorld): Boolean = {
-    world.getWorldInfo.getTerrainType == DimensionalLayersWorldType && DimensionalLayersWorldType.hasCubicGeneratorForWorld(world)
-  }
+}
 
-  def getWorldData(world: World): Option[WorldData] =
-    if (haveWorldLayers(world.asInstanceOf[SidedOriginalWorld]))
-      Some(worldDataForRealDimension.getOrElseUpdate(world.provider.getDimension, createWorldData(world.asInstanceOf[SidedOriginalWorld])))
+object LayerManager {
+  def getSided(world: World): LayerManager = {
+    if (world.isRemote)
+      LayerManagerClient
     else
-      None
-
-  protected def createWorldData(world: SidedOriginalWorld): WorldData = new WorldData(world)
-
-  @SubscribeEvent
-  def unloadWorld(e: WorldEvent.Unload): Unit = {
-    e.getWorld match {
-      case w: SidedOriginalWorld =>
-        worldDataForRealDimension -= w.provider.getDimension
-      case _ =>
-    }
+      LayerManagerServer
   }
-
 }

@@ -10,17 +10,12 @@ import java.awt.Rectangle
 @SideOnly(Side.CLIENT)
 case class DrawableArea(minX: RelativeCoord, minY: RelativeCoord, maxX: RelativeCoord, maxY: RelativeCoord, uv: (Double, Double, Double, Double), hoveringUV: (Double, Double, Double, Double)) {
   def isHovering(implicit container: Container): Boolean = {
-    isHovering(
+    DrawableArea.isHovering(
       minX.absoluteCoord(container.minX, container.minY, container.maxX, container.maxY),
       minY.absoluteCoord(container.minX, container.minY, container.maxX, container.maxY),
       maxX.absoluteCoord(container.minX, container.minY, container.maxX, container.maxY),
       maxY.absoluteCoord(container.minX, container.minY, container.maxX, container.maxY)
     )
-  }
-
-  private def isHovering(minX: Int, minY: Int, maxX: Int, maxY: Int)(implicit container: Container): Boolean = {
-    minX <= container.absMouseX && container.absMouseX < maxX &&
-      minY <= container.absMouseY && container.absMouseY < maxY
   }
 
   def x(implicit container: Container): Int = minX.absoluteCoord(container.minX, container.minY, container.maxX, container.maxY)
@@ -106,9 +101,23 @@ object DrawableArea {
     def maxX: Int
 
     def maxY: Int
-    
-    def absMouseX: Int
-    
-    def absMouseY: Int
+  }
+
+  case class DumbContainer(minX: Int, minY: Int, maxX: Int, maxY: Int) extends Container
+  
+  class MutableContainer extends Container{
+    var minX: Int = 0
+
+    var minY: Int = 0
+
+    var maxX: Int = 0
+
+    var maxY: Int = 0
+  }
+
+  def isHovering(minX: Int, minY: Int, maxX: Int, maxY: Int): Boolean = {
+    val (mouseX, mouseY) = MouseUtils.getMousePos
+    minX <= mouseX && mouseX < maxX &&
+      minY <= mouseY && mouseY < maxY
   }
 }

@@ -79,7 +79,7 @@ class GuiSettingsLayer(parent: GuiSetupDimensionalLayersPreset, layer: SolidLaye
       }
     })
 
-    addElement(new GuiBlocksList(this, width - 210))
+    addElement(new GuiBlocksList(this, 10, 10, width - 210, height - 20))
       .select(GuiBlocksList.DrawableBlock(fillerH.get.getBlock))
   }
 

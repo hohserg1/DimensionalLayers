@@ -36,7 +36,7 @@ class BaseEventHandler[E <: Event](modidSet: Set[String]) {
     listeners.foreach(l => l.invoke(fakeEvent))
   }
 
-  def handleEntityBasedEvent[SidedProxyWorld <: CCWorld, SidedOriginalWorld <: CCWorld](layerManager: LayerManager[SidedOriginalWorld],
+  def handleEntityBasedEvent[SidedProxyWorld <: CCWorld, SidedOriginalWorld <: CCWorld](layerManager: LayerManager,
                                                                                         entity: Entity,
                                                                                         originalWorld: SidedOriginalWorld,
                                                                                         proxyEvent: => E,
@@ -72,7 +72,7 @@ class BaseEventHandler[E <: Event](modidSet: Set[String]) {
     handleHeightBasedEvent[ProxyWorldClient, CCWorldClient](LayerManagerClient, cubeY, originalWorld, proxyEvent, setup, clear, _.clientProxyWorld)
   }
 
-  def handleHeightBasedEvent[SidedProxyWorld <: CCWorld, SidedOriginalWorld <: CCWorld](layerManager: LayerManager[SidedOriginalWorld],
+  def handleHeightBasedEvent[SidedProxyWorld <: CCWorld, SidedOriginalWorld <: CCWorld](layerManager: LayerManager,
                                                                                         cubeY: Int, originalWorld: SidedOriginalWorld,
                                                                                         proxyEvent: => E,
                                                                                         setup: (DimensionalLayer, SidedProxyWorld) => Unit,

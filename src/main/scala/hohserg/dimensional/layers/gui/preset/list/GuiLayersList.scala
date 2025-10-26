@@ -2,10 +2,10 @@ package hohserg.dimensional.layers.gui.preset.list
 
 import hohserg.dimensional.layers.clamp
 import hohserg.dimensional.layers.data.LayerMap
+import hohserg.dimensional.layers.gui.*
 import hohserg.dimensional.layers.gui.GuiBaseSettings.ValueHolder
 import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
-import hohserg.dimensional.layers.gui._
-import hohserg.dimensional.layers.preset._
+import hohserg.dimensional.layers.preset.*
 import hohserg.dimensional.layers.preset.spec.LayerSpec
 import net.minecraft.client.renderer.Tessellator
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
@@ -18,7 +18,8 @@ import scala.util.Try
 class GuiLayersList(val parent: GuiSetupDimensionalLayersPreset, settings: String, scrollDistance: Float)
   extends GuiScrollingListElement(10, 10, parent.width - 200, parent.height - 20, IconUtils.width + 4) {
 
-  private val fromPreset: DimensionalLayersPreset = DimensionalLayersPreset.fromJson(settings)
+  private val fullPresetBase: DimensionalLayersPreset = DimensionalLayersPreset.fromJson(settings)
+  private val fromPreset = fullPresetBase.realDimensionToLayers(parent.currentRealDimension)
 
   val startCubeY: ValueHolder[Int] = new ValueHolder[Int](fromPreset.startCubeY, clamp(_, LayerMap.minCubeY, LayerMap.maxCubeY))(using new StateComposite {
     override val state = new ListBuffer[ValueHolder[?]]
@@ -30,8 +31,8 @@ class GuiLayersList(val parent: GuiSetupDimensionalLayersPreset, settings: Strin
 
   val entries: mutable.Buffer[GuiLayerEntry] =
     fromPreset.layers
-      .map(_.toGuiLayerEntry(this))
-      .toBuffer
+              .map(_.toGuiLayerEntry(this))
+              .toBuffer
 
   setScrollDistanceWithLimits(scrollDistance)
 
@@ -40,14 +41,21 @@ class GuiLayersList(val parent: GuiSetupDimensionalLayersPreset, settings: Strin
   }
 
   def scrollUpOnce(): Unit = {
-    setScrollDistanceWithLimits(AccessorGuiScrollingList.scrollDistance.get(this) - this.slotHeight)
+    setScrollDistanceWithLimits(GuiScrollingListLens.scrollDistance.get(this) - this.slotHeight)
   }
 
   def scrollDownOnce(): Unit = {
-    setScrollDistanceWithLimits(AccessorGuiScrollingList.scrollDistance.get(this) + this.slotHeight)
+    setScrollDistanceWithLimits(GuiScrollingListLens.scrollDistance.get(this) + this.slotHeight)
   }
 
-  def toSettings: String = Try(DimensionalLayersPreset(entries.map(_.layer).toList, startCubeY.get).toSettings).getOrElse("")
+  def toSettings: String = Try(actualPreset.toSettings).getOrElse("")
+
+
+  def actualPreset: DimensionalLayersPreset =
+    fullPresetBase.copy(realDimensionToLayers = fullPresetBase.realDimensionToLayers.updated(
+      parent.currentRealDimension, 
+      SingleDimensionPreset(entries.map(_.layer).toList, startCubeY.get)
+    ))
 
 
   override def getSize: Int = entries.size
@@ -67,10 +75,12 @@ class GuiLayersList(val parent: GuiSetupDimensionalLayersPreset, settings: Strin
   override def drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float): Unit = {
     super.drawScreen(mouseX, mouseY, partialTicks)
 
-    val baseY = top + 4 - AccessorGuiScrollingList.scrollDistance.get(this).toInt
+    val baseY = top + 4 - GuiScrollingListLens.scrollDistance.get(this).toInt
     startCubeYField.y = baseY + entries.size * this.slotHeight - 11
     startCubeYField.drawTextBox()
   }
+  
+  override def drawHoveringHighlight(): Unit = ()
 
   override def mouseClick: Option[(Int, Int, Int) => Unit] = startCubeYField.mouseClick
 

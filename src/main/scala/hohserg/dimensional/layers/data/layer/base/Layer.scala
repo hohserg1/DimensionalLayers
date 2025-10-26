@@ -1,9 +1,10 @@
 package hohserg.dimensional.layers.data.layer.base
 
 import hohserg.dimensional.layers.lens.{DimensionTypeLens, WorldLens}
-import hohserg.dimensional.layers.preset.spec.LayerSpec
+import hohserg.dimensional.layers.preset.spec.*
 import hohserg.dimensional.layers.worldgen.proxy.client.ProxyWorldClient
 import hohserg.dimensional.layers.{CCWorld, CCWorldClient, CCWorldServer, Main}
+import net.minecraft.block.state.IBlockState
 import net.minecraft.world.DimensionType
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
@@ -22,6 +23,8 @@ trait Layer {
   def spec: Spec
 
   def originalWorld: CCWorld
+
+  lazy val hasPotionEffectGranting: Boolean = spec.additionalFeatures.exists(_.isInstanceOf[PotionEffectGranting])
 
   protected def createGenerator(original: CCWorldServer): G
 
@@ -53,6 +56,10 @@ trait DimensionalLayer extends Layer {
   def dimensionType: DimensionType
 
   def isCubic: Boolean
+
+  lazy val blockReplacements: Map[IBlockState, IBlockState] = spec.additionalFeatures.collect { case BlockReplacing(from, to) => from -> to }.toMap
+  
+  lazy val hasBlockReplacing:Boolean = blockReplacements.nonEmpty
 
   override protected def fakeSaveFolderName: String = dimensionType.getName
 

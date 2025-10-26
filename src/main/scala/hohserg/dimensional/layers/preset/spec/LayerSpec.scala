@@ -16,6 +16,8 @@ import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 sealed trait LayerSpec {
   def height: Int
 
+  def additionalFeatures: Seq[AdditionalFeature]
+
   def toLayer: (Int, this.type, CCWorld) => Layer
 
   def toLayer(startFromCubeY: Int, original: CCWorld): Layer = toLayer(startFromCubeY, this, original)
@@ -27,7 +29,8 @@ sealed trait LayerSpec {
 case class DimensionLayerSpec(dimensionType: DimensionType,
                               seedOverride: Option[Long] = None,
                               topOffset: Int = 0, bottomOffset: Int = 0,
-                              worldType: WorldType = WorldType.DEFAULT, worldTypePreset: String = ""
+                              worldType: WorldType = WorldType.DEFAULT, worldTypePreset: String = "",
+                              additionalFeatures: Seq[AdditionalFeature] = Seq.empty
                              ) extends LayerSpec {
 
   override val height: Int = 16 - topOffset - bottomOffset
@@ -42,7 +45,8 @@ case class CubicWorldTypeLayerSpec(cubicWorldType: WorldType & ICubicWorldType, 
                                    dimensionType1: DimensionType = DimensionType.OVERWORLD,
                                    minCubeY: Int = 0,
                                    maxCubeY: Int = 32,
-                                   seedOverride: Option[Long] = None
+                                   seedOverride: Option[Long] = None,
+                                   additionalFeatures: Seq[AdditionalFeature] = Seq.empty
                                   ) extends LayerSpec {
 
   override val toLayer = CubicWorldTypeLayer.apply
@@ -54,7 +58,8 @@ case class CubicWorldTypeLayerSpec(cubicWorldType: WorldType & ICubicWorldType, 
   override def toGuiLayerEntry(parent: GuiLayersList): GuiLayerEntry = new GuiCubicWorldTypeLayerEntry(parent, this)
 }
 
-case class SolidLayerSpec(filler: IBlockState, height: Int, biome: Biome = Biomes.PLAINS) extends LayerSpec {
+case class SolidLayerSpec(filler: IBlockState, height: Int, biome: Biome = Biomes.PLAINS,
+                          additionalFeatures: Seq[AdditionalFeature] = Seq.empty) extends LayerSpec {
   override val toLayer = SolidLayer.apply
 
   @SideOnly(Side.CLIENT)

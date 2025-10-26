@@ -12,7 +12,11 @@ import net.minecraft.world.DimensionType
 
 import scala.util.{Failure, Success, Try}
 
-case class DimensionalLayersPreset(layers: List[LayerSpec], startCubeY: Int = 0)  {
+case class DimensionalLayersPreset(realDimensionToLayers: Map[Int, SingleDimensionPreset]) {
+  def toSettings: String = Serialization.toJson(this)
+}
+
+case class SingleDimensionPreset(layers: List[LayerSpec], startCubeY: Int = 0) {
 
   if (layers.isEmpty)
     throw new IllegalPresetException("no layers available in preset, need to add at least one")
@@ -29,8 +33,6 @@ case class DimensionalLayersPreset(layers: List[LayerSpec], startCubeY: Int = 0)
   }
 
   private def range(lastFreeCubic: Int, height: Int) = IntRange.of(lastFreeCubic, lastFreeCubic + height - 1)
-
-  def toSettings: String = Serialization.toJson(this)
 }
 
 object DimensionalLayersPreset {
@@ -59,8 +61,10 @@ object DimensionalLayersPreset {
       .map(DimensionLayerSpec(_))
       .toList
 
-  def mixedPreset =
-    DimensionalLayersPreset(
+  lazy val mixedPreset = DimensionalLayersPreset(Map(0 -> singleMixedPreset))
+
+  lazy val singleMixedPreset =
+    SingleDimensionPreset(
       scala.util.Random.shuffle(mixedPresetTop) ++
         List(DimensionLayerSpec(DimensionType.THE_END), DimensionLayerSpec(DimensionType.OVERWORLD), DimensionLayerSpec(DimensionType.NETHER, topOffset = 8))
         :+ SolidLayerSpec(Blocks.NETHERRACK.getDefaultState, 0 - LayerMap.minCubeY - 1, Biomes.HELL)

@@ -2,7 +2,7 @@ package hohserg.dimensional.layers.gui
 
 import hohserg.dimensional.layers.Main
 import hohserg.dimensional.layers.gui.RelativeCoord.{alignLeft, alignTop}
-import net.minecraft.client.gui.{FontRenderer, GuiScreen}
+import net.minecraft.client.gui.{FontRenderer, GuiButton, GuiScreen}
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.util.text.TextFormatting
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
@@ -19,7 +19,7 @@ class GuiBase(val parent: GuiScreen) extends GuiScreen {
     mc.displayGuiScreen(parent)
   }
 
-  protected def show(nextGuiByParent: this.type => GuiScreen): Handler =
+  def show(nextGuiByParent: this.type => GuiScreen): Handler =
     () => mc.displayGuiScreen(nextGuiByParent(this))
 
   protected def showWarning(msg: String, desc: String): Handler =
@@ -100,6 +100,8 @@ class GuiBase(val parent: GuiScreen) extends GuiScreen {
   def addFreeDrawable(draw: () => Unit): Unit = {
     drawScreenPostListeners += { (_, _, _) => draw() }
   }
+
+  override def addButton[T <: GuiButton](buttonIn: T): T = super.addButton(buttonIn)
 
   def drawScreenPre(mouseX: Int, mouseY: Int, partialTicks: Float): Unit = {
     drawDefaultBackground()

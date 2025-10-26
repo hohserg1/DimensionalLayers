@@ -605,7 +605,8 @@ public class GuiMultiLineTextField extends Gui {
         }
         float md = Mouse.getDWheel();
         if (md != 0) {
-            int m = md > 0 ? -1 : 1;
+            int m = (int) -clamp(md, -10, 10);
+            System.out.println(m);
             this.verticalScrollOffset += m;
             verticalScrollOffset = clamp(verticalScrollOffset, 0, text.size() - 1);
         }

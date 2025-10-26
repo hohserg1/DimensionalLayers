@@ -10,7 +10,8 @@ import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 @SideOnly(Side.CLIENT)
 abstract class GuiSelectDimension(parent: GuiBase,
                                   linesCache: LoadingCache[Integer, Seq[GuiTileList.GuiTileLine[DrawableDim]]] = GuiSelectDimension.dimLinesByLen)
-  extends GuiBase(parent) with GuiTileList.SelectHandler[DrawableDim] {
+  extends GuiBase(parent) 
+    with GuiTileList.SelectHandler[DrawableDim] {
 
   override def initGui(): Unit = {
     super.initGui()

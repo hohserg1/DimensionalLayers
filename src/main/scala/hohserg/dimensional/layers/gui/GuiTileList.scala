@@ -1,11 +1,14 @@
 package hohserg.dimensional.layers.gui
 
 import com.google.common.cache.{CacheBuilder, CacheLoader, LoadingCache}
+import hohserg.dimensional.layers.*
+import hohserg.dimensional.layers.gui.GuiBaseSettings.ValueHolder
 import hohserg.dimensional.layers.gui.GuiTileList.{GuiTileLine, SelectHandler, slotWidth}
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.Tessellator
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
+import org.lwjgl.input.Mouse
 
 import scala.util.boundary
 import scala.util.boundary.break
@@ -15,6 +18,10 @@ object GuiTileList {
 
   trait SelectHandler[A <: Drawable] {
     def onSelected(item: A): Unit
+  }
+
+  class HolderSelectHandle[A <: Drawable, V](holder: ValueHolder[V], f: A => V) extends SelectHandler[A] {
+    override def onSelected(item: A): Unit = holder.set(f(item))
   }
 
   def createLinesCache[A <: Drawable](allItems: Seq[A], itemWidth: Int): LoadingCache[Integer, Seq[GuiTileLine[A]]] = {
@@ -36,7 +43,7 @@ object GuiTileList {
     protected var mouseX: Int = 0
     protected var mouseY: Int = 0
 
-    def drawEntryAndGetTooltip(verticalIndex: Int, minX: Int, minY: Int, maxX: Int, maxY: Int, mouseX: Int, mouseY: Int): Option[String] = {
+    def drawEntryAndGetTooltip(verticalIndex: Int, minX: Int, minY: Int, maxX: Int, maxY: Int, mouseX: Int, mouseY: Int): Option[(String, Int, A)] = {
       this.minX = minX
       this.minY = minY
       this.maxX = maxX
@@ -44,14 +51,14 @@ object GuiTileList {
       this.mouseX = mouseX
       this.mouseY = mouseY
 
-      var r: Option[String] = None
+      var r: Option[(String, Int, A)] = None
 
       for ((item, horizontalIndex) <- line.zipWithIndex) {
         val x = minX + horizontalIndex * slotWidth(itemWidth) + border
         val y = minY + border
         if (isHovering(x, y, x + itemWidth, y + itemWidth)) {
           drawHighlightHovering(x, y, itemWidth, itemWidth)
-          r = Some(item.tooltip)
+          r = Some((item.tooltip, horizontalIndex, item))
         }
         item.draw(x, y, x + itemWidth, y + itemWidth)
       }
@@ -84,7 +91,7 @@ object GuiTileList {
 }
 
 @SideOnly(Side.CLIENT)
-class GuiTileList[A <: Drawable](val parent: GuiScreen & SelectHandler[A],
+class GuiTileList[A <: Drawable](val parent: SelectHandler[A],
                                  x: Int, y: Int,
                                  availableWidth: Int, height: Int,
                                  itemWidth: Int,
@@ -107,15 +114,7 @@ class GuiTileList[A <: Drawable](val parent: GuiScreen & SelectHandler[A],
     g.drawHoveringText
   }
 
-  override def elementClicked(verticalIndex: Int, doubleClick: Boolean): Unit = {
-    if (lines.indices contains verticalIndex)
-      lines(verticalIndex).clicked() match {
-        case Some((horizontalIndex, element)) =>
-          selection = Some(verticalIndex, horizontalIndex, element)
-          parent.onSelected(element)
-        case None =>
-      }
-  }
+  override def elementClicked(verticalIndex: Int, doubleClick: Boolean): Unit =()
 
   override def isSelected(index: Int): Boolean = false
 
@@ -124,8 +123,13 @@ class GuiTileList[A <: Drawable](val parent: GuiScreen & SelectHandler[A],
   override def drawSlot(index: Int, right: Int, top: Int, height: Int, tess: Tessellator): Unit = {
     if (lines.indices contains index) {
       val line = lines(index)
-      val maybeNewTooltip = line.drawEntryAndGetTooltip(index, left, top, right, top + height, mouseX, mouseY)
-      maybeTooltip = maybeTooltip.orElse(maybeNewTooltip)
+      line.drawEntryAndGetTooltip(index, left, top, right, top + height, mouseX, mouseY) match {
+        case Some((newTooltip, horizontalIndex, elem)) =>
+          maybeTooltip = Some(newTooltip)
+          if (Mouse.isButtonDown(0))
+            selection = Some((index, horizontalIndex, elem))
+        case None =>
+      }
 
       selection match {
         case Some((verticalIndex, horizontalIndex, _)) if index == verticalIndex =>
@@ -142,6 +146,8 @@ class GuiTileList[A <: Drawable](val parent: GuiScreen & SelectHandler[A],
     maybeTooltip = None
   }
 
+  override def drawHoveringHighlight(): Unit = ()
+  
   def select(item: A): Unit = {
     boundary:
       for ((line, verticalIndex) <- lines.zipWithIndex) {

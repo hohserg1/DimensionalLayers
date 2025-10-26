@@ -1,9 +1,11 @@
 package hohserg.dimensional.layers
 
 import hohserg.dimensional.layers.gui.DrawableArea.Container
+import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
-import net.minecraft.client.renderer.{GlStateManager, Tessellator}
+import net.minecraft.client.renderer.{BufferBuilder, GlStateManager, Tessellator}
 import net.minecraft.client.resources.I18n
+import net.minecraft.util.ResourceLocation
 import net.minecraft.world.{DimensionType, WorldType}
 import org.lwjgl.opengl.GL11
 
@@ -25,6 +27,7 @@ package object gui {
 
   def drawHighlight(xx: Int, yy: Int, ww: Int, hh: Int, red: Int = 255, green: Int = 255, blue: Int = 255): Unit = {
     GlStateManager.disableTexture2D()
+    GlStateManager.disableDepth()
     val z = -100
     val tess = Tessellator.getInstance()
     val buffer = tess.getBuffer
@@ -55,6 +58,26 @@ package object gui {
 
     tess.draw()
     GlStateManager.enableTexture2D()
+  }
+
+  def drawWithTexture(texture: ResourceLocation, render: BufferBuilder => Unit): Unit = {
+    val tess = Tessellator.getInstance()
+    Minecraft.getMinecraft.getTextureManager.bindTexture(texture)
+
+    val buffer: BufferBuilder = tess.getBuffer
+    buffer.begin(7, DefaultVertexFormats.POSITION_TEX)
+    render(buffer)
+    tess.draw()
+  }
+
+  def drawTexturedRect(minX: Int, minY: Int, maxX: Int, maxY: Int, texture: ResourceLocation, u1: Double, v1: Double, u2: Double, v2: Double): Unit = {
+    drawWithTexture(texture, buffer => {
+      val z = -100
+      buffer.pos(minX, minY, z).tex(u1, v1).endVertex()
+      buffer.pos(minX, maxY, z).tex(u1, v2).endVertex()
+      buffer.pos(maxX, maxY, z).tex(u2, v2).endVertex()
+      buffer.pos(maxX, minY, z).tex(u2, v1).endVertex()
+    })
   }
 
 }

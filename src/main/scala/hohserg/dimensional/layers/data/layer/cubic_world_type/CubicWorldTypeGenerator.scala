@@ -1,8 +1,7 @@
 package hohserg.dimensional.layers.data.layer.cubic_world_type
 
 import hohserg.dimensional.layers.CCWorldServer
-import hohserg.dimensional.layers.data.layer.base.{DimensionalGenerator, DimensionalLayerBounds}
-import hohserg.dimensional.layers.preset.spec.CubicWorldTypeLayerSpec
+import hohserg.dimensional.layers.data.layer.base.DimensionalGenerator
 import hohserg.dimensional.layers.worldgen.proxy.server.ProxyWorldServer
 import hohserg.dimensional.layers.worldgen.proxy.server.ProxyWorldServer.createLayerWorldInfo
 import hohserg.dimensional.layers.worldgen.proxy.{ProxyCube, ShiftedBlockPos}
@@ -27,7 +26,17 @@ class CubicWorldTypeGenerator(original: CCWorldServer, val layer: CubicWorldType
   val generator = layer.spec.cubicWorldType.createCubeGenerator(proxyWorld)
 
   override def generateCube(cubeX: Int, cubeY: Int, cubeZ: Int, primer: CubePrimer): CubePrimer = {
-    generator.generateCube(cubeX, ShiftedBlockPos.unshiftCubeY(cubeY, layer.bounds), cubeZ, primer)
+    val result = generator.generateCube(cubeX, ShiftedBlockPos.unshiftCubeY(cubeY, layer.bounds), cubeZ, primer)
+    if (layer.hasBlockReplacing) {
+      for {
+        x <- 0 to 15
+        y <- 0 to 15
+        z <- 0 to 15
+        block = result.getBlockState(x, y, z)
+        block2 <- layer.blockReplacements.get(block)
+      } primer.setBlockState(x, y, z, block2)
+    }
+    result
   }
 
   override def populateCube(cube: ICube): Unit = {

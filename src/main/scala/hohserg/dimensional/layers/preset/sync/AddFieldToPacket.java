@@ -1,12 +1,14 @@
 package hohserg.dimensional.layers.preset.sync;
 
-import gloomyfolken.hooklib.api.FieldAccessor;
-import gloomyfolken.hooklib.api.FieldLens;
-import net.minecraft.network.play.server.SPacketJoinGame;
+import gloomyfolken.hooklib.api.*;
+import net.minecraft.network.play.server.*;
 
-//@HookContainer
+@HookContainer
 public class AddFieldToPacket {
 
+    @FieldLens(createField = true)
+    public static FieldAccessor<SPacketJoinGame, Boolean> isDimensionalLayersWorldType;
+    
     @FieldLens(createField = true)
     public static FieldAccessor<SPacketJoinGame, String> generatorOptions;
 }

@@ -13,6 +13,8 @@ class GuiTextFieldElement[A](x: Int, y: Int, w: Int, h: Int, value: ValueHolder[
   extends GuiTextField(gui.nextElementId(), gui.fr, x, y, w, h)
     with GuiEditableElement[A] {
 
+  var enabled = true
+
   value.initControlElement(this)
 
   setValidator((input: String) => input.isEmpty || Try(fromString(input)).isSuccess)
@@ -43,13 +45,29 @@ class GuiTextFieldElement[A](x: Int, y: Int, w: Int, h: Int, value: ValueHolder[
 
   override def draw: Option[(Int, Int, Float) => Unit] = {
     Some((mouseX, mouseY, _) => {
-      absMouseX = mouseX
-      absMouseY = mouseY
-      drawTextBox()
+      if (enabled) {
+        absMouseX = mouseX
+        absMouseY = mouseY
+        drawTextBox()
+      }
     })
   }
 
   override def mouseClick: Option[(Int, Int, Int) => Unit] = Some(mouseClicked)
 
   override def keyTyped: Option[(Char, Int) => Unit] = Some(textboxKeyTyped)
+
+  override def mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int): Boolean = {
+    if (enabled)
+      super.mouseClicked(mouseX, mouseY, mouseButton)
+    else
+      false
+  }
+
+  override def textboxKeyTyped(typedChar: Char, keyCode: Int): Boolean = {
+    if (enabled)
+      super.textboxKeyTyped(typedChar, keyCode)
+    else
+      false
+  }
 }

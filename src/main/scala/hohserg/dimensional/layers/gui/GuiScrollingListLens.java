@@ -7,10 +7,13 @@ import gloomyfolken.hooklib.api.MethodLens;
 import net.minecraftforge.fml.client.GuiScrollingList;
 
 @HookContainer
-public class AccessorGuiScrollingList {
+public class GuiScrollingListLens {
 
     @FieldLens
     public static FieldAccessor<GuiScrollingList, Float> scrollDistance;
+    
+    @FieldLens
+    public static FieldAccessor<GuiScrollingList, Integer> headerHeight;
 
     @MethodLens
     public static void applyScrollLimits(GuiScrollingList guiScrollingList) {
