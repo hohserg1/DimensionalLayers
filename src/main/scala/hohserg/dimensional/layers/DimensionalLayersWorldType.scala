@@ -3,17 +3,15 @@ package hohserg.dimensional.layers
 import hohserg.dimensional.layers.data.{LayerManager, LayerManagerServer}
 import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
 import hohserg.dimensional.layers.worldgen.DimensionalLayersGenerator
-import hohserg.dimensional.layers.worldgen.proxy.server.BaseWorldServer
 import io.github.opencubicchunks.cubicchunks.api.util.IntRange
 import io.github.opencubicchunks.cubicchunks.api.world.ICubicWorldType
 import io.github.opencubicchunks.cubicchunks.api.worldgen.ICubeGenerator
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiCreateWorld
 import net.minecraft.world.{World, WorldServer, WorldType}
-import net.minecraftforge.common.DimensionManager
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
-object DimensionalLayersWorldType extends WorldType("dimlayers") with ICubicWorldType {
+object DimensionalLayersWorldType extends WorldType("dimlayers2") with ICubicWorldType {
 
   override def onGUICreateWorldPress(): Unit = {
   }
