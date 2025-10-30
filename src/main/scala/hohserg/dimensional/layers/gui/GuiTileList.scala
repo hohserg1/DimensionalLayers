@@ -114,7 +114,7 @@ class GuiTileList[A <: Drawable](val parent: SelectHandler[A],
     g.drawHoveringText
   }
 
-  override def elementClicked(verticalIndex: Int, doubleClick: Boolean): Unit =()
+  override def elementClicked(verticalIndex: Int, doubleClick: Boolean): Unit = ()
 
   override def isSelected(index: Int): Boolean = false
 
@@ -126,8 +126,10 @@ class GuiTileList[A <: Drawable](val parent: SelectHandler[A],
       line.drawEntryAndGetTooltip(index, left, top, right, top + height, mouseX, mouseY) match {
         case Some((newTooltip, horizontalIndex, elem)) =>
           maybeTooltip = Some(newTooltip)
-          if (Mouse.isButtonDown(0))
+          if (Mouse.isButtonDown(0)) {
             selection = Some((index, horizontalIndex, elem))
+            parent.onSelected(elem)
+          }
         case None =>
       }
 
@@ -147,7 +149,7 @@ class GuiTileList[A <: Drawable](val parent: SelectHandler[A],
   }
 
   override def drawHoveringHighlight(): Unit = ()
-  
+
   def select(item: A): Unit = {
     boundary:
       for ((line, verticalIndex) <- lines.zipWithIndex) {
