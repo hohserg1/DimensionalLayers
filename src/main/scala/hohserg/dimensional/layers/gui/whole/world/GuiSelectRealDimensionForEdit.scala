@@ -39,6 +39,7 @@ class GuiSelectRealDimensionForEdit(parent: GuiSetupDimensionalLayersPreset)
             Main.sided.printSimpleError("One real dimension should be configured", "add other real dimension before removal this one")
         } else {
           parent.currentRealDimension = realDimensionId.id
+          parent.initFromJson(preset.toSettings)
           back()
         }
     }
