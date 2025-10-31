@@ -1,8 +1,8 @@
 package hohserg.dimensional.layers.data
 
 import hohserg.dimensional.layers.*
-import hohserg.dimensional.layers.preset.{DimensionalLayersPreset, SingleDimensionPreset}
-import io.github.opencubicchunks.cubicchunks.api.world.ICubicWorld
+import hohserg.dimensional.layers.preset.DimensionalLayersPreset
+import hohserg.dimensional.layers.worldgen.proxy.ProxyWorldCommon
 import net.minecraft.world.World
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber
@@ -32,12 +32,16 @@ object LayerManagerClient extends LayerManager {
   override def haveWorldLayers(world: World): Boolean = getWorldData(world).isDefined
 
   override def getWorldData(world: World): Option[WorldData] = {
-    if (!currentWorldLayersChecked) {
-      currentWorldLayersChecked = true
-      currentWorldLayers = preset.flatMap(_.realDimensionToLayers.get(world.provider.getDimension))
-                                 .map(p=>new WorldData(world.asInstanceOf[CCWorld], p))
+    if (world.isInstanceOf[ProxyWorldCommon])
+      None
+    else {
+      if (!currentWorldLayersChecked) {
+        currentWorldLayersChecked = true
+        currentWorldLayers = preset.flatMap(_.realDimensionToLayers.get(world.provider.getDimension))
+                                   .map(p => new WorldData(world.asInstanceOf[CCWorld], p))
+      }
+      currentWorldLayers
     }
-    currentWorldLayers
   }
 
   @SubscribeEvent

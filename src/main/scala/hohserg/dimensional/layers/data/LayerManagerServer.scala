@@ -1,10 +1,8 @@
 package hohserg.dimensional.layers.data
 
-import hohserg.dimensional.layers.data.LayerManagerServer.preset
-import hohserg.dimensional.layers.lens.DimensionManagerLens
 import hohserg.dimensional.layers.preset.{DimensionalLayersPreset, SingleDimensionPreset}
-import hohserg.dimensional.layers.{CCWorld, CCWorldServer, DimensionalLayersWorldType, Main}
-import io.github.opencubicchunks.cubicchunks.api.world.ICubicWorld
+import hohserg.dimensional.layers.worldgen.proxy.ProxyWorldCommon
+import hohserg.dimensional.layers.{CCWorld, DimensionalLayersWorldType}
 import net.minecraft.world.World
 import net.minecraftforge.common.DimensionManager
 import net.minecraftforge.event.world.WorldEvent
@@ -36,11 +34,13 @@ object LayerManagerServer extends LayerManager {
   def unloadWorld(e: WorldEvent.Unload): Unit = {
     val world = e.getWorld
     if (!world.isRemote) {
-      worldDataForRealDimension -= world.provider.getDimension
-      if (world.provider.getDimension == 0) {
-        preset = None
-        checked = false
-        worldDataForRealDimension.clear()
+      if (world.isInstanceOf[ProxyWorldCommon]) {
+        worldDataForRealDimension -= world.provider.getDimension
+        if (world.provider.getDimension == 0) {
+          preset = None
+          checked = false
+          worldDataForRealDimension.clear()
+        }
       }
     }
   }
@@ -50,10 +50,14 @@ object LayerManagerServer extends LayerManager {
   }
 
   def getWorldData(world: World): Option[WorldData] = {
-    val dimensionId = world.provider.getDimension
-    getPreset(world).flatMap(_.realDimensionToLayers.get(dimensionId))
-                    .map(new WorldData(world.asInstanceOf[CCWorld], _: SingleDimensionPreset))
-                    .foreach(worldDataForRealDimension += dimensionId -> _)
-    worldDataForRealDimension.get(dimensionId)
+    if (world.isInstanceOf[ProxyWorldCommon])
+      None
+    else {
+      val dimensionId = world.provider.getDimension
+      getPreset(world).flatMap(_.realDimensionToLayers.get(dimensionId))
+                      .map(new WorldData(world.asInstanceOf[CCWorld], _: SingleDimensionPreset))
+                      .foreach(worldDataForRealDimension += dimensionId -> _)
+      worldDataForRealDimension.get(dimensionId)
+    }
   }
 }
