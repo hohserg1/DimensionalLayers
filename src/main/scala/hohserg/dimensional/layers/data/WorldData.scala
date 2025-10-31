@@ -2,12 +2,12 @@ package hohserg.dimensional.layers.data
 
 import hohserg.dimensional.layers.CCWorld
 import hohserg.dimensional.layers.data.layer.base.{DimensionalLayer, Layer}
-import hohserg.dimensional.layers.preset.{DimensionalLayersPreset, SingleDimensionPreset}
+import hohserg.dimensional.layers.preset.SingleDimensionPreset
 import io.github.opencubicchunks.cubicchunks.api.util.{Coords, IntRange}
 import net.minecraft.entity.Entity
 
 
-class WorldData(val original: CCWorld, val preset:SingleDimensionPreset) {
+class WorldData(val original: CCWorld, val preset: SingleDimensionPreset) {
   val layers: Seq[(IntRange, Layer)] = preset.toLayerSeq(original)
 
   val layerAtCubeY: LayerMap = LayerMap(layers)
@@ -22,7 +22,13 @@ class WorldData(val original: CCWorld, val preset:SingleDimensionPreset) {
   val maxBlockY = (maxCubeY << 4) + 15
 
   def getLayerOf(entity: Entity): Option[Layer] = {
-    val y = Coords.blockToCube((entity.posY + 0.5).toInt)
-    layerAtCubeY.get(y)
+    getLayerAt((entity.posY + 0.5).toInt)
   }
+
+  def getLayerAt(blockY: Int): Option[Layer] = {
+    layerAtCubeY.get(Coords.blockToCube(blockY))
+  }
+
+  def getDimensionalLayerAt(blockY: Int): Option[DimensionalLayer] =
+    getLayerAt(blockY).collect { case l: DimensionalLayer => l }
 }
