@@ -15,6 +15,7 @@ import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 object SyncWithVanillaPacket {
 
   @Hook(targetMethod = Constants.CONSTRUCTOR_NAME)
+  @OnReturn
   def initPacketField(self: SPacketJoinGame,
                       playerIdIn: Int, gameTypeIn: GameType, hardcoreModeIn: Boolean, dimensionIn: Int, difficultyIn: EnumDifficulty, maxPlayersIn: Int, worldTypeIn: WorldType, reducedDebugInfoIn: Boolean): Unit = {
     val worldInfo = DimensionManager.getWorld(0).getWorldInfo
