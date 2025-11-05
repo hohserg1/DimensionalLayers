@@ -1,8 +1,8 @@
 package hohserg.dimensional.layers.data
 
+import hohserg.dimensional.layers.*
 import hohserg.dimensional.layers.preset.{DimensionalLayersPreset, SingleDimensionPreset}
 import hohserg.dimensional.layers.worldgen.proxy.ProxyWorldCommon
-import hohserg.dimensional.layers.{CCWorld, DimensionalLayersWorldType}
 import net.minecraft.world.World
 import net.minecraftforge.common.DimensionManager
 import net.minecraftforge.event.world.WorldEvent
@@ -17,7 +17,7 @@ object LayerManagerServer extends LayerManager {
   private var checked = false
   private var preset: Option[DimensionalLayersPreset] = None
 
-  private val worldDataForRealDimension = new mutable.HashMap[Int, WorldData]()
+  private val worldDataForRealDimension = new mutable.HashMap[Int, Option[WorldData]]()
 
   def getPreset(proofOfLoaded: World): Option[DimensionalLayersPreset] = {
     if (!checked) {
@@ -30,16 +30,33 @@ object LayerManagerServer extends LayerManager {
     preset
   }
 
+  private def clear(): Unit = {
+    preset = None
+    checked = false
+    worldDataForRealDimension.clear()
+  }
+
   @SubscribeEvent
   def unloadWorld(e: WorldEvent.Unload): Unit = {
     val world = e.getWorld
     if (!world.isRemote) {
-      if (world.isInstanceOf[ProxyWorldCommon]) {
+      if (!world.isInstanceOf[ProxyWorldCommon]) {
         worldDataForRealDimension -= world.provider.getDimension
         if (world.provider.getDimension == 0) {
-          preset = None
-          checked = false
-          worldDataForRealDimension.clear()
+          clear()
+        }
+      }
+    }
+  }
+
+  @SubscribeEvent
+  def bcWorldUnloadEventMayNotFire(e: WorldEvent.Load): Unit = {
+    val world = e.getWorld
+    if (!world.isRemote) {
+      if (!world.isInstanceOf[ProxyWorldCommon]) {
+        if (world.provider.getDimension == 0) {
+          clear()
+          getPreset(world)
         }
       }
     }
@@ -54,10 +71,11 @@ object LayerManagerServer extends LayerManager {
       None
     else {
       val dimensionId = world.provider.getDimension
-      getPreset(world).flatMap(_.realDimensionToLayers.get(dimensionId))
-                      .map(new WorldData(world.asInstanceOf[CCWorld], _: SingleDimensionPreset))
-                      .foreach(worldDataForRealDimension += dimensionId -> _)
-      worldDataForRealDimension.get(dimensionId)
+      worldDataForRealDimension.getOrElseUpdate(
+        dimensionId,
+        getPreset(world).flatMap(_.realDimensionToLayers.get(dimensionId))
+                        .map(new WorldData(world.asInstanceOf[CCWorld], _: SingleDimensionPreset))
+      )
     }
   }
 }
