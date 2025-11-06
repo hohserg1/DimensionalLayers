@@ -21,11 +21,13 @@ class GuiLayersList(val parent: GuiSetupDimensionalLayersPreset, settings: Strin
   private val fullPresetBase: DimensionalLayersPreset = DimensionalLayersPreset.fromJson(settings)
   private val fromPreset = fullPresetBase.realDimensionToLayers(parent.currentRealDimension)
 
-  val startCubeY: ValueHolder[Int] = new ValueHolder[Int](fromPreset.startCubeY, clamp(_, LayerMap.minCubeY, LayerMap.maxCubeY))(using new StateComposite {
+  given StateComposite {
     override val state = new ListBuffer[ValueHolder[?]]
 
     override def onStateChanged(): Unit = ()
-  })
+  }
+
+  val startCubeY: ValueHolder[Int] = new ValueHolder[Int](fromPreset.startCubeY, clamp(_, LayerMap.minCubeY, LayerMap.maxCubeY))
 
   val startCubeYField = new GuiCubeYField(10 + IconUtils.width + 11, 10 + parent.height - 30, startCubeY)(using parent)
 
@@ -33,6 +35,8 @@ class GuiLayersList(val parent: GuiSetupDimensionalLayersPreset, settings: Strin
     fromPreset.layers
               .map(_.toGuiLayerEntry(this))
               .toBuffer
+
+  val spawnLayer: ValueHolder[Int] = new ValueHolder[Int](fromPreset.spawnLayerReversIndex, clamp(_, 0, entries.size))
 
   setScrollDistanceWithLimits(scrollDistance)
 
@@ -53,8 +57,8 @@ class GuiLayersList(val parent: GuiSetupDimensionalLayersPreset, settings: Strin
 
   def actualPreset: DimensionalLayersPreset =
     fullPresetBase.copy(realDimensionToLayers = fullPresetBase.realDimensionToLayers.updated(
-      parent.currentRealDimension, 
-      SingleDimensionPreset(entries.map(_.layer).toList, startCubeY.get)
+      parent.currentRealDimension,
+      SingleDimensionPreset(entries.map(_.layer).toList, startCubeY.get, spawnLayer.get)
     ))
 
 
@@ -79,7 +83,7 @@ class GuiLayersList(val parent: GuiSetupDimensionalLayersPreset, settings: Strin
     startCubeYField.y = baseY + entries.size * this.slotHeight - 11
     startCubeYField.drawTextBox()
   }
-  
+
   override def drawHoveringHighlight(): Unit = ()
 
   override def mouseClick: Option[(Int, Int, Int) => Unit] = startCubeYField.mouseClick

@@ -21,7 +21,7 @@ package object layers {
     minV max v min maxV
   }
 
-  implicit class RichOption[A](val x: Option[A]) extends AnyVal {
+  extension [A](x: Option[A]) {
     def mapNull[B](f: A => B): Option[B] = {
       x.flatMap(i => Option(f(i)))
     }
@@ -41,7 +41,7 @@ package object layers {
         .getOrElse(str.hashCode.toLong))
   }
 
-  implicit class RichIntColor(val color: Int) extends AnyVal {
+  extension (color: Int) {
     def clearedAlpha: Int = color & 0x00FFffFF
 
     def withAlpha(a: Int): Int = clearedAlpha | (a << 24)

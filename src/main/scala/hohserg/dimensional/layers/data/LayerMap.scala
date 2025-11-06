@@ -72,22 +72,22 @@ object LayerMap {
     )
   }
 
-  def apply(seq: Seq[(IntRange, Layer)]): LayerMap = {
+  def apply(seq: Seq[((Int,Int), Layer)]): LayerMap = {
     val slices: Array[Option[Slice1]] = new Array(512)
 
     for (i <- slices.indices)
       slices(i) = None
 
     for {
-      (range, layer) <- seq
+      ((rangeMin, rangeMax), layer) <- seq
 
       sliceEntry_1 = Some(new Slice1Solid(layer))
       sliceEntry_2 = Some(new Slice2Solid(layer))
       cubeEntry = Some(layer)
 
-      (fromSlice_1, fromSlice_2, fromLocalCube) = coords(range.getMin)
+      (fromSlice_1, fromSlice_2, fromLocalCube) = coords(rangeMin)
 
-      (toSlice_1, toSlice_2, toLocalCube) = coords(range.getMax)
+      (toSlice_1, toSlice_2, toLocalCube) = coords(rangeMax)
 
 
       fromFullSlice_1 = if (fromSlice_2 == 0 && fromLocalCube == 0) fromSlice_1 else fromSlice_1 + 1

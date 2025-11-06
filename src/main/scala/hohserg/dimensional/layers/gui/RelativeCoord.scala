@@ -7,6 +7,8 @@ import scala.language.implicitConversions
 @SideOnly(Side.CLIENT)
 trait RelativeCoord {
   def absoluteCoord(minX: Int, minY: Int, maxX: Int, maxY: Int): Int
+
+  def shift(v: Int): RelativeCoord = this.absoluteCoord(_, _, _, _) + v
 }
 
 @SideOnly(Side.CLIENT)
@@ -35,9 +37,4 @@ object RelativeCoord {
 
   def verticalCenterMax(height: Int): RelativeCoord =
     (_: Int, minY: Int, _: Int, maxY: Int) => minY + (maxY - minY) / 2 + math.ceil(height.toDouble / 2).toInt
-
-
-  private implicit def fromFunction(f: (Int, Int, Int, Int) => Int): RelativeCoord = new RelativeCoord {
-    override def absoluteCoord(minX: Int, minY: Int, maxX: Int, maxY: Int): Int = f(minX, minY, maxX, maxY)
-  }
 }

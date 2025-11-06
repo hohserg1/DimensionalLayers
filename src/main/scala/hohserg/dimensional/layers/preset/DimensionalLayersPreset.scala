@@ -6,7 +6,6 @@ import hohserg.dimensional.layers.data.layer.base.Layer
 import hohserg.dimensional.layers.preset.DimensionalLayersPreset.IllegalPresetException
 import hohserg.dimensional.layers.preset.spec.{DimensionLayerSpec, LayerSpec, SolidLayerSpec}
 import hohserg.dimensional.layers.{CCWorld, Configuration, Main}
-import io.github.opencubicchunks.cubicchunks.api.util.IntRange
 import net.minecraft.init.{Biomes, Blocks}
 import net.minecraft.world.DimensionType
 
@@ -16,14 +15,14 @@ case class DimensionalLayersPreset(realDimensionToLayers: Map[Int, SingleDimensi
   def toSettings: String = Serialization.toJson(this)
 }
 
-case class SingleDimensionPreset(layers: List[LayerSpec], startCubeY: Int = 0) {
+case class SingleDimensionPreset(layers: List[LayerSpec], startCubeY: Int = 0, spawnLayerReversIndex: Int) {
 
   if (layers.isEmpty)
     throw new IllegalPresetException("no layers available in preset, need to add at least one")
 
-  def toLayerSeq(original: CCWorld): Seq[(IntRange, Layer)] = {
+  def toLayerSeq(original: CCWorld): Seq[((Int, Int), Layer)] = {
     layers
-      .foldRight(List[(IntRange, Layer)]() -> startCubeY) {
+      .foldRight(List[((Int, Int), Layer)]() -> startCubeY) {
         case (spec, (acc, lastFreeCubic)) =>
           val layer: Layer = spec.toLayer(lastFreeCubic, original)
 
@@ -32,7 +31,7 @@ case class SingleDimensionPreset(layers: List[LayerSpec], startCubeY: Int = 0) {
       ._1
   }
 
-  private def range(lastFreeCubic: Int, height: Int) = IntRange.of(lastFreeCubic, lastFreeCubic + height - 1)
+  private def range(lastFreeCubic: Int, height: Int) = (lastFreeCubic, lastFreeCubic + height - 1)
 }
 
 object DimensionalLayersPreset {
@@ -69,7 +68,8 @@ object DimensionalLayersPreset {
         List(DimensionLayerSpec(DimensionType.THE_END), DimensionLayerSpec(DimensionType.OVERWORLD), DimensionLayerSpec(DimensionType.NETHER, topOffset = 8))
         :+ SolidLayerSpec(Blocks.NETHERRACK.getDefaultState, 0 - LayerMap.minCubeY - 1, Biomes.HELL)
         :+ SolidLayerSpec(Blocks.BEDROCK.getDefaultState, 1),
-      startCubeY = LayerMap.minCubeY
+      startCubeY = LayerMap.minCubeY,
+      spawnLayerReversIndex = 3
     )
 
   private def handleError(preset: String, exception: Throwable): Unit = {

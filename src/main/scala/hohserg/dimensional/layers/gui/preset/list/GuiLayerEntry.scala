@@ -2,11 +2,11 @@ package hohserg.dimensional.layers.gui.preset.list
 
 import hohserg.dimensional.layers.Main
 import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
-import hohserg.dimensional.layers.gui.{DrawableArea, GuiBase, IconUtils, RelativeCoord}
+import hohserg.dimensional.layers.gui.{DrawableArea, GuiBase, IconUtils, RelativeCoord, SteveIconTexture, drawWithTexture, steveIconRL}
 import hohserg.dimensional.layers.preset.spec.LayerSpec
 import net.minecraft.client.Minecraft
-import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
+import net.minecraft.client.renderer.{GlStateManager, Tessellator}
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import org.lwjgl.opengl.GL11
@@ -45,10 +45,32 @@ val rulers = DrawableArea(
 )
 
 val settings = DrawableArea(
-  RelativeCoord.alignRight(-20 - 40), RelativeCoord.verticalCenterMin(20),
-  RelativeCoord.alignRight(-40), RelativeCoord.verticalCenterMax(20),
+  RelativeCoord.alignRight(-50 - 20), RelativeCoord.verticalCenterMin(20),
+  RelativeCoord.alignRight(-50), RelativeCoord.verticalCenterMax(20),
   new Rectangle(2, 52, 20, 20)
 )
+
+val spawnPointHighlight = DrawableArea(
+  RelativeCoord.alignRight(-29 - 18 / 2), RelativeCoord.verticalCenterMin(34 / 2),
+  RelativeCoord.alignRight(-29), RelativeCoord.verticalCenterMax(34 / 2),
+  new Rectangle(2, 186, 18, 34)
+)
+val spawnPointTranslucent = DrawableArea(
+  RelativeCoord.alignRight(-29 - 18 / 2), RelativeCoord.verticalCenterMin(34 / 2),
+  RelativeCoord.alignRight(-29), RelativeCoord.verticalCenterMax(34 / 2),
+  new Rectangle(18, 0, 18, 34),
+  new Rectangle(18, 0, 18, 34),
+  textureSize = 36
+)
+
+val spawnPointSteveIcon = DrawableArea(
+  RelativeCoord.alignRight(-29 - 18 / 2), RelativeCoord.verticalCenterMin(34 / 2),
+  RelativeCoord.alignRight(-29), RelativeCoord.verticalCenterMax(34 / 2),
+  new Rectangle(0, 0, 18, 34),
+  new Rectangle(0, 0, 18, 34),
+  textureSize = 36
+)
+
 
 @SideOnly(Side.CLIENT)
 trait GuiLayerEntry extends DrawableArea.Container {
@@ -91,13 +113,37 @@ trait GuiLayerEntry extends DrawableArea.Container {
 
       remove.draw(buffer)
       settings.draw(buffer)
+
+      spawnPointHighlight.draw(buffer)
     }
 
     tess.draw()
 
+    val textureManager = Minecraft.getMinecraft.getTextureManager
+    if (textureManager.getTexture(steveIconRL) == null) {
+      textureManager.loadTexture(steveIconRL, new SteveIconTexture)
+    }
+
+    if (background.isHovering) {
+      GlStateManager.enableBlend()
+      drawWithTexture(steveIconRL, buffer => {
+        spawnPointTranslucent.draw(buffer)
+      })
+      GlStateManager.disableBlend()
+    }
+
+    if (parent.spawnLayer.get == parent.entries.size - index - 1)
+      drawSpawnPoint()
+
     val endCubeY = parent.startCubeY.get + parent.entries.dropWhile(_ != this).map(_.layer.height).sum
 
     mc.fontRenderer.drawStringWithShadow("" + endCubeY, minX + IconUtils.width + 11, minY - 6, 0xffffff)
+  }
+
+  def drawSpawnPoint(): Unit = {
+    drawWithTexture(steveIconRL, buffer => {
+      spawnPointSteveIcon.draw(buffer)
+    })
   }
 
   def clicked(index: Int, mouseX: Int, mouseY: Int): Unit = {
@@ -106,6 +152,7 @@ trait GuiLayerEntry extends DrawableArea.Container {
     checkRemoveClicked(index, mouseX, mouseY)
     checkSettingsClicked(index, mouseX, mouseY)
     parent.parent.exportButton.displayString = "Export preset"
+    checkSpawnPointClicked(index, mouseX, mouseY)
   }
 
   private def checkMoveUpClicked(index: Int, mouseX: Int, mouseY: Int): Unit = {
@@ -139,6 +186,12 @@ trait GuiLayerEntry extends DrawableArea.Container {
   private def checkSettingsClicked(index: Int, mouseX: Int, mouseY: Int): Unit = {
     if (settings.isHovering) {
       mc.displayGuiScreen(guiSettings(index, parent.parent))
+    }
+  }
+
+  private def checkSpawnPointClicked(index: Int, mouseX: Int, mouseY: Int): Unit = {
+    if (spawnPointHighlight.isHovering) {
+      parent.spawnLayer.set(parent.entries.size - index - 1)
     }
   }
 

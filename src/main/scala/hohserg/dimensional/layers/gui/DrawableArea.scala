@@ -41,7 +41,7 @@ case class DrawableArea(minX: RelativeCoord, minY: RelativeCoord, maxX: Relative
   private def drawRect(buffer: BufferBuilder,
                        areaMinX: Int, areaMinY: Int, areaMaxX: Int, areaMaxY: Int,
                        uv: (Double, Double, Double, Double)): Unit = {
-    val z = 0;
+    val z = 0
 
     val (u1, v1, u2, v2) = uv
 
@@ -69,11 +69,11 @@ object DrawableArea {
       DrawableArea(minX, minY, maxX, maxY, uv)
   }
 
-  def apply(minX: RelativeCoord, minY: RelativeCoord, maxX: RelativeCoord, maxY: RelativeCoord, uv: Rectangle, hoveringUV: Rectangle): DrawableArea = {
+  def apply(minX: RelativeCoord, minY: RelativeCoord, maxX: RelativeCoord, maxY: RelativeCoord, uv: Rectangle, hoveringUV: Rectangle, textureSize:Double = 256d): DrawableArea = {
     DrawableArea(
       minX, minY, maxX, maxY,
-      (uv.x / 256d, uv.y / 256d, (uv.x + uv.width) / 256d, (uv.y + uv.height) / 256d),
-      (hoveringUV.x / 256d, hoveringUV.y / 256d, (hoveringUV.x + hoveringUV.width) / 256d, (hoveringUV.y + hoveringUV.height) / 256d)
+      (uv.x / textureSize, uv.y / textureSize, (uv.x + uv.width) / textureSize, (uv.y + uv.height) / textureSize),
+      (hoveringUV.x / textureSize, hoveringUV.y / textureSize, (hoveringUV.x + hoveringUV.width) / textureSize, (hoveringUV.y + hoveringUV.height) / textureSize)
     )
   }
 

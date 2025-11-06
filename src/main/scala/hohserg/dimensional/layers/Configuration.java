@@ -19,6 +19,9 @@ public class Configuration {
     @Config.Comment("if true, default selected world type will be dimlayers at new world creation gui")
     public static boolean worldTypeByDefault = true;
 
+    @Config.Comment("if true, default cubic chunks spawnpoint finding logic will be replaced to spawn player in preset configured layer")
+    public static boolean spawnInLayer = true;
+
     @Config.Comment({
             "Power of two.",
             "The world is divided to square areas with width of 2^portalFastTravelPrecision.",
