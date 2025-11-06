@@ -2,7 +2,7 @@ package hohserg.dimensional.layers.feature.overworld.portal
 
 import com.google.common.collect.ImmutableList
 import hohserg.dimensional.layers.lens.TextureAtlasSpriteLens
-import hohserg.dimensional.layers.{Main, RichIntColor}
+import hohserg.dimensional.layers.*
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.texture.TextureAtlasSprite
 import net.minecraft.client.resources.IResourceManager
@@ -42,5 +42,4 @@ class PortalTextureAtlasSprite extends TextureAtlasSprite(Main.modid + ":blocks/
 
     false
   }
-
 }

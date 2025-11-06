@@ -7,7 +7,7 @@ import net.minecraftforge.fml.common.Mod.EventBusSubscriber
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
-@EventBusSubscriber
+@EventBusSubscriber(Array(Side.CLIENT))
 object Registration {
 
   @SubscribeEvent
