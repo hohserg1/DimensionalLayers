@@ -61,6 +61,7 @@ package object gui {
   }
 
   def drawWithTexture(texture: ResourceLocation, render: BufferBuilder => Unit): Unit = {
+    GlStateManager.color(1, 1, 1, 1)
     val tess = Tessellator.getInstance()
     Minecraft.getMinecraft.getTextureManager.bindTexture(texture)
 

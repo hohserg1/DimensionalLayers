@@ -76,7 +76,7 @@ class GuiNewAdditionalFeature(parent: GuiBase, holder: ValueHolder[Seq[Additiona
     super.initGui()
     addButton(new GuiClickableButton(width - 100, height - 30, 90, 20, "Cancel")(back))
     confirmButton = addButton(new GuiClickableButton(width - 100, 10, 90, 20, "Add")(add))
-    addElement(new GuiScrollingListElement(x = 10, y = 10, w = width / 4, h = height - 20, entryHeight = 21 + 4) {
+    val featureTypeList = addElement(new GuiScrollingListElement(x = 10, y = 10, w = width / 8, h = height - 20, entryHeight = 21 + 4) {
 
       override def getSize: Int = FeatureType.values.length
 
@@ -93,7 +93,7 @@ class GuiNewAdditionalFeature(parent: GuiBase, holder: ValueHolder[Seq[Additiona
       }
     })
 
-    val listX = width / 4 + 20
+    val listX = featureTypeList.x + featureTypeList.w + 20
     val listY = 40
     val listW = width - listX - 10
     val listH = height - listY * 2
@@ -107,7 +107,7 @@ class GuiNewAdditionalFeature(parent: GuiBase, holder: ValueHolder[Seq[Additiona
     val labelX = amplifierFieldX - fontRenderer.getStringWidth(label)
     addFreeDrawable(() => {
       if (selected == FeatureType.Potion.ordinal)
-        drawString(fontRenderer,label, labelX, amplifierFieldY + 5, 0xffa0a0a0)
+        drawString(fontRenderer, label, labelX, amplifierFieldY + 5, 0xffa0a0a0)
     })
 
     blockFromList = addElement(new GuiBlocksList(blockFromSelectHandler, listX, listY, listW / 2 - 11, listH))
@@ -120,7 +120,7 @@ class GuiNewAdditionalFeature(parent: GuiBase, holder: ValueHolder[Seq[Additiona
 
     addFreeDrawable(() => {
       if (selected == FeatureType.BlockReplacement.ordinal)
-        drawWithTexture(texture, arrowArea.draw(_)(using arrowContainer))
+        drawWithTexture(texture, largeArrowArea.draw(_)(using arrowContainer))
     })
   }
 
@@ -129,7 +129,7 @@ class GuiNewAdditionalFeature(parent: GuiBase, holder: ValueHolder[Seq[Additiona
       holder.set(holder.get ++ Seq(
         FeatureType.values(selected) match {
           case FeatureType.Potion =>
-            PotionEffectGranting(potionH.get, 0, true)
+            PotionEffectGranting(potionH.get, potionAmplifierH.get, true)
           case FeatureType.BlockReplacement =>
             BlockReplacing(blockFromH.get, blockToH.get)
         }

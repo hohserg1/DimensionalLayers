@@ -14,14 +14,24 @@ package object features {
     gui.addCenteredLabel("additional", alignLeft(10 + addFeatListW / 2), alignTop(top), 0xffffffff)
     gui.addCenteredLabel("features:", alignLeft(10 + addFeatListW / 2), alignTop(top + 10), 0xffffffff)
     gui.addElement(new AdditionalFeaturesList(10, top + 20, addFeatListW, bottom - top - 20 - 15, holder))
-    gui.addButton(new GuiTexturedButton(10, bottom - 15, addFeatListW, 15, "+", new Rectangle(2, 131, 64, 15))(gui.show(new GuiNewAdditionalFeature(_,holder))))
+    gui.addButton(new GuiTexturedButton(10, bottom - 15, addFeatListW, 15, "+", new Rectangle(2, 131, 64, 15))(gui.show(new GuiNewAdditionalFeature(_, holder))))
   }
 
-  val arrowUV = new Rectangle(144, 0, 13, 11)
+  val arrowUV = new Rectangle(33, 79, 6, 5)
   val arrowArea = DrawableArea(
-    RelativeCoord.horizontalCenterMin(13), RelativeCoord.verticalCenterMin(11),
-    RelativeCoord.horizontalCenterMax(13), RelativeCoord.verticalCenterMax(11),
+    RelativeCoord.horizontalCenterMin(6).shift(-6), RelativeCoord.verticalCenterMin(5),
+    RelativeCoord.horizontalCenterMax(6).shift(-6), RelativeCoord.verticalCenterMax(5),
     arrowUV, arrowUV
+  )
+  val largeArrowArea = DrawableArea(
+    RelativeCoord.horizontalCenterMin(12), RelativeCoord.verticalCenterMin(10),
+    RelativeCoord.horizontalCenterMax(12), RelativeCoord.verticalCenterMax(10),
+    arrowUV, arrowUV
+  )
+  val remove = DrawableArea(
+    RelativeCoord.alignRight(-1 - 13), RelativeCoord.verticalCenterMin(12),
+    RelativeCoord.alignRight(-1), RelativeCoord.verticalCenterMax(12),
+    new Rectangle(2, 38, 13, 12)
   )
 
 }
