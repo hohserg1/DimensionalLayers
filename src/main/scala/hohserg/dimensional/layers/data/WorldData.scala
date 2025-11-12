@@ -1,9 +1,9 @@
 package hohserg.dimensional.layers.data
 
-import hohserg.dimensional.layers.{CCWorld, clamp}
 import hohserg.dimensional.layers.data.layer.base.{DimensionalLayer, Layer}
 import hohserg.dimensional.layers.preset.SingleDimensionPreset
-import io.github.opencubicchunks.cubicchunks.api.util.{Coords, IntRange}
+import hohserg.dimensional.layers.{CCWorld, clamp}
+import io.github.opencubicchunks.cubicchunks.api.util.Coords
 import net.minecraft.entity.Entity
 
 
@@ -21,9 +21,10 @@ class WorldData(val original: CCWorld, val preset: SingleDimensionPreset) {
   val minBlockY = Coords.cubeToMinBlock(minCubeY)
   val maxBlockY = Coords.cubeToMaxBlock(maxCubeY)
 
-  val spawnLayer = layers.apply(clamp(layers.size - preset.spawnLayerReversIndex - 1, 0, layers.size))
-  val minSpawnBlockY = Coords.cubeToMinBlock(spawnLayer._1._1)
-  val maxSpawnBlockY = Coords.cubeToMaxBlock(spawnLayer._1._2)
+  val (minSpawnBlockY, maxSpawnBlockY, spawnLayer) = {
+    val ((cubeMinY, cubeMaxY), spawnLayer) = layers.apply(clamp(layers.size - preset.spawnLayerReversIndex - 1, 0, layers.size))
+    (Coords.cubeToMinBlock(cubeMinY), Coords.cubeToMaxBlock(cubeMaxY), spawnLayer)
+  }
 
   def getLayerOf(entity: Entity): Option[Layer] = {
     getLayerAt((entity.posY + 0.5).toInt)
