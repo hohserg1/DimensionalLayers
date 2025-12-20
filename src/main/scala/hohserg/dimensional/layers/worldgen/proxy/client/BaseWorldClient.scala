@@ -18,8 +18,8 @@ import net.minecraft.world.{DimensionType, EnumDifficulty, WorldSettings}
 
 import java.util.Random
 
-class BaseWorldClient(netHandler: NetHandlerPlayClient, info: WorldInfo, dimensionType: DimensionType, difficulty: EnumDifficulty, profilerIn: Profiler)
-  extends WorldClient(netHandler, new WorldSettings(info), dimensionType.getId, difficulty, profilerIn) {
+class BaseWorldClient(netHandler: NetHandlerPlayClient, info: WorldInfo, dimensionId: Int, difficulty: EnumDifficulty, profilerIn: Profiler)
+  extends WorldClient(netHandler, new WorldSettings(info), dimensionId, difficulty, profilerIn) {
   override def tick(): Unit = {}
 
   override def createChunkProvider(): IChunkProvider = ???

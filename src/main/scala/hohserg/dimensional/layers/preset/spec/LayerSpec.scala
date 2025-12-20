@@ -3,9 +3,10 @@ package hohserg.dimensional.layers.preset.spec
 import hohserg.dimensional.layers.CCWorld
 import hohserg.dimensional.layers.data.layer.base.Layer
 import hohserg.dimensional.layers.data.layer.cubic_world_type.CubicWorldTypeLayer
+import hohserg.dimensional.layers.data.layer.mystcraft.MystcraftDimensionLayer
 import hohserg.dimensional.layers.data.layer.solid.SolidLayer
 import hohserg.dimensional.layers.data.layer.vanilla_dimension.VanillaDimensionLayer
-import hohserg.dimensional.layers.gui.preset.list.{GuiCubicWorldTypeLayerEntry, GuiDimensionLayerEntry, GuiLayerEntry, GuiLayersList, GuiSolidLayerEntry}
+import hohserg.dimensional.layers.gui.preset.list.*
 import io.github.opencubicchunks.cubicchunks.api.world.ICubicWorldType
 import net.minecraft.block.state.IBlockState
 import net.minecraft.init.Biomes
@@ -26,14 +27,18 @@ sealed trait LayerSpec {
   def toGuiLayerEntry(parent: GuiLayersList): GuiLayerEntry
 }
 
+case class CubeOffsets(topOffset: Int, bottomOffset: Int) {
+  val height: Int = 16 - topOffset - bottomOffset
+}
+
 case class DimensionLayerSpec(dimensionType: DimensionType,
                               seedOverride: Option[Long] = None,
-                              topOffset: Int = 0, bottomOffset: Int = 0,
+                              offsets: CubeOffsets = CubeOffsets(topOffset = 0, bottomOffset = 0),
                               worldType: WorldType = WorldType.DEFAULT, worldTypePreset: String = "",
                               additionalFeatures: Seq[AdditionalFeature] = Seq.empty
                              ) extends LayerSpec {
 
-  override val height: Int = 16 - topOffset - bottomOffset
+  override def height: Int = offsets.height
 
   override val toLayer = VanillaDimensionLayer.apply
 
@@ -64,4 +69,17 @@ case class SolidLayerSpec(filler: IBlockState, height: Int, biome: Biome = Biome
 
   @SideOnly(Side.CLIENT)
   override def toGuiLayerEntry(parent: GuiLayersList): GuiLayerEntry = new GuiSolidLayerEntry(parent, this)
+}
+
+case class MystcraftLayerSpec(seedOverride: Option[Long] = None,
+                              instability: Short = 0,
+                              symbols: Seq[String] = Seq("mystcraft:terrainamplified", "mystcraft:modmat_log2_0", "mystcraft:envaccel"),
+                              offsets: CubeOffsets = CubeOffsets(topOffset = 0, bottomOffset = 0),
+                              additionalFeatures: Seq[AdditionalFeature] = Seq.empty) extends LayerSpec {
+
+  override def height: Int = offsets.height
+
+  override val toLayer = MystcraftDimensionLayer.apply
+
+  override def toGuiLayerEntry(parent: GuiLayersList): GuiLayerEntry = new GuiMystcraftLayerEntry(parent, this)
 }

@@ -108,12 +108,6 @@ class GuiTileList[A <: Drawable](val parent: SelectHandler[A],
 
   private var maybeTooltip: Option[String] = None
 
-  private val drawHoveringText: (String, Int, Int) => Unit = {
-    val g = new GuiScreen {}
-    g.setWorldAndResolution(Minecraft.getMinecraft, Minecraft.getMinecraft.displayWidth, Minecraft.getMinecraft.displayHeight)
-    g.drawHoveringText
-  }
-
   override def elementClicked(verticalIndex: Int, doubleClick: Boolean): Unit = ()
 
   override def isSelected(index: Int): Boolean = false

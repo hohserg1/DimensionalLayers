@@ -1,4 +1,4 @@
-package hohserg.dimensional.layers.gui.settings.dimension
+package hohserg.dimensional.layers.gui.settings.base.offsets
 
 import hohserg.dimensional.layers.gui.GuiBaseSettings.ValueHolder
 import hohserg.dimensional.layers.gui.settings.GuiBaseSettingsLayer.*

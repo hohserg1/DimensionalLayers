@@ -3,7 +3,7 @@ package hohserg.dimensional.layers.gui.preset
 import hohserg.dimensional.layers.gui.add.*
 import hohserg.dimensional.layers.gui.preset.list.{GuiLayersList, texture}
 import hohserg.dimensional.layers.gui.whole.world.GuiSelectRealDimensionForEdit
-import hohserg.dimensional.layers.gui.{GuiScrollingListLens, DrawableArea, GuiBase, GuiClickableButton, RelativeCoord}
+import hohserg.dimensional.layers.gui.{DrawableArea, GuiBase, GuiClickableButton, GuiScrollingListLens, RelativeCoord}
 import hohserg.dimensional.layers.lens.GuiCreateWorldLens
 import hohserg.dimensional.layers.preset.CubicWorldTypeHelper
 import net.minecraft.client.Minecraft
@@ -39,18 +39,23 @@ class GuiSetupDimensionalLayersPreset(parent: GuiCreateWorld) extends GuiBase(pa
       back()
     }))
 
-    addButton(new GuiClickableButton(width - 80 - 10 - 80 - 10, 10, 80, 20, "Cancel")(back))
+    addButton(new GuiClickableButton(x = width - 80 - 10 - 80 - 10, y = 10, w = 80, h = 20, label = "Cancel")(back))
 
-    addButton(new GuiClickableButton(width - 150 - 10, 10 + 20 + 10, 150, 20, "Add dimension layer")(show(new dimension.GuiAddLayer(_))))
+    val addStartY = 10 + 20 + 10
+    val addStep = 20 + 1
 
-    addButton(new GuiClickableButton(width - 150 - 10, 10 + 20 + 10 + 20 + 1, 150, 20, "Add solid layer")(show(new solid.GuiAddLayer(_))))
+    addButton(new GuiClickableButton(x = width - 150 - 10, y = addStartY, w = 150, h = 20, label = "Add dimension layer")(show(new dimension.GuiAddLayer(_))))
 
-    addButton(new GuiClickableButton(width - 150 - 10, 10 + 20 + 10 + 20 + 1 + 20 + 1, 150, 20, "Add cubic world type layer")(
+    addButton(new GuiClickableButton(x = width - 150 - 10, y = addStartY + addStep, w = 150, h = 20, label = "Add solid layer")(show(new solid.GuiAddLayer(_))))
+
+    addButton(new GuiClickableButton(x = width - 150 - 10, y = addStartY + addStep * 2, w = 150, h = 20, label = "Add cubic world type layer")(
       if (CubicWorldTypeHelper.possibleWorldTypes.nonEmpty)
         show(new cubic.worldtype.GuiAddLayer(_))
       else
         showWarning("Need to install", "CubicWorldGen or smth like")
     ))
+
+    addButton(new GuiClickableButton(x = width - 150 - 10, y = addStartY + addStep * 3, w = 150, h = 20, label = "Add mistcraft layer")(show(new mystcraft.GuiAddLayer(_))))
     /*
     addButton(new GuiClickableButton(width - 150 - 10, 10 + 20 + 10 + 20 + 1 + 20 + 1 + 20 + 1, 150, 20, "Add OTG layer")(
       if (Main.otgPresent)

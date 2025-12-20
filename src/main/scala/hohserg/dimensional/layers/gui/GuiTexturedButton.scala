@@ -8,13 +8,52 @@ import org.lwjgl.opengl.GL11
 
 import java.awt.Rectangle
 
-class GuiTexturedButton(x: Int, y: Int, w: Int, h: Int, label: String, standardUV: Rectangle)(clicked: Handler)(implicit gui: GuiBase)
+class GuiTexturedButton(x: Int, y: Int, w: Int, h: Int, label: String, uv: Rectangle)(clicked: Handler)(implicit gui: GuiBase)
   extends GuiClickableButton(x, y, w, h, label)(clicked)
     with DrawableArea.Container {
+
   val area = DrawableArea(
     RelativeCoord.alignLeft(0), RelativeCoord.alignTop(0),
     RelativeCoord.alignRight(0), RelativeCoord.alignBottom(0),
-    standardUV
+    new Rectangle(0, 0, 1, 1)
+  )
+
+  val leftArea = DrawableArea(
+    RelativeCoord.alignLeft(0), RelativeCoord.alignTop(0),
+    RelativeCoord.alignLeft(15), RelativeCoord.alignBottom(0),
+    new Rectangle(uv.x, uv.y, uv.height, uv.height),
+    new Rectangle(uv.x, uv.y, uv.height, uv.height)
+  )
+  val centerArea = DrawableArea(
+    RelativeCoord.alignLeft(15), RelativeCoord.alignTop(0),
+    RelativeCoord.alignRight(-15), RelativeCoord.alignBottom(0),
+    new Rectangle(uv.x + uv.height, uv.y, uv.width - uv.height - uv.height, uv.height),
+    new Rectangle(uv.x + uv.height, uv.y, uv.width - uv.height - uv.height, uv.height)
+  )
+  val rightArea = DrawableArea(
+    RelativeCoord.alignRight(-15), RelativeCoord.alignTop(0),
+    RelativeCoord.alignRight(0), RelativeCoord.alignBottom(0),
+    new Rectangle(uv.x + uv.width - uv.height, uv.y, uv.height, uv.height),
+    new Rectangle(uv.x + uv.width - uv.height, uv.y, uv.height, uv.height)
+  )
+
+  val leftAreaHovering = DrawableArea(
+    RelativeCoord.alignLeft(0), RelativeCoord.alignTop(0),
+    RelativeCoord.alignLeft(15), RelativeCoord.alignBottom(0),
+    new Rectangle(uv.x + uv.width + 2, uv.y, uv.height, uv.height),
+    new Rectangle(uv.x + uv.width + 2, uv.y, uv.height, uv.height)
+  )
+  val centerAreaHovering = DrawableArea(
+    RelativeCoord.alignLeft(15), RelativeCoord.alignTop(0),
+    RelativeCoord.alignRight(-15), RelativeCoord.alignBottom(0),
+    new Rectangle(uv.x + uv.height + uv.width + 2, uv.y, uv.width - uv.height - uv.height, uv.height),
+    new Rectangle(uv.x + uv.height + uv.width + 2, uv.y, uv.width - uv.height - uv.height, uv.height)
+  )
+  val rightAreaHovering = DrawableArea(
+    RelativeCoord.alignRight(-15), RelativeCoord.alignTop(0),
+    RelativeCoord.alignRight(0), RelativeCoord.alignBottom(0),
+    new Rectangle(uv.x + uv.width - uv.height + uv.width + 2, uv.y, uv.height, uv.height),
+    new Rectangle(uv.x + uv.width - uv.height + uv.width + 2, uv.y, uv.height, uv.height)
   )
 
   implicit def self: DrawableArea.Container = this
@@ -28,7 +67,15 @@ class GuiTexturedButton(x: Int, y: Int, w: Int, h: Int, label: String, standardU
       val buffer = tess.getBuffer
       buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX)
 
-      area.draw(buffer)
+      if (area.isHovering) {
+        leftAreaHovering.draw(buffer)
+        centerAreaHovering.draw(buffer)
+        rightAreaHovering.draw(buffer)
+      } else {
+        leftArea.draw(buffer)
+        centerArea.draw(buffer)
+        rightArea.draw(buffer)
+      }
 
       tess.draw()
 

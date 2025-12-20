@@ -1,10 +1,11 @@
 package hohserg.dimensional.layers.gui.whole.world
 
 import hohserg.dimensional.layers.gui.preset.list.{background, texture}
+import hohserg.dimensional.layers.gui.settings.mystcraft.SymbolDrawable
 import hohserg.dimensional.layers.gui.settings.solid.GuiBlocksList.DrawableBlock
 import hohserg.dimensional.layers.gui.{Drawable, DrawableArea, IconUtils, RelativeCoord, drawHighlight}
 import hohserg.dimensional.layers.preset.SingleDimensionPreset
-import hohserg.dimensional.layers.preset.spec.{CubicWorldTypeLayerSpec, DimensionLayerSpec, SolidLayerSpec}
+import hohserg.dimensional.layers.preset.spec.{CubicWorldTypeLayerSpec, DimensionLayerSpec, MystcraftLayerSpec, SolidLayerSpec}
 import io.github.opencubicchunks.cubicchunks.api.world.ICubicWorldType
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.Tessellator
@@ -38,12 +39,14 @@ case class RealDimensionDrawable(id: Int, preset: SingleDimensionPreset) extends
   implicit def self: DrawableArea.Container = this
 
   val reversed = preset.layers.reverse.map {
-    case DimensionLayerSpec(dimensionType, _, _, _, _, _, _) =>
-      dimensionType
-    case CubicWorldTypeLayerSpec(cubicWorldType, _, _, _, _, _, _) =>
-      cubicWorldType
-    case SolidLayerSpec(filler, _, _, _) =>
-      DrawableBlock(filler.getBlock)
+    case spec: DimensionLayerSpec =>
+      spec.dimensionType
+    case spec: CubicWorldTypeLayerSpec =>
+      spec.cubicWorldType
+    case spec: SolidLayerSpec =>
+      DrawableBlock(spec.filler.getBlock)
+    case spec:MystcraftLayerSpec=>
+      SymbolDrawable(spec.symbols.head)
   }.zipWithIndex
 
   @nowarn("msg=with")

@@ -4,7 +4,7 @@ import com.google.gson.JsonParseException
 import hohserg.dimensional.layers.data.LayerMap
 import hohserg.dimensional.layers.data.layer.base.Layer
 import hohserg.dimensional.layers.preset.DimensionalLayersPreset.IllegalPresetException
-import hohserg.dimensional.layers.preset.spec.{DimensionLayerSpec, LayerSpec, SolidLayerSpec}
+import hohserg.dimensional.layers.preset.spec.{CubeOffsets, DimensionLayerSpec, LayerSpec, SolidLayerSpec}
 import hohserg.dimensional.layers.{CCWorld, Configuration, Main}
 import net.minecraft.init.{Biomes, Blocks}
 import net.minecraft.world.DimensionType
@@ -65,7 +65,7 @@ object DimensionalLayersPreset {
   lazy val singleMixedPreset =
     SingleDimensionPreset(
       scala.util.Random.shuffle(mixedPresetTop) ++
-        List(DimensionLayerSpec(DimensionType.THE_END), DimensionLayerSpec(DimensionType.OVERWORLD), DimensionLayerSpec(DimensionType.NETHER, topOffset = 8))
+        List(DimensionLayerSpec(DimensionType.THE_END), DimensionLayerSpec(DimensionType.OVERWORLD), DimensionLayerSpec(DimensionType.NETHER, offsets = CubeOffsets(topOffset = 8, bottomOffset = 0)))
         :+ SolidLayerSpec(Blocks.NETHERRACK.getDefaultState, 0 - LayerMap.minCubeY - 1, Biomes.HELL)
         :+ SolidLayerSpec(Blocks.BEDROCK.getDefaultState, 1),
       startCubeY = LayerMap.minCubeY,

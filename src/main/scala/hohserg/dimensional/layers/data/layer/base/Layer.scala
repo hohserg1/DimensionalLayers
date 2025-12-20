@@ -56,16 +56,18 @@ trait DimensionalLayer extends Layer {
   def dimensionType: DimensionType
 
   def isCubic: Boolean
+  
+  def dimensionId = dimensionType.getId
 
   lazy val blockReplacements: Map[IBlockState, IBlockState] = spec.additionalFeatures.collect { case BlockReplacing(from, to) => from -> to }.toMap
-  
-  lazy val hasBlockReplacing:Boolean = blockReplacements.nonEmpty
+
+  lazy val hasBlockReplacing: Boolean = blockReplacements.nonEmpty
 
   override protected def fakeSaveFolderName: String = dimensionType.getName
 
   @SideOnly(Side.CLIENT)
   protected def createClientProxyWorld(original: CCWorldClient): ProxyWorldClient = {
-    ProxyWorldClient(original, this)
+    new ProxyWorldClient(original, this)
   }
 
   @SideOnly(Side.CLIENT)
@@ -80,4 +82,16 @@ trait DimensionalLayer extends Layer {
           value
       }
   }
+}
+
+abstract class VanillaDimensionLayerBase(_realStartCubeY: Int, originalWorld: CCWorld, offsets: CubeOffsets) extends DimensionalLayer {
+  override val bounds: DimensionalLayerBounds = new DimensionalLayerBounds {
+    override val realStartCubeY: Int = _realStartCubeY
+    override val cubeHeight: Int = offsets.height
+    override val virtualStartCubeY: Int = offsets.bottomOffset
+    override val virtualEndCubeY: Int = 16 - offsets.topOffset - 1
+  }
+
+  override def isCubic: Boolean = false
+
 }

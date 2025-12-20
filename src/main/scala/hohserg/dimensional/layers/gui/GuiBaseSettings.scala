@@ -13,11 +13,12 @@ class GuiBaseSettings(parent: GuiScreen) extends GuiBase(parent) with StateCompo
   }
 
   var doneButton: GuiClickableButton = null
+  var cancelButton: GuiClickableButton = null
 
   override def initGui(): Unit = {
     super.initGui()
 
-    addButton(new GuiClickableButton(width - 80 - 10, height - 30, 80, 20, "Cancel")(back))
+    cancelButton = addButton(new GuiClickableButton(width - 80 - 10, height - 30, 80, 20, "Cancel")(back))
 
     doneButton = addButton(new GuiClickableButton(width - 80 - 10, 10, 80, 20, "Done")(done) {
       enabled = hasChanges

@@ -7,8 +7,8 @@ import net.minecraft.client.Minecraft
 import net.minecraft.entity.Entity
 import net.minecraft.profiler.Profiler
 
-case class ProxyWorldClient(original: CCWorldClient, layer: DimensionalLayer)
-  extends BaseWorldClient(Minecraft.getMinecraft.getConnection, original.getWorldInfo, layer.dimensionType, original.getDifficulty, new Profiler)
+class ProxyWorldClient(val original: CCWorldClient, val layer: DimensionalLayer)
+  extends BaseWorldClient(Minecraft.getMinecraft.getConnection, original.getWorldInfo, layer.dimensionId, original.getDifficulty, new Profiler)
     with FakeCubicWorldClient
     with ProxyWorldCommon {
 

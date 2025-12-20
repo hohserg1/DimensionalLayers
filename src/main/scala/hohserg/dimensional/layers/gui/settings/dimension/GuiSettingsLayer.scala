@@ -6,17 +6,16 @@ import hohserg.dimensional.layers.gui.IconUtils.*
 import hohserg.dimensional.layers.gui.RelativeCoord.{alignLeft, alignTop}
 import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
 import hohserg.dimensional.layers.gui.settings.GuiBaseSettingsLayer.*
-import hohserg.dimensional.layers.gui.settings.additional.features.{AdditionalFeaturesList, addAdditionalFeaturesWidgets}
+import hohserg.dimensional.layers.gui.settings.additional.features.addAdditionalFeaturesWidgets
+import hohserg.dimensional.layers.gui.settings.base.offsets.addOffsetsWidgets
 import hohserg.dimensional.layers.gui.settings.dimension.GuiSettingsLayer.{CyclicValueHolder, possibleWorldTypes}
 import hohserg.dimensional.layers.gui.settings.{GuiBaseSettingsLayer, GuiFakeCreateWorld}
-import hohserg.dimensional.layers.preset.spec.{AdditionalFeature, DimensionLayerSpec, LayerSpec}
+import hohserg.dimensional.layers.preset.spec.{AdditionalFeature, CubeOffsets, DimensionLayerSpec, LayerSpec}
 import hohserg.dimensional.layers.{clamp, toLongSeed}
 import io.github.opencubicchunks.cubicchunks.api.world.ICubicWorldType
 import net.minecraft.client.resources.I18n
 import net.minecraft.world.WorldType
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
-
-import java.awt.Rectangle
 
 @SideOnly(Side.CLIENT)
 object GuiSettingsLayer {
@@ -45,8 +44,8 @@ object GuiSettingsLayer {
 @SideOnly(Side.CLIENT)
 class GuiSettingsLayer(parent: GuiSetupDimensionalLayersPreset, index: Int, layer: DimensionLayerSpec) extends GuiBaseSettingsLayer(parent, index) {
   val seedOverrideH = new ValueHolder[String](layer.seedOverride.map(_.toString).getOrElse(""))
-  val topOffset: ValueHolder[Int] = new ValueHolder[Int](layer.topOffset, clamp(_, 0, 15 - bottomOffset.get))
-  val bottomOffset: ValueHolder[Int] = new ValueHolder[Int](layer.bottomOffset, clamp(_, 0, 15 - topOffset.get))
+  val topOffset: ValueHolder[Int] = new ValueHolder[Int](layer.offsets.topOffset, clamp(_, 0, 15 - bottomOffset.get))
+  val bottomOffset: ValueHolder[Int] = new ValueHolder[Int](layer.offsets.bottomOffset, clamp(_, 0, 15 - topOffset.get))
   val worldTypeH = new CyclicValueHolder[WorldType](layer.worldType, possibleWorldTypes)
   val worldTypePresetH = new ValueHolder[String](layer.worldTypePreset)
   val additionalFeaturesH = new ValueHolder[Seq[AdditionalFeature]](layer.additionalFeatures)
@@ -55,18 +54,16 @@ class GuiSettingsLayer(parent: GuiSetupDimensionalLayersPreset, index: Int, laye
     DimensionLayerSpec(
       layer.dimensionType,
       toLongSeed(seedOverrideH.get),
-      topOffset.get,
-      bottomOffset.get,
+      CubeOffsets(
+        topOffset.get,
+        bottomOffset.get
+      ),
       worldTypeH.getA,
       worldTypePresetH.get,
       additionalFeaturesH.get
     )
   }
 
-  var gridLeft: Int = IconUtils.width + 10 * 2 + 70 + 10
-
-  var topOffsetField: GuiOffsetField = null
-  var bottomOffsetField: GuiOffsetField = null
   var worldTypeButton: GuiClickableButton = null
   var worldTypeCustomizationButton: GuiClickableButton = null
 
@@ -82,16 +79,8 @@ class GuiSettingsLayer(parent: GuiSetupDimensionalLayersPreset, index: Int, laye
     val dimNameLabelX = math.max(10, 10 + IconUtils.width / 2 - fontRenderer.getStringWidth(dimNameLabel) / 2)
     addLabel(dimNameLabel, dimNameLabelX, IconUtils.width + 10 * 2, 0xffffffff)
 
-    gridLeft = {
-      val offset = 70 + 10
-      val left = IconUtils.width + 10 * 2 + offset
-      val right = seedOverrideField.x - offset
-      math.max(left, (right + left) / 2 - 14 / 2)
-    }
-
-    topOffsetField = addElement(new GuiOffsetField(gridLeft, gridTop, topOffset, null))
-    bottomOffsetField = addElement(new GuiOffsetField(gridLeft, gridTop, bottomOffset, topOffsetField))
-
+    val offset = 70 + 10
+    addOffsetsWidgets(topOffset, bottomOffset, left = IconUtils.width + 10 * 2 + offset, right = seedOverrideField.x - offset)
 
     worldTypeCustomizationButton = addButton(new GuiClickableButton(width - 150 - 10, height / 2 - 5 + 20 + 1, 150, 20, I18n.format("selectWorld.customizeType"))(() => {
       worldTypeH.getA.onCustomizeButton(mc, guiFakeCreateWorld)
@@ -105,44 +94,11 @@ class GuiSettingsLayer(parent: GuiSetupDimensionalLayersPreset, index: Int, laye
       guiFakeCreateWorld.chunkProviderSettingsJson = ""
     }))
 
-    addAdditionalFeaturesWidgets(additionalFeaturesH,  top = math.max(IconUtils.width + 10 * 6 + 9, height - 100), bottom = height - 10)
+    addAdditionalFeaturesWidgets(additionalFeaturesH, top = math.max(IconUtils.width + 10 * 6 + 9, height - 100), bottom = height - 10)
   }
 
   override def drawScreenPre(mouseX: Int, mouseY: Int, partialTicks: Float): Unit = {
     super.drawScreenPre(mouseX, mouseY, partialTicks)
     drawLogo(layer.dimensionType, 10, 10)
-    drawLayerGrid()
-  }
-
-  def gridTop = height / 2 - 209 / 2
-
-  def drawLayerGrid(): Unit = {
-    val firstEnabled = 0 + topOffset.get
-    val lastEnabled = 15 - bottomOffset.get
-
-    mc.getTextureManager.bindTexture(texture)
-
-    drawTexturedModalRect(gridLeft, gridTop, 0, 0, 14, 209)
-
-    for {
-      i <- 0 until firstEnabled
-    } drawDisabledCell(i)
-
-    for {
-      i <- firstEnabled to lastEnabled
-    } drawEnabledCell(i)
-
-    for {
-      i <- 15 until lastEnabled by -1
-    } drawDisabledCell(i)
-
-  }
-
-  def drawDisabledCell(i: Int): Unit = {
-    drawTexturedModalRect(gridLeft + 1, gridTop + i * gridCellSize + 1, 15, 14, 12, 12)
-  }
-
-  def drawEnabledCell(i: Int): Unit = {
-    drawTexturedModalRect(gridLeft + 1, gridTop + i * gridCellSize + 1, 15, 1, 12, 12)
   }
 }
