@@ -52,7 +52,10 @@ object DimensionalLayersPreset {
   def isNotVanillaDim(dimensionType: DimensionType): Boolean =
     dimensionType != DimensionType.OVERWORLD && dimensionType != DimensionType.NETHER && dimensionType != DimensionType.THE_END
 
-  lazy val availableDims: Seq[DimensionType] = DimensionType.values().toSeq.filter(dt => Try(dt.createDimension()).isSuccess)
+  val blacklistedDims = Set("Mystcraft")
+  lazy val availableDims: Seq[DimensionType] = DimensionType.values().toSeq
+                                                            .filter(dt => Try(dt.createDimension()).isSuccess)
+                                                            .filter(dt => !blacklistedDims.contains(dt.getName))
 
   lazy val mixedPresetTop: List[DimensionLayerSpec] =
     availableDims
