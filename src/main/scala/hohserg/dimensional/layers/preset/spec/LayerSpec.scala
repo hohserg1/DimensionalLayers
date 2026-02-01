@@ -73,7 +73,7 @@ case class SolidLayerSpec(filler: IBlockState, height: Int, biome: Biome = Biome
 
 case class MystcraftLayerSpec(seedOverride: Option[Long] = None,
                               instability: Short = 0,
-                              symbols: Seq[String] = Seq("mystcraft:terrainamplified", "mystcraft:modmat_log2_0", "mystcraft:envaccel"),
+                              symbols: Seq[String] = Seq("mystcraft:terrainamplified"),
                               offsets: CubeOffsets = CubeOffsets(topOffset = 0, bottomOffset = 0),
                               additionalFeatures: Seq[AdditionalFeature] = Seq.empty) extends LayerSpec {
 
