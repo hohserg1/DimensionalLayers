@@ -33,7 +33,7 @@ dependencies {
     runtimeOnly "com.cleanroommc:scalar:1.0.0"
 
     implementation "_ABC:hooklib:+"
-    compileOnly "abc:CubicChunks-1.12.2:0.0.1283.0-SNAPSHOT-all"
+    compileOnly "abc:CubicChunks-1.12.2:0.0.1283.0-SNAPSHOT-all:deobf"
     //implementation "com.lihaoyi:upickle_3:4.3.2"
     implementation("com.github.plokhotnyuk.jsoniter-scala:jsoniter-scala-core_3:2.38.3")
     compileOnly("com.github.plokhotnyuk.jsoniter-scala:jsoniter-scala-macros_3:2.38.3")
