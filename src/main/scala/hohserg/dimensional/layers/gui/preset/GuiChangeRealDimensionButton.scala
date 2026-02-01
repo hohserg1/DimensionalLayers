@@ -11,7 +11,7 @@ class GuiChangeRealDimensionButton(x: Int, y: Int)(implicit gui: GuiSetupDimensi
     with DrawableArea.Container {
 
   def renderTooltip(mouseX: Int, mouseY: Int): Unit = {
-    if (leftArea.isHovering)
+    if (area.isHovering)
       gui.drawHoveringText(ImmutableList.of("currently editing layers of real dimension " + gui.currentRealDimension, "click to switch to other"), mouseX, mouseY - 10)
   }
 }

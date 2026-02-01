@@ -15,46 +15,52 @@ class GuiTexturedButton(x: Int, y: Int, w: Int, h: Int, label: String, uv: Recta
   val area = DrawableArea(
     RelativeCoord.alignLeft(0), RelativeCoord.alignTop(0),
     RelativeCoord.alignRight(0), RelativeCoord.alignBottom(0),
-    new Rectangle(0, 0, 1, 1)
+    uv
   )
 
-  val leftArea = DrawableArea(
-    RelativeCoord.alignLeft(0), RelativeCoord.alignTop(0),
-    RelativeCoord.alignLeft(15), RelativeCoord.alignBottom(0),
-    new Rectangle(uv.x, uv.y, uv.height, uv.height),
-    new Rectangle(uv.x, uv.y, uv.height, uv.height)
-  )
-  val centerArea = DrawableArea(
-    RelativeCoord.alignLeft(15), RelativeCoord.alignTop(0),
-    RelativeCoord.alignRight(-15), RelativeCoord.alignBottom(0),
-    new Rectangle(uv.x + uv.height, uv.y, uv.width - uv.height - uv.height, uv.height),
-    new Rectangle(uv.x + uv.height, uv.y, uv.width - uv.height - uv.height, uv.height)
-  )
-  val rightArea = DrawableArea(
-    RelativeCoord.alignRight(-15), RelativeCoord.alignTop(0),
-    RelativeCoord.alignRight(0), RelativeCoord.alignBottom(0),
-    new Rectangle(uv.x + uv.width - uv.height, uv.y, uv.height, uv.height),
-    new Rectangle(uv.x + uv.width - uv.height, uv.y, uv.height, uv.height)
-  )
+  val (unhoverAreasToDraw: Seq[DrawableArea], hoverAreasToDraw: Seq[DrawableArea]) =
+    if (w > h * 2) {
+      val leftArea = DrawableArea(
+        RelativeCoord.alignLeft(0), RelativeCoord.alignTop(0),
+        RelativeCoord.alignLeft(h), RelativeCoord.alignBottom(0),
+        new Rectangle(uv.x, uv.y, uv.height, uv.height),
+        new Rectangle(uv.x, uv.y, uv.height, uv.height)
+      )
+      val centerArea = DrawableArea(
+        RelativeCoord.alignLeft(h), RelativeCoord.alignTop(0),
+        RelativeCoord.alignRight(-h), RelativeCoord.alignBottom(0),
+        new Rectangle(uv.x + uv.height, uv.y, uv.width - uv.height - uv.height, uv.height),
+        new Rectangle(uv.x + uv.height, uv.y, uv.width - uv.height - uv.height, uv.height)
+      )
+      val rightArea = DrawableArea(
+        RelativeCoord.alignRight(-h), RelativeCoord.alignTop(0),
+        RelativeCoord.alignRight(0), RelativeCoord.alignBottom(0),
+        new Rectangle(uv.x + uv.width - uv.height, uv.y, uv.height, uv.height),
+        new Rectangle(uv.x + uv.width - uv.height, uv.y, uv.height, uv.height)
+      )
 
-  val leftAreaHovering = DrawableArea(
-    RelativeCoord.alignLeft(0), RelativeCoord.alignTop(0),
-    RelativeCoord.alignLeft(15), RelativeCoord.alignBottom(0),
-    new Rectangle(uv.x + uv.width + 2, uv.y, uv.height, uv.height),
-    new Rectangle(uv.x + uv.width + 2, uv.y, uv.height, uv.height)
-  )
-  val centerAreaHovering = DrawableArea(
-    RelativeCoord.alignLeft(15), RelativeCoord.alignTop(0),
-    RelativeCoord.alignRight(-15), RelativeCoord.alignBottom(0),
-    new Rectangle(uv.x + uv.height + uv.width + 2, uv.y, uv.width - uv.height - uv.height, uv.height),
-    new Rectangle(uv.x + uv.height + uv.width + 2, uv.y, uv.width - uv.height - uv.height, uv.height)
-  )
-  val rightAreaHovering = DrawableArea(
-    RelativeCoord.alignRight(-15), RelativeCoord.alignTop(0),
-    RelativeCoord.alignRight(0), RelativeCoord.alignBottom(0),
-    new Rectangle(uv.x + uv.width - uv.height + uv.width + 2, uv.y, uv.height, uv.height),
-    new Rectangle(uv.x + uv.width - uv.height + uv.width + 2, uv.y, uv.height, uv.height)
-  )
+      val leftAreaHovering = DrawableArea(
+        RelativeCoord.alignLeft(0), RelativeCoord.alignTop(0),
+        RelativeCoord.alignLeft(h), RelativeCoord.alignBottom(0),
+        new Rectangle(uv.x + uv.width + 2, uv.y, uv.height, uv.height),
+        new Rectangle(uv.x + uv.width + 2, uv.y, uv.height, uv.height)
+      )
+      val centerAreaHovering = DrawableArea(
+        RelativeCoord.alignLeft(h), RelativeCoord.alignTop(0),
+        RelativeCoord.alignRight(-h), RelativeCoord.alignBottom(0),
+        new Rectangle(uv.x + uv.height + uv.width + 2, uv.y, uv.width - uv.height - uv.height, uv.height),
+        new Rectangle(uv.x + uv.height + uv.width + 2, uv.y, uv.width - uv.height - uv.height, uv.height)
+      )
+      val rightAreaHovering = DrawableArea(
+        RelativeCoord.alignRight(-h), RelativeCoord.alignTop(0),
+        RelativeCoord.alignRight(0), RelativeCoord.alignBottom(0),
+        new Rectangle(uv.x + uv.width - uv.height + uv.width + 2, uv.y, uv.height, uv.height),
+        new Rectangle(uv.x + uv.width - uv.height + uv.width + 2, uv.y, uv.height, uv.height)
+      )
+      Seq(leftArea, centerArea, rightArea) -> Seq(leftAreaHovering, centerAreaHovering, rightAreaHovering)
+    } else {
+      Seq(area) -> Seq(area)
+    }
 
   implicit def self: DrawableArea.Container = this
 
@@ -67,15 +73,10 @@ class GuiTexturedButton(x: Int, y: Int, w: Int, h: Int, label: String, uv: Recta
       val buffer = tess.getBuffer
       buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX)
 
-      if (area.isHovering) {
-        leftAreaHovering.draw(buffer)
-        centerAreaHovering.draw(buffer)
-        rightAreaHovering.draw(buffer)
-      } else {
-        leftArea.draw(buffer)
-        centerArea.draw(buffer)
-        rightArea.draw(buffer)
-      }
+      if (area.isHovering)
+        hoverAreasToDraw.foreach(_.draw(buffer))
+      else
+        unhoverAreasToDraw.foreach(_.draw(buffer))
 
       tess.draw()
 

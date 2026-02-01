@@ -4,8 +4,6 @@ import com.google.common.cache.{CacheBuilder, CacheLoader, LoadingCache}
 import hohserg.dimensional.layers.*
 import hohserg.dimensional.layers.gui.GuiBaseSettings.ValueHolder
 import hohserg.dimensional.layers.gui.GuiTileList.{GuiTileLine, SelectHandler, slotWidth}
-import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.Tessellator
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import org.lwjgl.input.Mouse
@@ -119,10 +117,12 @@ class GuiTileList[A <: Drawable](val parent: SelectHandler[A],
       val line = lines(index)
       line.drawEntryAndGetTooltip(index, left, top, right, top + height, mouseX, mouseY) match {
         case Some((newTooltip, horizontalIndex, elem)) =>
-          maybeTooltip = Some(newTooltip)
-          if (Mouse.isButtonDown(0)) {
-            selection = Some((index, horizontalIndex, elem))
-            parent.onSelected(elem)
+          if (x <= mouseX && mouseX < x + w && y <= mouseY && mouseY <= y + h) {
+            maybeTooltip = Some(newTooltip)
+            if (Mouse.isButtonDown(0)) {
+              selection = Some((index, horizontalIndex, elem))
+              parent.onSelected(elem)
+            }
           }
         case None =>
       }

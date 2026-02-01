@@ -31,6 +31,13 @@ object GuiBlocksList {
     val stack = new ItemStack(block)
 
     override def draw(minX: Int, minY: Int, maxX: Int, maxY: Int): Unit = {
+      GlStateManager.color(1, 1, 1, 1)
+      GlStateManager.colorMaterial(1032, 5634)
+      GlStateManager.enableLighting()
+      GlStateManager.enableLight(0)
+      GlStateManager.enableLight(1)
+      for (i <- 2 to 7)
+        GlStateManager.disableLight(i)
       Minecraft.getMinecraft.getRenderItem.renderItemIntoGUI(stack, minX + 1, minY + 1)
     }
 

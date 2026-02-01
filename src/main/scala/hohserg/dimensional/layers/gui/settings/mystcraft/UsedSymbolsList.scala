@@ -3,15 +3,18 @@ package hohserg.dimensional.layers.gui.settings.mystcraft
 import com.xcompwiz.mystcraft.client.gui.GuiUtils
 import com.xcompwiz.mystcraft.client.gui.element.{FixGuiElementScrollablePages, GuiElementScrollablePages}
 import com.xcompwiz.mystcraft.page.Page
+import hohserg.dimensional.layers.data.layer.mystcraft.symbolsToPages
 import hohserg.dimensional.layers.gui.GuiBaseSettings.ValueHolder
 import hohserg.dimensional.layers.gui.GuiElement
 import net.minecraft.client.Minecraft
 import net.minecraft.item.ItemStack
 import net.minecraft.util.ResourceLocation
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 import java.util
 import scala.jdk.CollectionConverters.*
 
+@SideOnly(Side.CLIENT)
 class UsedSymbolsList(x: Int, val y: Int, w: Int, symbolsH: ValueHolder[Seq[String]]) extends GuiElement
   with GuiElementScrollablePages.IGuiScrollableClickHandler
   with GuiElementScrollablePages.IGuiPageListProvider {
@@ -34,8 +37,7 @@ class UsedSymbolsList(x: Int, val y: Int, w: Int, symbolsH: ValueHolder[Seq[Stri
     symbolsH.set(symbolsH.get.patch(index, Seq.empty, 1))
   }
 
-  override def getPageList: util.List[ItemStack] =
-    symbolsH.get.map(new ResourceLocation(_)).map(Page.createSymbolPage).asJava
+  override def getPageList: util.List[ItemStack] = symbolsToPages(symbolsH.get)
 
   override def getItemStack: ItemStack = ItemStack.EMPTY
 

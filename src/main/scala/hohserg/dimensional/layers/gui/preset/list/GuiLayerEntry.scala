@@ -114,6 +114,7 @@ trait GuiLayerEntry extends DrawableArea.Container {
       remove.draw(buffer)
       settings.draw(buffer)
 
+      GlStateManager.enableBlend()
       spawnPointHighlight.draw(buffer)
     }
 
@@ -132,7 +133,7 @@ trait GuiLayerEntry extends DrawableArea.Container {
       GlStateManager.disableBlend()
     }
 
-    if (parent.spawnLayer.get == parent.entries.size - index - 1)
+    if (isSpawnLayerIndex(index))
       drawSpawnPoint()
 
     val endCubeY = parent.startCubeY.get + parent.entries.dropWhile(_ != this).map(_.layer.height).sum
@@ -140,7 +141,7 @@ trait GuiLayerEntry extends DrawableArea.Container {
     mc.fontRenderer.drawStringWithShadow("" + endCubeY, minX + IconUtils.width + 11, minY - 6, 0xffffff)
   }
 
-  def drawSpawnPoint(): Unit = {
+  private def drawSpawnPoint(): Unit = {
     drawWithTexture(steveIconRL, buffer => {
       spawnPointSteveIcon.draw(buffer)
     })
@@ -158,10 +159,8 @@ trait GuiLayerEntry extends DrawableArea.Container {
   private def checkMoveUpClicked(index: Int, mouseX: Int, mouseY: Int): Unit = {
     if (isNotFirst(index)) {
       if (moveUp.isHovering) {
-        val prev = parent.entries(index - 1)
-        parent.entries(index - 1) = this
-        parent.entries(index) = prev
-        parent.scrollUpOnce();
+        swapEntries(index, index - 1)
+        parent.scrollUpOnce()
       }
     }
   }
@@ -169,17 +168,30 @@ trait GuiLayerEntry extends DrawableArea.Container {
   private def checkMoveDownClicked(index: Int, mouseX: Int, mouseY: Int): Unit = {
     if (isNotLast(index)) {
       if (moveDown.isHovering) {
-        val next = parent.entries(index + 1)
-        parent.entries(index + 1) = this
-        parent.entries(index) = next
-        parent.scrollDownOnce();
+        swapEntries(index, index + 1)
+        parent.scrollDownOnce()
       }
     }
+  }
+
+  private def swapEntries(i: Int, k: Int): Unit = {
+    val ie = parent.entries(i)
+    val ke = parent.entries(k)
+    parent.entries(i) = ke
+    parent.entries(k) = ie
+
+    if (isSpawnLayerIndex(i))
+      setSpawnLayerIndex(k)
+
+    else if (isSpawnLayerIndex(k))
+      setSpawnLayerIndex(i)
   }
 
   private def checkRemoveClicked(index: Int, mouseX: Int, mouseY: Int): Unit = {
     if (remove.isHovering) {
       parent.entries.remove(index)
+      if (isSpawnLayerIndex(index))
+        setSpawnLayerIndex(math.max(0, index - 1))
     }
   }
 
@@ -191,9 +203,16 @@ trait GuiLayerEntry extends DrawableArea.Container {
 
   private def checkSpawnPointClicked(index: Int, mouseX: Int, mouseY: Int): Unit = {
     if (spawnPointHighlight.isHovering) {
-      parent.spawnLayer.set(parent.entries.size - index - 1)
+      setSpawnLayerIndex(index)
     }
   }
+
+  private def setSpawnLayerIndex(index: Int): Unit = {
+    parent.spawnLayer.set(parent.entries.size - index - 1)
+  }
+
+  private def isSpawnLayerIndex(index: Int): Boolean =
+    parent.spawnLayer.get == parent.entries.size - index - 1
 
   private def isNotLast(index: Int) = {
     index != parent.entries.size - 1

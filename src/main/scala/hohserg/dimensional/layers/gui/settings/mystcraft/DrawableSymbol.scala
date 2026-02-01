@@ -6,8 +6,10 @@ import com.xcompwiz.mystcraft.symbol.SymbolManager
 import hohserg.dimensional.layers.gui.Drawable
 import net.minecraft.client.Minecraft
 import net.minecraft.util.ResourceLocation
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
-case class SymbolDrawable(name: String) extends Drawable {
+@SideOnly(Side.CLIENT)
+case class DrawableSymbol(name: String) extends Drawable {
 
   private val stack = Page.createSymbolPage(new ResourceLocation(name))
 
