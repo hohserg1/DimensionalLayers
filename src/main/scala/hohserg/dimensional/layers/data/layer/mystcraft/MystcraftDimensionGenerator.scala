@@ -19,7 +19,7 @@ class MystcraftDimensionGenerator(original: CCWorldServer, layer: MystcraftDimen
   override def worldTypePreset: String = ""
 
   override def beforeInitWorld(proxyWorld: ProxyWorldServer): Unit = {
-    layer.registerMystcraftDim()
+    layer.registerMystcraftDim(original)
     proxyWorld.provider.setDimension(layer.dimensionId)
   }
 }

@@ -1,6 +1,7 @@
 package hohserg.dimensional.layers.data.layer.mystcraft
 
 import com.xcompwiz.mystcraft.Mystcraft
+import com.xcompwiz.mystcraft.world.agedata.AgeData
 import hohserg.dimensional.layers.data.layer.base.VanillaDimensionLayerBase
 import hohserg.dimensional.layers.preset.spec.MystcraftLayerSpec
 import hohserg.dimensional.layers.worldgen.proxy.client.ProxyWorldClient
@@ -24,13 +25,15 @@ case class MystcraftDimensionLayer(_realStartCubeY: Int, spec: MystcraftLayerSpe
 
   @SideOnly(Side.CLIENT)
   override protected def createClientProxyWorld(original: CCWorldClient): ProxyWorldClient = {
-    registerMystcraftDim()
+    registerMystcraftDim(original)
     val proxyWorldClient = super.createClientProxyWorld(original)
     proxyWorldClient.provider.setDimension(dimensionId)
     proxyWorldClient
   }
 
-  def registerMystcraftDim(): Unit = {
+  def registerMystcraftDim(originalWorld: CCWorld): Unit = {
+    val client = originalWorld.isRemote
+    val server = !client
     if (!DimensionManager.isDimensionRegistered(dimensionId)) {
       DimensionManager.registerDimension(dimensionId, Mystcraft.dimensionType)
     } else {
@@ -42,5 +45,11 @@ case class MystcraftDimensionLayer(_realStartCubeY: Int, spec: MystcraftLayerSpe
     if (Mystcraft.registeredDims == null)
       Mystcraft.registeredDims = new JHashSet[Integer]()
     Mystcraft.registeredDims.add(dimensionId)
+
+    val age = AgeData.getAge(dimensionId, client)
+    if (server)
+      age.setSeed(spec.seedOverride.getOrElse(originalWorld.getSeed))
+    age.setPages(symbolsToPages(spec.symbols))
+    age.getSymbols(client)
   }
 }
