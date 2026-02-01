@@ -11,7 +11,7 @@ import net.minecraft.client.gui.GuiCreateWorld
 import net.minecraft.world.{World, WorldServer, WorldType}
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
-object DimensionalLayersWorldType extends WorldType("dimlayers2") with ICubicWorldType {
+object DimensionalLayersWorldType extends WorldType("dimlayers5") with ICubicWorldType {
 
   override def onGUICreateWorldPress(): Unit = {
   }
