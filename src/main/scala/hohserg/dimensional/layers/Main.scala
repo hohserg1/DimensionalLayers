@@ -33,6 +33,10 @@ object Main {
 
   lazy val netherexPresent = Loader.isModLoaded(netherexModid)
 
+  final val mystcraftModid = "mystcraft"
+
+  lazy val mystcraftPresent = Loader.isModLoaded(mystcraftModid)
+
   @EventHandler
   def preInit(e: FMLPreInitializationEvent): Unit = {
   }

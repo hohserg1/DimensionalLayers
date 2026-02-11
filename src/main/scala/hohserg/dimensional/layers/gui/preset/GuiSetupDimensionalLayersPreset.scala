@@ -1,5 +1,6 @@
 package hohserg.dimensional.layers.gui.preset
 
+import hohserg.dimensional.layers.Main
 import hohserg.dimensional.layers.gui.add.*
 import hohserg.dimensional.layers.gui.preset.list.{GuiLayersList, texture}
 import hohserg.dimensional.layers.gui.whole.world.GuiSelectRealDimensionForEdit
@@ -55,7 +56,12 @@ class GuiSetupDimensionalLayersPreset(parent: GuiCreateWorld) extends GuiBase(pa
         showWarning("Need to install", "CubicWorldGen or smth like")
     ))
 
-    addButton(new GuiClickableButton(x = width - 150 - 10, y = addStartY + addStep * 3, w = 150, h = 20, label = "Add mistcraft layer")(show(new mystcraft.GuiAddLayer(_))))
+    addButton(new GuiClickableButton(x = width - 150 - 10, y = addStartY + addStep * 3, w = 150, h = 20, label = "Add mystcraft layer")(
+      if (Main.mystcraftPresent)
+        show(new mystcraft.GuiAddLayer(_))
+      else
+        showWarning("Need to install", "Mystcraft")
+    ))
     /*
     addButton(new GuiClickableButton(width - 150 - 10, 10 + 20 + 10 + 20 + 1 + 20 + 1 + 20 + 1, 150, 20, "Add OTG layer")(
       if (Main.otgPresent)
