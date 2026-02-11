@@ -1,9 +1,9 @@
 package hohserg.dimensional.layers.gui.preset.list
 
-import hohserg.dimensional.layers.Main
 import hohserg.dimensional.layers.gui.preset.GuiSetupDimensionalLayersPreset
 import hohserg.dimensional.layers.gui.{DrawableArea, GuiBase, IconUtils, RelativeCoord, SteveIconTexture, drawWithTexture, steveIconRL}
 import hohserg.dimensional.layers.preset.spec.LayerSpec
+import hohserg.dimensional.layers.{Main, clamp}
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.client.renderer.{GlStateManager, Tessellator}
@@ -189,9 +189,10 @@ trait GuiLayerEntry extends DrawableArea.Container {
 
   private def checkRemoveClicked(index: Int, mouseX: Int, mouseY: Int): Unit = {
     if (remove.isHovering) {
+      val needShiftSpawn = isSpawnLayerIndex(index)
       parent.entries.remove(index)
-      if (isSpawnLayerIndex(index))
-        setSpawnLayerIndex(math.max(0, index - 1))
+      if (needShiftSpawn)
+        setSpawnLayerIndex(clamp(index - 1, 0, parent.entries.size - 1))
     }
   }
 
