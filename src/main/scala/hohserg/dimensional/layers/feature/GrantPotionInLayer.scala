@@ -18,7 +18,7 @@ object GrantPotionInLayer {
         data.getLayerOf(e.player).filter(l => l.hasPotionEffectGranting).foreach(l => {
           l.spec.additionalFeatures.foreach {
             case PotionEffectGranting(effect, amplifier, playerOnly) =>
-              e.player.addPotionEffect(new PotionEffect(effect, 20 * 10, amplifier, true, false))
+              e.player.addPotionEffect(new PotionEffect(effect, 20 * 11, amplifier, true, false))
             case _ =>
           }
         })
