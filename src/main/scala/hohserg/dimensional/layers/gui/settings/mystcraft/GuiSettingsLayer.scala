@@ -192,4 +192,8 @@ class GuiSettingsLayer(parent: GuiSetupDimensionalLayersPreset, layer: Mystcraft
         SelectedSymbol.clear()
     super.mouseClicked(mouseX, mouseY, mouseButton)
   }
+
+  override def onStateChanged(): Unit = {
+    doneButton.enabled = hasChanges && symbolsH.get.nonEmpty
+  }
 }
