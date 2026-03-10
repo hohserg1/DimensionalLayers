@@ -30,3 +30,4 @@ gradle-app.setting
 /libs_gradle/
 /production/
 todo.txt
+.profileconfig.json
