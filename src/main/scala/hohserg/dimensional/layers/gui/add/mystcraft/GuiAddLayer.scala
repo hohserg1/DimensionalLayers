@@ -7,4 +7,8 @@ import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 @SideOnly(Side.CLIENT)
 class GuiAddLayer(parent: GuiSetupDimensionalLayersPreset) extends mystcraft.GuiSettingsLayer(parent, MystcraftLayerSpec(), 0) {
+  override def done(): Unit = {
+    parent.layersList.add(buildLayerSpec())
+    back()
+  }
 }
