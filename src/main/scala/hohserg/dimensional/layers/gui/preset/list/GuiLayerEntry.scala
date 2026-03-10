@@ -133,7 +133,7 @@ trait GuiLayerEntry extends DrawableArea.Container {
       GlStateManager.disableBlend()
     }
 
-    if (isSpawnLayerIndex(index))
+    if (parent.spawnLayer.get == parent.entries.size - index - 1)
       drawSpawnPoint()
 
     val endCubeY = parent.startCubeY.get + parent.entries.dropWhile(_ != this).map(_.layer.height).sum
@@ -180,16 +180,16 @@ trait GuiLayerEntry extends DrawableArea.Container {
     parent.entries(i) = ke
     parent.entries(k) = ie
 
-    if (isSpawnLayerIndex(i))
+    if (parent.spawnLayer.get == parent.entries.size - i - 1)
       setSpawnLayerIndex(k)
 
-    else if (isSpawnLayerIndex(k))
+    else if (parent.spawnLayer.get == parent.entries.size - k - 1)
       setSpawnLayerIndex(i)
   }
 
   private def checkRemoveClicked(index: Int, mouseX: Int, mouseY: Int): Unit = {
     if (remove.isHovering) {
-      val needShiftSpawn = isSpawnLayerIndex(index)
+      val needShiftSpawn = parent.spawnLayer.get >= parent.entries.size - index - 1
       parent.entries.remove(index)
       if (needShiftSpawn)
         setSpawnLayerIndex(clamp(index - 1, 0, parent.entries.size - 1))
@@ -211,9 +211,6 @@ trait GuiLayerEntry extends DrawableArea.Container {
   private def setSpawnLayerIndex(index: Int): Unit = {
     parent.spawnLayer.set(parent.entries.size - index - 1)
   }
-
-  private def isSpawnLayerIndex(index: Int): Boolean =
-    parent.spawnLayer.get == parent.entries.size - index - 1
 
   private def isNotLast(index: Int) = {
     index != parent.entries.size - 1
