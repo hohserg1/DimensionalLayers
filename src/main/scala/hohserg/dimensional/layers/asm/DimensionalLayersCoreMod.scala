@@ -8,9 +8,11 @@ import java.util
 @IFMLLoadingPlugin.MCVersion(value = ForgeVersion.mcVersion)
 @IFMLLoadingPlugin.SortingIndex(value = 5000)
 class DimensionalLayersCoreMod extends IFMLLoadingPlugin {
-  override def getASMTransformerClass: Array[String] = {
-    Array("hohserg.dimensional.layers.asm.BaseWorldServerTransformer")
-  }
+  override def getASMTransformerClass: Array[String] =
+    Array(
+      "hohserg.dimensional.layers.asm.BaseWorldServerTransformer"
+      //,"hohserg.dimensional.layers.asm.multitude.patcher.MultitudeTransformer"
+    )
 
   override def getModContainerClass: String = null
 
